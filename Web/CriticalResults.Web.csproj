@@ -1,0 +1,369 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D1698C10-69C0-467D-9783-C2BB262357E6}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CriticalResults</RootNamespace>
+    <AssemblyName>CriticalResults.Web</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\libs\Newtonsoft.Json\JSON.Net 3.0\Bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Entity">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Abstractions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Routing">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Auth\CentricityLogin.aspx.cs">
+      <DependentUpon>CentricityLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Auth\CentricityLogin.aspx.designer.cs">
+      <DependentUpon>CentricityLogin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Auth\WindowsLogin.aspx.cs">
+      <DependentUpon>WindowsLogin.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Auth\WindowsLogin.aspx.designer.cs">
+      <DependentUpon>WindowsLogin.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="default.aspx.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="default.aspx.designer.cs">
+      <DependentUpon>default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DynamicScripts\Modules.aspx.cs">
+      <DependentUpon>Modules.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DynamicScripts\Modules.aspx.designer.cs">
+      <DependentUpon>Modules.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DynamicScripts\RootUrl.aspx.cs">
+      <DependentUpon>RootUrl.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DynamicScripts\RootUrl.aspx.designer.cs">
+      <DependentUpon>RootUrl.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="mobile\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="mobile\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="mobile\Help.aspx.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="mobile\Help.aspx.designer.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="mobile\RadiologyContext.cs" />
+    <Compile Include="mobile\ResultDetail.aspx.cs">
+      <DependentUpon>ResultDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="mobile\ResultDetail.aspx.designer.cs">
+      <DependentUpon>ResultDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="mobile\ResultList.aspx.cs">
+      <DependentUpon>ResultList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="mobile\ResultList.aspx.designer.cs">
+      <DependentUpon>ResultList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="mobile\Utilities.cs" />
+    <Compile Include="mobile\_Default.aspx.cs">
+      <DependentUpon>_Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="mobile\_Default.aspx.designer.cs">
+      <DependentUpon>_Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CSS\menu.css" />
+    <Content Include="CSS\mobile.css" />
+    <Content Include="CSS\modal.css" />
+    <Content Include="CSS\StyleSheet.css" />
+    <Content Include="Dashboard.htm" />
+    <Content Include="default.aspx" />
+    <Content Include="Default.htm" />
+    <Content Include="graphics\asc.gif" />
+    <Content Include="graphics\bg.gif" />
+    <Content Include="graphics\cricormf_tag_003399_H65.gif" />
+    <Content Include="graphics\desc.gif" />
+    <Content Include="graphics\header.gif" />
+    <Content Include="graphics\icon-search.gif" />
+    <Content Include="graphics\icon-search2.gif" />
+    <Content Include="graphics\logo-bethisrael.gif" />
+    <Content Include="graphics\logo-brigham.gif" />
+    <Content Include="graphics\logo-brigham2.jpg" />
+    <Content Include="graphics\logo-crico_rmf.gif" />
+    <Content Include="graphics\logo-danafarber.gif" />
+    <Content Include="graphics\logo-df.gif" />
+    <Content Include="graphics\logo-faulkner.gif" />
+    <Content Include="graphics\logo-harvard.gif" />
+    <Content Include="graphics\logo-harvard2.jpg" />
+    <Content Include="graphics\logo-partners.gif" />
+    <Content Include="graphics\uchospitals.gif" />
+    <Content Include="graphics\working.gif" />
+    <Content Include="Header.htm" />
+    <Content Include="javascript\AcknowledgeResult.js" />
+    <Content Include="javascript\autocomplete\autocomplete.htm" />
+    <Content Include="javascript\autocomplete\autocomplete_ajax.cfm.txt" />
+    <Content Include="javascript\autocomplete\autocomplete_docs.txt" />
+    <Content Include="javascript\autocomplete\jquery.autocomplete.css" />
+    <Content Include="javascript\autocomplete\jquery.autocomplete.js" />
+    <Content Include="javascript\autocomplete\jquery.js" />
+    <Content Include="javascript\ChangePassword.js" />
+    <Content Include="javascript\CheckboxMenu.js" />
+    <Content Include="javascript\ContextMenu.js" />
+    <Content Include="javascript\CreateUser.js" />
+    <Content Include="javascript\crypt\aes_cbc.js" />
+    <Content Include="javascript\crypt\aes_core.js" />
+    <Content Include="javascript\crypt\aes_ctr.js" />
+    <Content Include="javascript\crypt\asn1.js" />
+    <Content Include="javascript\crypt\history.txt" />
+    <Content Include="javascript\crypt\jsbn.js" />
+    <Content Include="javascript\crypt\md5.js" />
+    <Content Include="javascript\crypt\Notes.txt" />
+    <Content Include="javascript\crypt\oids.js" />
+    <Content Include="javascript\crypt\original scripts\asn1.js" />
+    <Content Include="javascript\crypt\original scripts\jsbn.js" />
+    <Content Include="javascript\crypt\original scripts\md5.js" />
+    <Content Include="javascript\crypt\original scripts\prng4.js" />
+    <Content Include="javascript\crypt\original scripts\rng.js" />
+    <Content Include="javascript\crypt\original scripts\rsa.js" />
+    <Content Include="javascript\crypt\original scripts\sha1.js" />
+    <Content Include="javascript\crypt\original scripts\sha256.js" />
+    <Content Include="javascript\crypt\pidcrypt.js" />
+    <Content Include="javascript\crypt\pidcrypt_util.js" />
+    <Content Include="javascript\crypt\prng4.js" />
+    <Content Include="javascript\crypt\rng.js" />
+    <Content Include="javascript\crypt\rsa.js" />
+    <Content Include="javascript\crypt\sha1.js" />
+    <Content Include="javascript\crypt\sha256.js" />
+    <Content Include="javascript\datetime\DateExtensions.js" />
+    <Content Include="javascript\datetime\Timespan2.js" />
+    <Content Include="javascript\Filters\LevelFilter.js" />
+    <Content Include="javascript\Filters\SavedFilters.js" />
+    <Content Include="javascript\Filters\_StatusFilter.js" />
+    <Content Include="javascript\Filters\StatusTimeFilter.js" />
+    <Content Include="javascript\Filters\_TimeFilter.js" />
+    <Content Include="javascript\Filters\UserFilter.js" />
+    <Content Include="javascript\jquery\jquery-1.3.2-vsdoc2.js" />
+    <Content Include="javascript\jquery\jquery-1.3.2.js" />
+    <Content Include="javascript\jquery\jquery-1.3.2.min.js" />
+    <Content Include="javascript\jquery\jquery.json-1.3.min.js" />
+    <Content Include="javascript\jquery\plugins\jquery.cookie.js" />
+    <Content Include="javascript\jquery\plugins\jquery.tablesorter.min.js" />
+    <Content Include="javascript\jquery\plugins\tablesorter\jquery.metadata.js" />
+    <Content Include="javascript\jquery\plugins\tablesorter\jquery.tablesorter.min.js" />
+    <Content Include="javascript\jscolor\arrow.gif" />
+    <Content Include="javascript\jscolor\cross.gif" />
+    <Content Include="javascript\jscolor\hs.png" />
+    <Content Include="javascript\jscolor\hv.png" />
+    <Content Include="javascript\jscolor\jscolor.js" />
+    <Content Include="javascript\LevelEntity.js" />
+    <Content Include="javascript\LevelManager.js" />
+    <Content Include="javascript\UserAgentDetection.js" />
+    <Content Include="javascript\SettingsManager.js" />
+    <Content Include="javascript\UpdateUser.js" />
+    <Content Include="javascript\_Management.js" />
+    <Content Include="javascript\modalDialog.js" />
+    <Content Include="javascript\objects\manager.js" />
+    <Content Include="javascript\objects\RadiologyContextFormatter.js" />
+    <Content Include="javascript\objects\user.js" />
+    <Content Include="javascript\Timespan.js" />
+    <Content Include="javascript\transportManagement.js" />
+    <Content Include="javascript\TransportManager.js" />
+    <Content Include="javascript\UserManager.js" />
+    <Content Include="javascript\Utility.js" />
+    <Content Include="javascript\WebClient.js" />
+    <Content Include="Manager\Manager.htm" />
+    <Content Include="Manager\ProxyManager.htm" />
+    <Content Include="Navigation.htm" />
+    <Content Include="Auth\DefaultLogin.htm" />
+    <Content Include="User\ComposeResult.htm" />
+    <Content Include="User\LevelFilterMenu.htm" />
+    <Content Include="User\PersonalTransports.htm" />
+    <Content Include="User\RerouteResult.htm" />
+    <Content Include="User\ResultDetail.htm" />
+    <Content Include="User\ResultList.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CriticalResultsLib\CriticalResults.Lib.csproj">
+      <Project>{2D2D51E9-F82F-48E6-86D5-154586B44912}</Project>
+      <Name>CriticalResults.Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entities\CriticalResults.Entities.csproj">
+      <Project>{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}</Project>
+      <Name>CriticalResults.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EntityObjects\EntityObjects\CriticalResults.EntityObjects.csproj">
+      <Project>{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}</Project>
+      <Name>CriticalResults.EntityObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmtpTransport\CriticalResults.SmtpTransport.csproj">
+      <Project>{BDC3EF8A-3678-45BD-8402-3C337D386F3C}</Project>
+      <Name>CriticalResults.SmtpTransport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WcfServices\CriticalResults.WcfServices.csproj">
+      <Project>{4F8B3101-4588-4E02-8339-1C63F80299DB}</Project>
+      <Name>CriticalResults.WcfServices</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Auth\CentricityLogin.aspx" />
+    <Content Include="Auth\WindowsLogin.aspx" />
+    <Content Include="Auth\Web.config" />
+    <Content Include="CSS\custom-theme\images\ui-bg_flat_0_525252_40x100.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_flat_75_305481_40x100.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="CSS\custom-theme\images\ui-bg_inset-soft_95_fef1ec_1x100.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_000000_256x240.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_454545_256x240.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_888888_256x240.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="CSS\custom-theme\images\ui-icons_FFFFFF_256x240.png" />
+    <Content Include="CSS\custom-theme\jquery-ui-1.7.2.custom.css" />
+    <Content Include="DynamicScripts\Modules.aspx" />
+    <Content Include="DynamicScripts\RootUrl.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="javascript\AuthManager.js" />
+    <Content Include="javascript\DefaultExtension.js" />
+    <Content Include="javascript\Extensions.js" />
+    <Content Include="javascript\jquery\jquery-ui-1.7.2.custom.min.js" />
+    <Content Include="javascript\jquery\plugins\bgiframe_2.1.1\jquery.bgiframe.js" />
+    <Content Include="javascript\jquery\plugins\bgiframe_2.1.1\jquery.bgiframe.min.js" />
+    <Content Include="javascript\jquery\plugins\bgiframe_2.1.1\jquery.bgiframe.pack.js" />
+    <Content Include="javascript\jquery\ui.core.js" />
+    <Content Include="javascript\jquery\ui.tabs.js" />
+    <Content Include="mobile\Default.aspx" />
+    <Content Include="mobile\GetUserAgent.htm" />
+    <Content Include="mobile\Graphics\Help.jpg" />
+    <Content Include="mobile\Graphics\icon-search.gif" />
+    <Content Include="mobile\Graphics\icon-search2.gif" />
+    <Content Include="mobile\Graphics\magnifier-20px.png" />
+    <Content Include="mobile\Graphics\magnifier-40px.png" />
+    <Content Include="mobile\Graphics\magnifier-60px.png" />
+    <Content Include="mobile\Help.aspx" />
+    <Content Include="mobile\ResultDetail.aspx" />
+    <Content Include="mobile\ResultList.aspx" />
+    <Content Include="mobile\_Default.aspx" />
+    <Content Include="Services\DirectoryServices\DirectoryService.svc" />
+    <Content Include="Services\DirectoryServices\javascript\ADWebClient.js" />
+    <Content Include="Services\DirectoryServices\javascript\AutoCreateADAuthExt.js" />
+    <Content Include="Services\TransportService\SmtpTransport.svc" />
+    <Content Include="Services\WebServices\Results.svc" />
+    <Content Include="CriticalResultsTransporter.connection.config" />
+    <None Include="javascript\jquery\plugins\bgiframe_2.1.1\META.json" />
+    <Content Include="Services\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

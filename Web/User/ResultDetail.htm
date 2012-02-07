@@ -1,0 +1,1085 @@
+﻿<html>
+<head>
+    <title>Result Detail</title>
+	<link href="../CSS/StyleSheet.css" rel="stylesheet" type="text/css" />
+    <link href="../CSS/modal.css" rel="stylesheet" type="text/css" />
+	<script src="../javascript/jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/jquery.json-1.3.min.js" type="text/javascript"></script>
+	<script src="../DynamicScripts/RootUrl.aspx" type="text/javascript"></script>
+	<script src="../javascript/Utility.js" type="text/javascript"></script>
+    <script src="../javascript/modalDialog.js" type="text/javascript"></script>
+	<script src="../javascript/datetime/DateExtensions.js" type="text/javascript"></script>
+	<link href="../javascript/autocomplete/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+	<script src="../javascript/autocomplete/jquery.autocomplete.js" type="text/javascript"></script>
+
+	<script src="../javascript/WebClient.js" type="text/javascript"></script>
+	<script src="../Services/DirectoryServices/javascript/ADWebClient.js" type="text/javascript"></script>
+	<script src="../javascript/DefaultExtension.js" type="text/javascript"></script>
+	<script src="../DynamicScripts/Modules.aspx" type="text/javascript"></script>
+
+	<script src="../javascript/objects/RadiologyContextFormatter.js" type="text/javascript"></script>
+
+	<script language="javascript" type="text/javascript">
+		AuthManager = parent.AuthManager;
+	</script>
+	
+	<script type="text/javascript">
+		var CRManager = parent.Manager;
+		
+		var PageManager = {
+			Result:null,
+			RerouteTo: null,
+			NotificationTimer: 5000 
+		};
+		
+		var SENDER_ACK_DIR = "I have spoken face to face with {0} on {1}.";
+		var RECEIVER_ACK_DIR = "{0} has spoken face to face with me on {1}.  I have reviewed and understand the results.";
+		var SENDER_ACK_PHONE = "I have spoken on the phone with {0} on {1}.";
+		var RECEIVER_ACK_PHONE = "{0} has spoken with me on the phone at {1}.  I have reviewed and understand the results.";
+		var SENDER_ACK_EMAIL = "I have received an email acknowledging the critical finding(s) from {0} on {1}.";
+		var RECEIVER_ACK_EMAIL = "I have emailed {0} acknowledging the critical finding(s) on {1}.";
+		var SENDER_ACK_TEXTMESSAGE = "I have received a text message acknowledging the critical finding(s) from {0} on {1}.";
+		var RECEIVER_ACK_TEXTMESSAGE = "I have sent a text message to {0} acknowledging the critical finding on {1}.";
+		var RECEIVER_ACK_MESSAGE = "I have reviewed and understand the results.";
+		var MASTER_CLIN_ADMIN = "MasterClinicalAdminAccount";
+
+		var PAGER_TRANSPORT = "Pager Transport"; //TODO: search on PAGER_TRANSPORT and unify into one declaration that all code uses.
+		var MANUAL_TRANSPORT = "Manual";
+		
+		var senderName;
+
+		PageManager.initialize = function()
+		{
+			PageManager.ResultUuid = Utility.queryString()["uuid"];
+			CRManager.WebClient.getResult(PageManager.ResultUuid, PageManager.onResultSuccess, null);
+			//WebClient.getResultAcknowledgment(PageManager.ResultUuid, PageManager.onAcknowledgmentSuccess, null);
+			PageManager.GetNotifications();
+			setInterval(PageManager.GetNotifications, PageManager.NotificationTimer);
+
+			$(".sender").hide();
+			$(".receiver").hide();
+			$("#resendLink").addClass("hidden");
+			$("#rerouteLink").addClass("hidden");
+			Extension.renderResultDocuments($('#divResources'));
+		}
+        PageManager.GetNotifications = function() {
+            CRManager.WebClient.getResultNotifications(PageManager.ResultUuid, PageManager.onNotificationsSuccess, null);
+            var now = new Date();
+            $('#noteLastUpdate').html("Last Updated: <i>" + now.dateFormat(Date.patterns.NiceDisplay) + "</i>");
+        }
+
+		$(document).ready(function() {
+			PageManager.initialize();
+		});
+
+		PageManager.onResultSuccess = function(response) {
+			CRManager.AcknowledgeResult.initialize(response);
+			CRManager.setModalTitle("Critical Result Detail (ANCR): " + response.Level.Name);
+			$("#divResultDbg").val(response);
+			if (response != "")
+				PageManager.Result = response;
+
+
+			if (PageManager.userIsSender()) {
+				$(".sender").show();
+				$(".receiver").hide();
+				$("#cloneAlertAnchor").removeClass("hidden");
+				$("#resendLink").removeClass("hidden");
+				$("#rerouteLink").removeClass("hidden");
+			}
+			else if (PageManager.userIsReceiver()) {
+				$(".sender").hide();
+				$(".receiver").show();
+				$("#senderAcknowledgmentMethodList").addClass("hidden");
+				$("#textNotes").attr("disabled", "disabled");
+				$("#textNotes").text(RECEIVER_ACK_MESSAGE);
+				$("#resendLink").addClass("hidden");
+				$("#rerouteLink").addClass("hidden");
+			}
+			$(CRManager.AuthenticatedUser.Roles).each(function(index, item) {
+				if (item.Name == CRManager.ROLE_CLIN_ADMIN || item.Name == CRManager.ROLE_SYS_ADMIN) {
+					$("#resendLink").removeClass("hidden");
+					$("#rerouteLink").removeClass("hidden");
+				}
+			});
+
+			PageManager.Context = [];
+			if (PageManager.Result.Context != null) {
+				if (PageManager.Result.Context.length > 0)
+					PageManager.Context = $.evalJSON(PageManager.Result.Context[0].JsonValue);
+			}
+			var context = "";
+			if (PageManager.Context) {
+				$.each(PageManager.Context, function(index, item) {
+					if (item.value != "undefined" && item.value != null) {
+						context += '<tr><td class="field">' + item.displayName + "</td><td>" + item.value + "</tr>";
+						CRManager.UriContext[item.name] = item.value;
+					}
+				});
+			}
+
+			PageManager.Context.TypeName = "RadiologyTabular";
+			PageManager.Context.TypeUri = "http://partners.org/brigham/criticalresults/v0/context/radiology/";
+
+			var formatter = ContextFormatters.getFormatter(PageManager.Context.TypeName, PageManager.Context.TypeUri);
+			contextCell = formatter.format(PageManager.Context);
+
+
+			var senderName = PageManager.Result.Sender.FirstName + " " + PageManager.Result.Sender.LastName + ", " + PageManager.Result.Sender.Credentials;
+			$('#tdSenderCell').text(senderName);
+			var receiverName = PageManager.Result.Receiver.FirstName + " " + PageManager.Result.Receiver.LastName + ", " + PageManager.Result.Receiver.Credentials;
+			$('#tdReceiverCell').text(receiverName);
+
+			//TODO: Move HTML markup to HTML section - the HTML can be created below, with placeholders for the dynamic data.  This adds structure to the page, makes it easier to read and understand, and reduces the amount of javascript code...
+			//TODO: Add placeholders (span tags?) for sender/receiver
+			//TODO: Call to get receiver/sender transports
+			//TODO: Create PPD links
+
+			$("#divDetails").append(contextCell);
+
+			var message = '<span class="criticalResult">{0}</span>';
+			message = Utility.format(message, PageManager.Result.Message);
+
+			$("#divMessage").append(message);
+			$("#divMessage").addClass("criticalResult");
+			$("#divMessage").css({ "background-color": PageManager.Result.Level.ColorValue });
+
+			var cell = $(".criticalResult");
+			Utility.setLevelColor(cell[0], PageManager.Result.Level.ColorValue);
+			var cell = $("#spanStatusMsg");
+			Utility.setLevelColor(cell, PageManager.Result.Level.ColorValue);
+
+			CRManager.WebClient.getResultAcknowledgment(PageManager.ResultUuid, PageManager.onGetAcknowledgmentSuccess, null);
+
+			PageManager.getSenderAvailabilityLink(PageManager.Result.Sender.UserName);
+			PageManager.getReceiverAvailabilityLink(PageManager.Result.Receiver.UserName);
+
+			CRManager.WebClient.auditEvent("ViewResult:Success", PageManager.Result.Uuid + " " + CRManager.AuthenticatedUser.UserName, null, null); //TODO: review failure case; if we can't audit, should we fail?
+
+		}
+
+		PageManager.getReceiverAvailabilityLink = function(userName) {
+			CRManager.WebClient.getUser(userName, PageManager.appendReceiverAvailabilityLink, null, "ID!!!");
+		}
+		PageManager.appendReceiverAvailabilityLink = function(user, callId) {
+			var pagerId = null;
+
+			var userTransportArray = user.Transports;
+			$.each(userTransportArray, function(index, item) {
+				if (item.Transport.Name == PAGER_TRANSPORT) {
+					pagerId = item.Address;
+				}
+			});
+
+			if (pagerId != null) {
+				$("#tdReceiverAvail").html(Extension.extendContact(pagerId));
+				$("#tdReceiverAvail a").addClass("SmallText");
+			}
+		}
+
+		PageManager.getSenderAvailabilityLink = function(userName) {
+			CRManager.WebClient.getUser(userName, PageManager.appendSenderAvailabilityLink, null, "ID!!!");
+		}
+
+		PageManager.appendSenderAvailabilityLink = function(user, callId) {
+			var pagerId = null;
+
+			var userTransportArray = user.Transports;
+			$.each(userTransportArray, function(index, item) {
+				if (item.Transport.Name == PAGER_TRANSPORT) {
+					pagerId = item.Address;
+				}
+			});
+
+			if (pagerId != null)
+			{
+				$("#tdSenderAvail").html(Extension.extendContact(pagerId));
+				$("#tdSenderAvail a").addClass("SmallText");
+			}
+		}
+				
+		PageManager.onNotificationsSuccess = function(response) {
+			if (response == "" || response.length == 0) {
+				$("#resendLink").addClass("hidden");
+			}
+			$("#divHistoryDbg").val(response);
+			if (response != "") {
+				PageManager.Notifications = response;
+				if (PageManager.Notifications.length > 0) {
+					PageManager.applyNotifications();
+				} else {
+					$("#tableNotification").addClass("hidden");
+					$("#divNotification").append('<a href="#Resend">Resend Notification</a><br/>');
+					$("#divNotification").append('<a href="#Resend">Reroute result to another provider</a><br/><br/>');
+					$("#divNotification").append('No notifications...');
+				}
+			}
+			else {
+				PageManager.Notifications = null;
+			}
+		}
+		PageManager.onGetAcknowledgmentSuccess = function(response) {
+			var statusMessage = "";
+
+			if (response.User) {
+				PageManager.Acknowledgment = response;
+				var acknowledgment = "";
+				acknowledgment = Utility.format('<ul class="acknowledgment"><li class="acknowledgment">User: {3} {4}</li><li class="acknowledgment">Time: {0}</li><li class="acknowledgment">Notes: {1}</li></ul>', PageManager.Acknowledgment.CreationTimeFormatted, PageManager.Acknowledgment.Notes, PageManager.Acknowledgment.User.Title, PageManager.Acknowledgment.User.FirstName, PageManager.Acknowledgment.User.LastName)
+				$("#divAcknowledgment").html("");
+				$("#divAcknowledgment").html(acknowledgment);
+				statusMessage = "Result has been acknowledged";
+				$('#resendLink').addClass('hidden');
+				$('#rerouteLink').addClass('hidden');
+				$('#sendToAdminLink').addClass('hidden');
+			}
+			else if (response.CreateResultAcknowledgment_JsonResult) {
+				PageManager.Acknowledgment = response.CreateResultAcknowledgment_JsonResult;
+				var acknowledgment = "";
+				acknowledgment = Utility.format('<ul class="acknowledgment"><li class="acknowledgment">User: {3} {4}</li><li class="acknowledgment">Time: {0}</li><li class="acknowledgment">Notes: {1}</li></ul>', PageManager.Acknowledgment.CreationTimeFormatted, PageManager.Acknowledgment.Notes, PageManager.Acknowledgment.User.Title, PageManager.Acknowledgment.User.FirstName, PageManager.Acknowledgment.User.LastName)
+				$("#divAcknowledgment").html("");
+				$("#divAcknowledgment").html(acknowledgment);
+				statusMessage = "Result has been acknowledged";
+				$('#resendLink').addClass('hidden');
+				$('#rerouteLink').addClass('hidden');
+				$('#sendToAdminLink').addClass('hidden');
+			}
+			else {
+				PageManager.Acknowledgment = null;
+				if (CRManager.AuthenticatedUser.UserName == PageManager.Result.Receiver.UserName || CRManager.AuthenticatedUser.UserName == PageManager.Result.Sender.UserName || CRManager.userIsAdmin()) {
+					PageManager.showAcknowledgeForm();
+				}
+				if (PageManager.userIsReceiver() == true) {
+					$('#sendToAdminLink').removeClass('hidden');
+				}
+				statusMessage = "Result has not been acknowledged";
+			}
+			$("#spanStatusMsg").addClass("MessageStatus");
+			$("#spanStatusMsg").css({ "background-color": PageManager.Result.Level.ColorValue });
+			$("#divMessageStatusContainer").css({ "background-color": PageManager.Result.Level.ColorValue });
+			$("#spanStatusMsg").text(statusMessage);
+
+		}
+        PageManager.onAcknowledgmentAndCloseSuccess = function(response) {
+            top.Manager.closeModal(null, true);
+        }
+
+		PageManager.applyNotifications = function() {
+		    $("#tableNotificationBody").html("");
+		    $.each(PageManager.Notifications, function(index, item) {
+		        PageManager.createNotificationRow(index, item);
+		    });
+		    $("[name='New']").addClass('NewNotification');
+		    $("[name='Error']").addClass('ErrorNotification');
+		    $("[name='Sent']").addClass('SentNotification');
+		}
+		PageManager.createNotificationRow = function(index, item) {
+		    var notification = Utility.format('<tr><td class="ResultDataSmall">{0}</td><td class="ResultDataSmall">{1}</td><td class="ResultDataSmall ResultContent">{2}</td><td name="{3}" class="SmallText">{3}</td></tr>', item.CreationTimeFormatted, item.UserTransport.Transport.FriendlyName, item.UserTransport.Address, item.State);
+		    $("#tableNotification").append(notification);
+		}
+
+		//Acknowledgment
+
+		//Modified: 2009-12-22, Jeremy R
+		//	- Changed to move markup into html body, use class selector to show/hide based on direct/indirect contact, changed function name	
+		PageManager.displayAcknowledgementContextElements = function() {
+			if (PageManager.Result.Level.DirectContactRequired != true) {
+				$(".indirectContact").show();
+			}
+			else {
+				$(".indirectContact").hide();
+			}
+			//$("li").bind("click", PageManager.onContactSelect);
+		}
+
+		PageManager.onContactSelect = function(event) {
+			PageManager.buildDefaultNote();
+		}
+
+		//Created: 2009-12-22, Jeremy R.
+		// - Refactor inline check for receiver
+		PageManager.userIsReceiver = function(){
+			if (PageManager.Result.Receiver.UserName == CRManager.AuthenticatedUser.UserName) {
+				return true;
+			}
+			return false;
+		}
+		//Created: 2009-12-22, Jeremy R.
+		// - Refactor inline check for sender
+		PageManager.userIsSender = function() {
+			if (PageManager.Result.Sender.UserName == CRManager.AuthenticatedUser.UserName) {
+				return true;
+			}
+			return false;
+		}
+
+		PageManager.buildDefaultNote = function() {
+			var defaultNote = "";
+			var user = Utility.format("{1} {2}", CRManager.AuthenticatedUser.Title, CRManager.AuthenticatedUser.FirstName, CRManager.AuthenticatedUser.LastName);
+			var sender = Utility.format("{1} {2}", PageManager.Result.Sender.Title, PageManager.Result.Sender.FirstName, PageManager.Result.Sender.LastName);
+			var receiver = Utility.format("{1} {2}", PageManager.Result.Receiver.Title, PageManager.Result.Receiver.FirstName, PageManager.Result.Receiver.LastName);
+			var date = new Date().dateFormat(Date.patterns.TextDisplay);
+			date = Utility.format(date, "at");
+
+			var selectedComm = $("[name='notificationType'][checked='true']").val();
+			
+			if (PageManager.userIsSender() == true) {
+				//alert("sender");
+				if (selectedComm == "face") {
+					defaultNote = Utility.format(SENDER_ACK_DIR, receiver, date);
+				}
+				else if (selectedComm == "phone") {
+					defaultNote = Utility.format(SENDER_ACK_PHONE, receiver, date);
+				}
+				else if (selectedComm == "email") {
+					defaultNote = Utility.format(SENDER_ACK_EMAIL, receiver, date);
+				}
+				else if (selectedComm == "sms") {
+					defaultNote = Utility.format(SENDER_ACK_TEXTMESSAGE, receiver, date);
+				}
+			}
+			else if (PageManager.userIsReceiver() == true) {
+				if (selectedComm == "face") {
+					defaultNote = Utility.format(RECEIVER_ACK_DIR, sender, date);
+				}
+				else if (selectedComm == "phone") {
+					defaultNote = Utility.format(RECEIVER_ACK_PHONE, sender, date);
+				}
+				else if (selectedComm == "email") {
+					defaultNote = Utility.format(RECEIVER_ACK_EMAIL, sender, date);
+				}
+				else if (selectedComm == "sms") {
+					defaultNote = Utility.format(RECEIVER_ACK_TEXTMESSAGE, sender, date);
+				}
+			}
+			
+			$("#textNotes").val(defaultNote);
+		}
+
+		//Modified: 2010-02-28, Jeremy Richardson, Added check to confirm acknowledgment notes field has content
+		//			Additionally, default the ack radio buttons to "other"
+		PageManager.submitAck = function(close) {
+			var notes = $('#textNotes').val();
+			if (notes == "") {
+				alert("You must fill out the acknowledgment notes.");
+				return;
+}            
+			var jsonNotes = $.toJSON(notes);
+			$("#divCreateAck").hide();
+			$("#divAcknowledgment").show("fast");
+			CRManager.AcknowledgeResult.Submit(close, jsonNotes, PageManager.onGetAcknowledgmentSuccess);
+		}
+		
+		PageManager.showAcknowledgeForm = function() {
+
+			PageManager.displayAcknowledgementContextElements();
+			$("#divAcknowledgment").hide();
+			$("#divCreateAck").show("fast");
+		}
+
+		PageManager.cloneAlert = function() {
+			CRManager.SearchForExistingResultsOnCompose = false;
+			CRManager.UriContext["Action"] = CRManager.ACTION_CREATE;
+			CRManager.UriContext["To"] = Utility.format("{0}, {1} ({2})", PageManager.Result.Receiver.LastName, PageManager.Result.Receiver.FirstName, PageManager.Result.Receiver.UserName);
+			CRManager.createResult();
+		}
+
+
+		PageManager.showRerouteResult = function() {
+			var userList = [];
+			var receiverList = [];
+			$.each(CRManager.Users, function(index, user) {
+				if (user.Enabled == true) {
+					userList[index] = user.LastName + ", " + user.FirstName + " (" + user.UserName + ")";
+
+					$.each(user.Roles, function(roleIndex, role) {
+						if (role.Name == CRManager.RECEIVER_ROLE || role.Name == CRManager.ROLE_RECEIVER)
+							receiverList[receiverList.length] = userList[index];
+					});
+				}
+			});
+			receiverList.sort();
+			$("#txtTo").autocompleteArray(receiverList, { onItemSelect: PageManager.onToSelected });
+
+			$('#rerouteDiv').show('fast');
+			$('#rerouteBtn').removeClass('hidden');
+			$('#txtTo').removeClass('hidden');
+			$('#vTo').addClass('hidden');
+			$('#btnCancelResend').removeClass('hidden');
+			$('#rerouteHeader').removeClass('hidden');
+			$('#resendHeader').addClass('hidden');
+			$('#rerouteLink').hide('fast');
+			$('#resendLink').hide('fast');
+		}
+
+		PageManager.onToSelected = function(listItem) {
+			regexp = /[(].*[)]/;
+			var selectedUser = $("#txtTo").val();
+
+			var userMatch = regexp.exec(selectedUser);
+
+			if (!userMatch) {
+				PageManager.RerouteTo = null;
+				return;
+			}
+			if (!userMatch.lastIndex) {   //Firefox fix for userMatch.lastIndex null if not another match;
+				userMatch.lastIndex = selectedUser.length;
+			}
+
+			var userName = userMatch.input.substring(userMatch.index + 1, userMatch.lastIndex - 1);
+			CRManager.WebClient.getUser(userName, PageManager.onGetUserSuccess);
+		}
+
+		PageManager.onGetUserSuccess = function(data) {
+			PageManager.RerouteTo = data;
+			$('#vTo').removeClass('hidden');
+			var lnkText = $('#txtTo').val();
+			$('#vTo').html(lnkText);
+			$('#txtTo').addClass('hidden');
+			PageManager.buildNotificationOptions(PageManager.RerouteTo);
+			$('#notificationOptions').show('fast');
+		}
+
+		PageManager.buildNotificationOptions = function(receiver) {
+			var mandatoryTransportRequired = false;
+			var mandatoryTransportFound = false;
+			var mandatoryTransportList = "";
+			if (PageManager.Result.Level.MandatoryTransports.length > 0) {
+				mandatoryTransportRequired = true;
+			}
+			var notificationOptions = "";
+
+			if (PageManager.Result.Level && receiver) {
+				var anyConfiguredContacts = false;
+				if (PageManager.Result.Level.MandatoryTransports.length > 0) {
+					$('#trDoNotNotify').addClass('hidden');
+				}
+				else {
+					$('#trDoNotNotify').removeClass('hidden');
+				}
+
+				var missingTransportHtml = "";
+				$.each(PageManager.Result.Level.MandatoryTransports, function(index, mTransport) {
+					if (mTransport.Name != MANUAL_TRANSPORT) {
+						var transportConfigured = true;
+						$.each(receiver.Transports, function(k, transport) {
+							if (transport.Transport.Name != MANUAL_TRANSPORT) {
+
+								if (transport.Transport.Name == mTransport.Name) {
+									if (transport.Address == "") {
+										transportConfigured = false;
+									}
+								}
+							}
+						});
+						var html = "<li class='notificationOption'>{0}<input type='checkbox' checked='checked' disabled='true' name='notificationGroup' onclick='PageManager.validate()' id='{1}'/>"
+						if (transportConfigured == false) {
+							html += "<span style='color: red'> - Receiver does not have this transport configured.</span>";
+							missingTransportHtml += "<ol>" + mTransport.FriendlyName + "</ol>";
+						}
+						html += "</li>";
+						$("#notificationOptionsList").append(Utility.format(html, mTransport.FriendlyName, mTransport.Name));
+					}
+				});
+				if (missingTransportHtml != "") {
+					CRManager.showAlert("Provider does not have the required contact information for this level.  System requires: <ol>" +
+				            missingTransportHtml + "</ol><br /><input type='button' value='Close' onclick='Manager.closeAlert()' />");
+				}
+
+
+				$.each(receiver.Transports, function(index, transport) {
+
+					if (transport.Address != '') {
+						anyConfiguredContacts = true;
+					}
+					$.each(transport.Levels, function(lindex, level) {
+						if (PageManager.Result.Level.Name == level.Name) {
+							if (transport.Transport.Name != MANUAL_TRANSPORT) {
+								var mandatoryTransport = false;
+								$.each(PageManager.Result.Level.MandatoryTransports, function(index, item) {
+									if (item.Name != MANUAL_TRANSPORT) {
+										if (item.Name == transport.Transport.Name) {
+											mandatoryTransport = true;
+										}
+									}
+								});
+								if (mandatoryTransport == false) {
+									var html = "<li class='notificationOption'>{0}<input type='checkbox' name='notificationGroup' onclick='PageManager.validate()' id='{1}'/></li>"
+									$("#notificationOptionsList").append(Utility.format(html, transport.Transport.FriendlyName, transport.Transport.Name));
+								}
+							}
+						}
+					});
+				});
+
+			}
+			var userHasContactInfo = false;
+			$(receiver.Transports).each(function(index, item) {
+				if (item.Address != "") {
+					userHasContactInfo = true;
+				}
+			});
+			if (userHasContactInfo === false) {
+				$("#notificationOptionsList").html("");
+				$("#notificationOptionsList").append("<li style='color: red; font-weight: bold;'>Provider has no contact information listed!  Provider must be contacted directly.</li>");
+			}
+
+			PageManager.validate();
+		}
+
+		PageManager.validate = function() {
+			var transportSelected = false;
+			$('#updatedCallbackInformation').addClass("hidden");
+			$('#spnUpdatedCallback').addClass("hidden");
+			$('#updatedCallbackInformation').text("");
+
+			$('[name="notificationGroup"]').each(function(index, item) {
+				if (item.checked == true) {
+					transportSelected = true;
+				}
+				if (item.checked == true && item.id == "Pager Transport") {
+					$('#updatedCallbackInformation').removeClass("hidden");
+					$('#spnUpdatedCallback').removeClass("hidden");
+					var callBackCookie = PageManager.readCallbackCookie();
+					$('#updatedCallbackInformation').text(callBackCookie);
+				}
+
+			});
+			if (transportSelected == true) {
+				$('#rerouteBtn').removeAttr('disabled');
+			}
+
+
+		}
+
+		PageManager.readCallbackCookie = function() {
+			var nameEQ = "ANCRCallbackInfo=";
+			var ca = document.cookie.split(';');
+			for (var i = 0; i < ca.length; i++) {
+				var c = ca[i];
+				while (c.charAt(0) == ' ')
+					c = c.substring(1, c.length);
+				if (c.indexOf(nameEQ) == 0) {
+					var val = unescape(c.substring(nameEQ.length, c.length));
+					return val;
+				}
+
+			}
+			return "";
+
+		}
+
+		PageManager.editRerouteTo = function() {
+			$('#txtTo').removeClass('hidden');
+			$('#txtTo').val("");
+			$('#vTo').html("");
+			$('#vTo').addClass('hidden');
+			$('#notificationOptionsList').html("");
+			$('#notificationOptions').hide('fast');
+			$('#rerouteBtn').attr('disabled', 'disabled');
+		}
+
+		PageManager.resendResult = function() {
+			$('#rerouteLink').hide('fast');
+			$('#resendLink').hide('fast');
+			$('#btnResend').removeClass('hidden');
+			$('#btnCancelResend').removeClass('hidden');
+			$('#rerouteHeader').addClass('hidden');
+			$('#resendHeader').removeClass('hidden');
+			var lastNotification = PageManager.Notifications[PageManager.Notifications.length - 1];
+			var notification = {};
+			notification.Result = PageManager.Result;
+			notification.UserTransport = lastNotification.UserTransport;
+			notification.State = lastNotification.State;
+			notification.Notes = lastNotification.Notes + " -- RESENT";
+			CRManager.WebClient.getUser(PageManager.Result.Receiver.UserName, PageManager.onGetUserSuccess);
+			//WebClient.createResultNotification(notification, notification.UserTransport.Name, PageManager.onCreateResultNotificationSuccess);
+			//HERE
+		}
+
+		PageManager.resend = function() {
+			PageManager.onRerouteSuccess(PageManager.Result);
+		}
+
+		PageManager.rerouteResult = function(onComplete) {
+			var callbackInfo = $("#updatedCallbackInformation").text();
+			if (callbackInfo != "") {
+				PageManager.setCallbackCookie(callbackInfo);
+			}
+			CRManager.WebClient.updateResultReciever(PageManager.Result.Uuid, PageManager.RerouteTo.UserName, onComplete);
+		}
+
+		PageManager.setCallbackCookie = function(callbackInfo) {
+			var expire = new Date();
+			expire.setFullYear(2040, 1, 1);
+			document.cookie = "ANCRCallbackInfo=" + escape(callbackInfo) + "; expires=" + expire.toGMTString() + ";";
+		}
+		
+		var rerouteNotificationCount = 0;
+		PageManager.onRerouteSuccess = function(data) {
+		    rerouteNotificationCount = 0;
+		    $("#notificationOptionsList input").each(function(index, listItem) {
+		        if (listItem.checked == true) {
+		            if (listItem.id == CRManager.MANUAL_TRANSPORT) {
+		                var notification = {};
+		                notification.Result = data;
+		                notification.UserTransport = PageManager.RerouteTo.Transports;
+		                notification.State = CRManager.MANUAL_TRANSPORT;
+		                var notes = "";
+		                if ($('#updatedCallbackInformation').text() != "") {
+		                    notes = $('#updatedCallbackInformation').text() + "\r\n";
+		                }
+		                notification.Notes = notes;
+		                rerouteNotificationCount++;
+		                CRManager.WebClient.createResultNotification(notification, listItem.id, PageManager.onCreateReRouteNotificationSuccess);
+		            }
+		            else {
+		                var notification = {};
+		                notification.Result = data;
+		                notification.UserTransport = PageManager.RerouteTo.Transports;
+		                notification.State = "New";
+		                var notes = "";
+		                if ($('#updatedCallbackInformation').text() != "") {
+		                    notes = $('#updatedCallbackInformation').text();
+		                }
+		                notification.Notes = notes;
+		                rerouteNotificationCount++;
+		                CRManager.WebClient.createResultNotification(notification, listItem.id, PageManager.onCreateReRouteNotificationSuccess);
+		            }
+		        }
+		    });
+		}
+
+		PageManager.onCreateReRouteNotificationSuccess = function(data) {
+			rerouteNotificationCount--;
+			if (rerouteNotificationCount == 0) {
+				window.location.href = RootUrl + "/User/ResultDetail.htm?uuid=" + PageManager.Result.Uuid;
+			}
+		}
+		
+		PageManager.onCreateResultNotificationSuccess = function(data) {
+				window.location.href = RootUrl + "/User/ResultDetail.htm?uuid=" + PageManager.Result.Uuid;
+        }
+
+        PageManager.submitFeedback = function() {
+            var feedback = {
+                value: $("input[name='R1']:checked").val(),
+                comments: $('#feedbackNotes').val(),
+                user: CRManager.AuthenticatedUser.UserName,
+                resultUuid: PageManager.Result.Uuid
+            }
+            CRManager.WebClient.leaveFeedback(feedback.resultUuid, feedback.user, feedback.value, feedback.comments, PageManager.leaveFeedbackSuccess);
+        }
+
+        PageManager.leaveFeedbackSuccess = function(data) {
+            if (data.LeaveFeedback_JsonResult == false) {
+                alert("An unknown error occured leaving feedback, feedback was not saved.");
+            }
+            else {
+                $('#divFeedback').hide('fast');
+                $('#lnkFeedback').hide('fast');
+                $('#feedbackThanks').removeClass('hidden');
+            }
+        }
+        PageManager.launchImageViewer = function() {
+        	var baseUri = "https://centricity.partners.org/";
+        	var accession = PageManager.Context.Accession.value;
+        	var mrn = PageManager.Context.MRN.value;
+        	if (accession != null && accession != "") {
+        		baseUri += "ami/html/webviewer.html?view&ris_exam_id=" + accession;
+        	} else if (mrn != null & mrn != "") {
+        		baseUri += "ami/html/webviewer.html?view&ris_pat_id=" + mrn;
+        	}
+        	var win = window.open(baseUri, "centricity");
+        }
+        // Modified: 2009-12-22, Jeremy R.
+        //  - Added check to get Windows AuthExt for user
+        PageManager.launchOrderEntry = function() {
+			var queryString = "it.Type = 'AuthExt' AND it.Key = 'Windows' AND it.User.UserName = '" + CRManager.AuthenticatedUser.UserName + "'";
+			CRManager.WebClient.queryUserEntry(queryString, null, null, PageManager.completeOrderEntry, null);
+		}
+		//Created: 2009-12-22, Jeremy R.
+		//	- Refactored for ajax call
+		//	- Added MRN/MRNType to Percipio link.
+		PageManager.completeOrderEntry = function(authExtArr) {
+			var mrn = PageManager.Context.MRN.value;
+			var userId = "";
+
+			if (authExtArr != null && authExtArr.length == 1) {
+				userId = authExtArr[0].Value;
+				var domainSeparatorIndex = userId.lastIndexOf("\\");
+				if (domainSeparatorIndex >= 0) {
+					userId = userId.substring(domainSeparatorIndex + 1, userId.length);
+				}
+			}
+
+			var baseUri = "http://percipio.partners.org/";
+
+			if (userId != null && userId != "") {
+				baseUri += "LogonService?arg=0";
+				baseUri += "&userId=" + userId;
+				if (mrn != null & mrn != "") {
+					baseUri += "&mrn=" + mrn + "&mrnType=BWH";
+				}
+			}			
+
+			var win = window.open(baseUri, "percipio");
+		}
+
+		PageManager.showFeedback = function() {
+			$('#divFeedback').removeClass('hidden');
+			$('#lnkFeedback').addClass('hidden');
+
+		}
+
+
+PageManager.SendAlertToAdmin = function() {
+    var clinicalAdmin = null;
+    $.each(CRManager.SystemSettings, function(i, setting) {
+        if (setting.EntryKey == MASTER_CLIN_ADMIN) {
+            clinicalAdmin = setting.Value;
+        }
+    });
+    if (clinicalAdmin != null) {
+        var confirmRtn = confirm("Send Result to Clinical Administrator and remove from your list?");
+        if (confirmRtn == true) {
+            CRManager.WebClient.getUser(clinicalAdmin, PageManager.onGetClinicalAdminSuccess);
+        }
+    }
+    else {
+        alert("Clinical administrator account not found.\r\nPlease contact your system administrator.");
+    }
+}
+
+PageManager.onGetClinicalAdminSuccess = function(data) {
+    if (data != null) {
+        PageManager.RerouteTo = data;
+        CRManager.WebClient.updateResultReciever(PageManager.Result.Uuid, data.UserName, PageManager.assignToAdminSuccess);
+    }
+    else {
+        alert("Configured administrator not found.");
+    }
+}
+
+var adminNotificationCalls = 0;
+PageManager.assignToAdminSuccess = function(data) {
+	adminNotificationCalls = 0;
+	$(PageManager.RerouteTo.Transports).each(function(i, transport) {
+		if (transport.Transport.Name != MANUAL_TRANSPORT) {
+			var notification = {};
+			notification.Result = data;
+			notification.UserTransport = transport;
+			notification.State = "New";
+			notification.Notes = "Incorrectly Assigned.";
+			adminNotificationCalls++;
+			CRManager.WebClient.createResultNotification(notification, transport.Transport.Name, PageManager.onCreateAdminNotificationSuccess);
+		}
+	});
+}
+PageManager.onCreateAdminNotificationSuccess = function(data) {
+	adminNotificationCalls--;
+	if (adminNotificationCalls == 0) {
+		window.location.href = RootUrl + "/User/ResultDetail.htm?uuid=" + PageManager.Result.Uuid;
+	}
+}
+
+   PageManager.cancelResend = function() {
+   	$('#rerouteDiv').hide('fast');
+   	$('#btnResend').addClass('hidden');
+   	$('#btnCancelResend').addClass('hidden');
+   	$('#resendLink').show('fast');
+   	$('#rerouteLink').show('fast');
+   	$('#notificationOptions').hide('fast');
+   	$('#rerouteBtn').attr('disabled', 'disabled');
+   	$('#txtTo').val("");
+   	$('#notificationOptionsList').html("");
+   	$('#updatedCallbackInformation').text("");
+   	$('#rerouteHeader').addClass('hidden');
+   	$('#resendHeader').addClass('hidden');
+   	$('#rerouteBtn').addClass('hidden');
+   	PageManager.RerouteTo = null;
+
+   }
+	</script>
+	
+	<style type="text/css">
+		div.ContentLeft
+		{
+			background-color: rgb(177,195,218);
+			padding: 6px 12px 12px 12px;
+			width: 100%;
+		}
+		
+		div.ContentRight
+		{
+			background-color: rgb(232,232,232);
+			padding: 6px 12px 12px 12px;
+			width: 100%;
+		}
+		
+		div.ContentFeedback
+		{
+			padding: 6px 12px 12px 12px;
+			width: 100%;
+			border: solid 1px rgb(150, 150, 150);
+		}
+		
+		span.SectionTitle
+		{
+			padding-bottom: 6px;
+			font: bold 12px verdana;
+		}
+		span.SectionTitleRight
+		{
+		    padding-bottom:6px;
+		    font: bold 10px verdana;
+		}
+	    td.ResultData
+	    {
+	    	background-color: rgb(240, 240, 240);
+	    	border: solid 1px #C0C0C0;
+	    	font-size: 11px;
+	    }
+	    
+	    	    td.ResultDataSmall
+	    {
+	    	background-color: rgb(240, 240, 240);
+	    	border: solid 1px #C0C0C0;
+	    	font-size: 9px;
+	    }
+	    
+	    td.ResultContent
+	    {
+	    	color: rgb(32,32,32);
+	    }
+	    
+	    th
+	    {
+	    	background-color:rgb(192,192,192);
+	    	color:Black;
+	    	padding: 1px;
+	    }
+	    
+	    a:link
+	    {
+	    	color:rgb(43, 73, 115);
+	    	
+	    }
+	    a:hover
+	    {
+	    	color:rgb(57, 125, 220);
+	    }
+	    a:active
+	    {
+	    	color:rgb(57, 125, 220);
+	    }
+	    a:visited
+	    {
+	    	color:rgb(43, 73, 115);
+	    }
+	    
+	    span.UpdateFooter
+	    {
+	    	width: 100%;
+	    	font: italic 9px verdana;
+	    	color: rgb(62, 62, 62);
+	    	text-align: right;
+	    }
+	    
+	    div.MessageStatusContainer
+	    {
+	    	text-align:center;
+	    	width: 100%;
+	    	margin-bottom: 1px;
+	    	padding: 4px;
+	    }
+	    span.MessageStatus
+	    {
+	    	font: bold 11px verdana;
+			text-align:center;
+	    	padding: 0px;  	
+	    }
+	    #divMessage
+	    {
+	    	height: 120px;
+	    	overflow:auto;
+	    	padding-top:2px;
+	    	padding-bottom: 2px;
+	    	margin-top: 1px;
+	    	vertical-align: middle;
+	    }
+	    
+	    ul
+	    {
+	    	background-color: inherit;
+	    }
+	    li
+	    {
+	    	background-color: inherit;
+	    }
+	    li.directContact
+	    {
+	    }
+	    li.indirectContact
+	    {
+	    }
+	    
+	    span.emphasis
+	    {
+			font-style:italic;
+			text-decoration:underline;
+			color:#000000;
+	    }
+	    
+	    .NewNotification
+	    {
+		    background-color:Gray;
+	    }
+	    .SentNotification
+	    {
+		    background-color:Green;
+	    }
+	    .ErrorNotification
+	    {
+		    background-color:Red;
+	    }
+		table.layout
+		{
+			border: none;
+		}
+		.SmallText
+		{
+		    font-size: 9px;
+		}
+	</style>
+</head>
+<body>	
+	<div class="hidden" id="divResultDbg"></div>
+	<div class="hidden" id="divStatusDbg"></div>
+	<div class="hidden" id="divHistoryDbg"></div>	
+	
+	<table class="layout" border="0">
+	<tr><td style="width: 49%; border: none; vertical-align: top;">
+			<div class="ContentLeft">
+				<div style="padding-bottom: 4px;"><span class="SectionTitle">Patient & Exam Information</span></div>
+				<div id="divDetails" style="margin-bottom: 10px;"></div>
+				<div style="text-align:right;">
+					<a href="" onclick="PageManager.launchImageViewer(); return false;" title="Click here to view images and full radiology report in Centricity">View Images/Report (Centricity)<!--PARTNERS SPECIFIC--></a> | 
+					<a href="" onclick="PageManager.launchOrderEntry(); return false;" title="Order another radiology exam for this patient in Percipio">Order Followup Exam (Percipio)<!--PARTNERS SPECIFIC--></a><br />
+					<a href="" id="sendToAdminLink" onclick="PageManager.SendAlertToAdmin();return false;" class="hidden">Click here if this is not your patient</a>
+					<a id="cloneAlertAnchor" onclick="PageManager.cloneAlert();" class="hidden sender" href="ComposeResult.htm">Create new alert for this patient</a>
+				</div>
+			</div>
+			<br />
+			<br />
+			<div class="ContentLeft">
+				<div style="padding-bottom: 4px"><span class="SectionTitle">Critical Result Description</span><i>&nbsp;(this is not the full radiology report)</i><br /></div>
+				<div id="divMessageStatusContainer" class="MessageStatusContainer"><span id="spanStatusMsg"></span></div>
+				<div id="divMessage"></div>
+				<div id="divAcknowledgment"></div>
+				<div id="divCreateAck" class="hidden">
+					<div><span class="SectionTitle sender">Acknowledge on behalf of referring provider</span></div>			
+					<div id="notificationType">					
+						<ul class="acknowledgment" id="senderAcknowledgmentMethodList">
+							<li class="acknowledgment directContact" onclick="PageManager.onContactSelect();"><input type="radio" name="notificationType" id="faceToFaceContact" value="face" />I have spoken to the referring provider <span class="emphasis">face to face</span></li>
+							<li class="acknowledgment directContact" onclick="PageManager.onContactSelect();"><input type="radio" name="notificationType" id="phoneContact" value="phone" />I have spoken to the referring provider on the <span class="emphasis">phone</span></li>
+							<li class="acknowledgment indirectContact" onclick="PageManager.onContactSelect();"><input type="radio" name="notificationType" id="emailContact" value="email" />I have received an <span class="emphasis">email</span> from the referring provider</li>
+							<li class="acknowledgment indirectContact" onclick="PageManager.onContactSelect();"><input type="radio" name="notificationType" id="smsContact" value="sms" />I have received a <span class="emphasis">personal text message</span> from the referring provider</li>
+							<li class="acknowledgment indirectContact" onclick="PageManager.onContactSelect();"><input type="radio" name="notificationType" id="otherContact" value="other" checked="checked" />I have been in <span class="emphasis">contact</span> with the referring provider by the <span class="emphasis"> method specified below</span></li>
+						</ul>
+						</div>
+						<div id="ackInfo">
+						</div>
+						<br />
+						<textarea cols="80" rows="3" id="textNotes" style="width: 100%; margin-bottom:4px;"></textarea>
+					<div style="width:100%; text-align:right;">
+						<input type="button" id="btnAck" value="Acknowledge" onclick="PageManager.submitAck('false');"/>
+						<input type="button" id="btnAckClose" value="Acknowledge and Close" onclick="PageManager.submitAck('true');" />
+					</div>
+				</div>
+			</div>
+			
+	</td><td style="border: none;">&nbsp;
+	</td><td style="width: 49%; border: none; vertical-align: top;">
+			<div id="divProviderInfo" class="ContentRight">
+				<div style="padding-bottom: 4px"><span class="SectionTitleRight">Provider Information</span></div>
+				<table id="tblProviderInfo">
+					<tr><td class="ResultDataSmall">Alert created by</td><td class="ResultContent ResultDataSmall" id="tdSenderCell"></td><td class="ResultDataSmall" id="tdSenderAvail"></td></tr>
+					<tr><td class="ResultDataSmall">Alert sent to</td><td class="ResultContent ResultDataSmall" id="tdReceiverCell"></td><td class="ResultDataSmall" id="tdReceiverAvail"></td></tr>
+				</table>
+			</div>
+			
+
+			
+			<br /><br />
+			<div id="divNotification" class="ContentRight">
+				<div style="padding-bottom: 4px"><span class="SectionTitleRight">Notification History</span></div>
+				<table id="tableNotification">
+					<thead><tr><th style="font-size:10px;">Time</th><th style="font-size:10px;">Transport</th><th style="font-size:10px;">Details</th><th style="font-size:10px;">Status</th></tr></thead>
+					<tbody id="tableNotificationBody">
+					</tbody>
+				</table>
+				<span id="noteLastUpdate" class="UpdateFooter SmallText"></span>
+				<br />
+				<div>
+					<div class="hidden" id="rerouteDiv">To:&nbsp;<input type="text" id="txtTo" size="40" /><a href="" id='vTo' onclick='PageManager.editRerouteTo();return false;' class='hidden'></a></div>
+					<a href="" id="rerouteLink" onclick="PageManager.showRerouteResult();return false;" class="hidden">Reroute Result to another provider</a><br />
+					<a href="" id="resendLink" onclick="PageManager.resendResult();return false;" class="hidden">Resend Notification</a><br />
+					<div id="notificationOptions" class="hidden">
+					<div id="followUpNotificationDiv"><h2 id="rerouteHeader" class='hidden'>Reroute Notification Options</h2><h2 id="resendHeader" class='hidden'>Resend Notification Options</h2></div>
+						<ul id="notificationOptionsList">
+						</ul>
+						<span id="spnUpdatedCallback">Updated Callback Information</span>
+						<textarea id="updatedCallbackInformation" rows="3" cols="30" style="text-align:left"></textarea>
+					</div>
+					<input id="rerouteBtn" type='button' onclick="PageManager.rerouteResult(PageManager.onRerouteSuccess);" value='Send' class="hidden" disabled="disabled" />&nbsp;<input type='button' id='btnResend' onclick='PageManager.resend()' value='Resend' class='hidden' />&nbsp;<input type='button' id='btnCancelResend' onclick='PageManager.cancelResend()' value='Cancel' class='hidden' />&nbsp;
+				</div>
+			</div>
+	        <br />
+	        <div id="divResources" class="ContentRight sender">
+			</div>
+	        <br />
+			<a href="#" id='lnkFeedback' class="SmallText" onclick="PageManager.showFeedback();">Leave Feedback on this critical alert (FOR QA PURPOSES ONLY) </a>	
+			<div id="feedbackThanks" class="hidden">Thanks for submitting your feedback</div>
+			<div id='divFeedback' class="hidden ContentFeedback">
+				<span class="SectionTitleRight">Feedback on this critical alert</span><br /><span class="SmallText">(FOR QA PURPOSES ONLY)</span>
+				<table style="border: solid 1px rgb(90, 90, 90); margin-top: 4px">
+					<thead>
+					<tr><th colspan="5" style="font-weight:normal" class="SmallText">Did you find this critical result alert clinically useful and relevant?</th></tr></thead>
+					<tbody>
+					<tr>
+						<td style="text-align:center; width:100px;" class="SmallText">1</td>
+						<td style="text-align:center; width:100px;" class="SmallText">2</td>
+						<td style="text-align:center; width:100px;" class="SmallText">3</td>
+						<td style="text-align:center; width:100px;" class="SmallText">4</td>
+						<td style="text-align:center; width:100px;" class="SmallText">5</td>
+					</tr>
+					<tr>
+						<td style="text-align:center; width:100px;" class="hidden"><input type="radio" name="R1" value="-1" checked="checked" /></td>
+						<td style="text-align:center; width:100px;" class="SmallText"><input type="radio" name="R1" value="1" /></td>
+						<td style="text-align:center; width:100px;" class="SmallText"><input type="radio" name="R1" value="2" /></td>
+						<td style="text-align:center; width:100px;" class="SmallText"><input type="radio" name="R1" value="3"/></td>
+						<td style="text-align:center; width:100px;" class="SmallText"><input type="radio" name="R1" value="4"/></td>
+						<td style="text-align:center; width:100px;" class="SmallText"><input type="radio" name="R1" value="5"/></td>
+					</tr>
+					<tr>
+						<td style="text-align:center; width:100px;" class="SmallText">very unhelpful</td>
+						<td style="text-align:center; width:100px;" class="SmallText"></td>
+						<td style="text-align:center; width:100px;" class="SmallText">neutral</td>
+						<td style="text-align:center; width:100px;" class="SmallText"></td>
+						<td style="text-align:center; width:100px;" class="SmallText">very helpful</td>
+					</tr>
+					</tbody>
+					<tfoot>
+					</tfoot>
+					
+				</table>
+				<br />	
+				<span class="SmallText">Additional Notes:</span><textarea id="feedbackNotes" rows="4" cols="80" style="width:100%; margin-bottom: 4px;"></textarea>
+				<input id="submitFeedbackButton" style="text-align:center; float:right;" type="button" value="Submit Feedback" onclick="PageManager.submitFeedback();" />
+				</div>		
+	</td></tr>
+	</table>			
+	<div id="modalArea" class="modalPage"></div>
+
+</body>
+</html>

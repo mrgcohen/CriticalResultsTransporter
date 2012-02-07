@@ -1,0 +1,1216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd2" namespace="http://partners.org/brigham/criticalresults/" />
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/CriticalResults" />
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:element name="QueryUserEntries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUserEntriesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryUserEntriesResult" nillable="true" type="q1:ArrayOfUserEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUserEntries_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUserEntries_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryUserEntries_JsonResult" nillable="true" type="q2:ArrayOfUserEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRoles">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRolesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllRolesResult" nillable="true" type="q3:ArrayOfRole" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRoles_Json">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllRoles_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllRoles_JsonResult" nillable="true" type="q4:ArrayOfRole" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserTransports">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserTransportsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUserTransportsResult" nillable="true" type="q5:ArrayOfUserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserTransports_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserTransports_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUserTransports_JsonResult" nillable="true" type="q6:ArrayOfUserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUserTransportResult" nillable="true" type="q7:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUserTransport_JsonResult" nillable="true" type="q8:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="originalAddress" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateUserTransportResult" nillable="true" type="q9:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="originalAddress" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateUserTransport_JsonResult" nillable="true" type="q10:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddLevelsToUserTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="levelNames" nillable="true" type="q11:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddLevelsToUserTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://partners.org/brigham/criticalresults/" minOccurs="0" name="AddLevelsToUserTransportResult" nillable="true" type="q12:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddLevelsToUserTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="address" nillable="true" type="xs:string" />
+        <xs:element xmlns:q13="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="levelNames" nillable="true" type="q13:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddLevelsToUserTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://partners.org/brigham/criticalresults/" minOccurs="0" name="AddLevelsToUserTransport_JsonResult" nillable="true" type="q14:UserTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateProxy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="masterUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="relationshipDescription" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateProxyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/CriticalResults" minOccurs="0" name="CreateProxyResult" nillable="true" type="q15:ProxyEntity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateProxy_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="masterUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="relationshipDescription" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateProxy_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/CriticalResults" minOccurs="0" name="CreateProxy_JsonResult" nillable="true" type="q16:ProxyEntity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteProxy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="masterUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteProxyResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteProxy_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="masterUserName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteProxy_JsonResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUsersForProxy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUsersForProxyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q17="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUsersForProxyResult" nillable="true" type="q17:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUsersForProxy_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="proxyUserName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUsersForProxy_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q18="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUsersForProxy_JsonResult" nillable="true" type="q18:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUsers_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUsers_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q19="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryUsers_JsonResult" nillable="true" type="q19:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllContextTypes">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllContextTypesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q20="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllContextTypesResult" nillable="true" type="q20:ArrayOfContextType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllContextTypes_Json">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllContextTypes_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q21="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllContextTypes_JsonResult" nillable="true" type="q21:ArrayOfContextType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultAcknowledgment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultAcknowledgmentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q22="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResultAcknowledgmentResult" nillable="true" type="q22:Acknowledgment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultAcknowledgment_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultAcknowledgment_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q23="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResultAcknowledgment_JsonResult" nillable="true" type="q23:Acknowledgment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultAcknowledgment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="notes" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultAcknowledgmentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q24="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResultAcknowledgmentResult" nillable="true" type="q24:Acknowledgment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultAcknowledgment_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="notes" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultAcknowledgment_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q25="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResultAcknowledgment_JsonResult" nillable="true" type="q25:Acknowledgment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultNotifications">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultNotificationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q26="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResultNotificationsResult" nillable="true" type="q26:ArrayOfNotification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultNotifications_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="resultUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultNotifications_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q27="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResultNotifications_JsonResult" nillable="true" type="q27:ArrayOfNotification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryNotifications">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryNotificationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q28="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryNotificationsResult" nillable="true" type="q28:ArrayOfNotification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPendingNotifications">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPendingNotificationsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q29="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetPendingNotificationsResult" nillable="true" type="q29:ArrayOfNotification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateNotification">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="notificationUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="state" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="notes" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateNotificationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q30="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateNotificationResult" nillable="true" type="q30:Notification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultNotification">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q31="http://partners.org/brigham/criticalresults/" minOccurs="0" name="notification" nillable="true" type="q31:Notification" />
+        <xs:element minOccurs="0" name="selectedTransport" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultNotificationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q32="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResultNotificationResult" nillable="true" type="q32:Notification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultNotification_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q33="http://partners.org/brigham/criticalresults/" minOccurs="0" name="notification" nillable="true" type="q33:Notification" />
+        <xs:element minOccurs="0" name="selectedTransport" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultNotification_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q34="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResultNotification_JsonResult" nillable="true" type="q34:Notification" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllTransports">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllTransportsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q35="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllTransportsResult" nillable="true" type="q35:ArrayOfTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllTransports_Json">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllTransports_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q36="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllTransports_JsonResult" nillable="true" type="q36:ArrayOfTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="uri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="friendlyName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q37="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateTransportResult" nillable="true" type="q37:Transport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="uri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="friendlyName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q38="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateTransport_JsonResult" nillable="true" type="q38:Transport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportUri" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteTransportResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportUri" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteTransport_JsonResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateTransport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="origName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="origUri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="newName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="newUri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="friendlyName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateTransportResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q39="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateTransportResult" nillable="true" type="q39:Transport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateTransport_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="origName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="origUri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="newName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="newUri" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="friendlyName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateTransport_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q40="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateTransport_JsonResult" nillable="true" type="q40:Transport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTransportsForLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTransportsForLevelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q41="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetTransportsForLevelResult" nillable="true" type="q41:ArrayOfTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTransportsForLevel_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTransportsForLevel_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q42="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetTransportsForLevel_JsonResult" nillable="true" type="q42:ArrayOfTransport" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransportLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="mandatoryString" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransportLevelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CreateTransportLevelResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransportLevel_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="mandatoryString" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateTransportLevel_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CreateTransportLevel_JsonResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveTransportFromLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveTransportFromLevelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemoveTransportFromLevelResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveTransportFromLevel_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="levelUuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="transportName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveTransportFromLevel_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="RemoveTransportFromLevel_JsonResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetToken">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="passwordHash" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTokenResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q43="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="GetTokenResult" nillable="true" type="q43:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetToken_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="passwordHash" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetToken_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q44="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="GetToken_JsonResult" nillable="true" type="q44:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserEntry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="xmlValue" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserEntryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q45="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUserEntryResult" nillable="true" type="q45:UserEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserEntry_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="value" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="xmlValue" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserEntry_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q46="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUserEntry_JsonResult" nillable="true" type="q46:UserEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Echo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EchoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EchoResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DoubleEcho">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="secondMessage" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DoubleEchoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DoubleEchoResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EchoPost">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="message" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EchoPostResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EchoPostResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResult">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResultResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q47="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResultResult" nillable="true" type="q47:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResult_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetResult_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q48="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetResult_JsonResult" nillable="true" type="q48:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResults">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResultsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q49="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryResultsResult" nillable="true" type="q49:ArrayOfResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResults_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResults_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q50="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryResults_JsonResult" nillable="true" type="q50:ArrayOfResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResult">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q51="http://partners.org/brigham/criticalresults/" minOccurs="0" name="result" nillable="true" type="q51:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResultResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q52="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResultResult" nillable="true" type="q52:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResult_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q53="http://partners.org/brigham/criticalresults/" minOccurs="0" name="result" nillable="true" type="q53:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateResult_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q54="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateResult_JsonResult" nillable="true" type="q54:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResultReceiver">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResultReceiverResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q55="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateResultReceiverResult" nillable="true" type="q55:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResultReceiver_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="uuid" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResultReceiver_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q56="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateResultReceiver_JsonResult" nillable="true" type="q56:Result" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResultList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResultListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q57="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryResultListResult" nillable="true" type="q57:ArrayOfResultViewEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResultList_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResultList_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q58="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryResultList_JsonResult" nillable="true" type="q58:ArrayOfResultViewEntry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserEntry">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserEntryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteUserEntryResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserEntry_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="type" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="key" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteUserEntry_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="DeleteUserEntry_JsonResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllLevels">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllLevelsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q59="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllLevelsResult" nillable="true" type="q59:ArrayOfLevel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllLevels_Json">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllLevels_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q60="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllLevels_JsonResult" nillable="true" type="q60:ArrayOfLevel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q61="http://partners.org/brigham/criticalresults/" minOccurs="0" name="level" nillable="true" type="q61:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateLevelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q62="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateLevelResult" nillable="true" type="q62:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateLevel_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q63="http://partners.org/brigham/criticalresults/" minOccurs="0" name="level" nillable="true" type="q63:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateLevel_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q64="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateLevel_JsonResult" nillable="true" type="q64:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateLevel">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q65="http://partners.org/brigham/criticalresults/" minOccurs="0" name="level" nillable="true" type="q65:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateLevelResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q66="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateLevelResult" nillable="true" type="q66:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateLevel_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q67="http://partners.org/brigham/criticalresults/" minOccurs="0" name="level" nillable="true" type="q67:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateLevel_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q68="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateLevel_JsonResult" nillable="true" type="q68:Level" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q69="http://partners.org/brigham/criticalresults/" minOccurs="0" name="user" nillable="true" type="q69:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q70="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUserResult" nillable="true" type="q70:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUser_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q71="http://partners.org/brigham/criticalresults/" minOccurs="0" name="user" nillable="true" type="q71:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateUser_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q72="http://partners.org/brigham/criticalresults/" minOccurs="0" name="CreateUser_JsonResult" nillable="true" type="q72:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q73="http://partners.org/brigham/criticalresults/" minOccurs="0" name="user" nillable="true" type="q73:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q74="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateUserResult" nillable="true" type="q74:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUser_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q75="http://partners.org/brigham/criticalresults/" minOccurs="0" name="user" nillable="true" type="q75:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUser_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q76="http://partners.org/brigham/criticalresults/" minOccurs="0" name="UpdateUser_JsonResult" nillable="true" type="q76:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserRoles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q77="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="roles" nillable="true" type="q77:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserRolesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UpdateUserRolesResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserRoles_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q78="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="roles" nillable="true" type="q78:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateUserRoles_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UpdateUserRoles_JsonResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllUsers">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllUsersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q79="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllUsersResult" nillable="true" type="q79:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllUsers_Json">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAllUsers_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q80="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetAllUsers_JsonResult" nillable="true" type="q80:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q81="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUserResult" nillable="true" type="q81:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUser_Json">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUser_JsonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q82="http://partners.org/brigham/criticalresults/" minOccurs="0" name="GetUser_JsonResult" nillable="true" type="q82:User" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUsers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="queryString" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="pageSize" nillable="true" type="xs:int" />
+        <xs:element minOccurs="0" name="pageNumber" nillable="true" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryUsersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q83="http://partners.org/brigham/criticalresults/" minOccurs="0" name="QueryUsersResult" nillable="true" type="q83:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/CriticalResults" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CriticalResults" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" />
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ProxyEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q1:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="ProxyUser" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="ProxyUserReference" nillable="true" type="q1:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="RelationshipDescription" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q1:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ProxyEntity" nillable="true" type="tns:ProxyEntity" />
+  <xs:complexType name="UserEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q2:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Acknowledgments" nillable="true" type="tns:ArrayOfAcknowledgmentEntity" />
+          <xs:element minOccurs="0" name="Credentials" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="IsHomoSapien" type="xs:boolean" />
+          <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MiddleName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ProxiedUsers" nillable="true" type="tns:ArrayOfProxyEntity" />
+          <xs:element minOccurs="0" name="ProxyUsers" nillable="true" type="tns:ArrayOfProxyEntity" />
+          <xs:element minOccurs="0" name="Ratings" nillable="true" type="tns:ArrayOfRatingEntity" />
+          <xs:element minOccurs="0" name="Results" nillable="true" type="tns:ArrayOfResultEntity" />
+          <xs:element minOccurs="0" name="ResultsReceived" nillable="true" type="tns:ArrayOfResultEntity" />
+          <xs:element minOccurs="0" name="ResultsSent" nillable="true" type="tns:ArrayOfResultEntity" />
+          <xs:element minOccurs="0" name="Roles" nillable="true" type="tns:ArrayOfRoleEntity" />
+          <xs:element minOccurs="0" name="Title" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Tokens" nillable="true" type="tns:ArrayOfTokenEntity" />
+          <xs:element minOccurs="0" name="UserEntries" nillable="true" type="tns:ArrayOfUserEntryEntity" />
+          <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserResultTags" nillable="true" type="tns:ArrayOfUserResultTagEntity" />
+          <xs:element minOccurs="0" name="UserTransports" nillable="true" type="tns:ArrayOfUserTransportEntity" />
+          <xs:element minOccurs="0" name="enabled" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserEntity" nillable="true" type="tns:UserEntity" />
+  <xs:complexType name="ArrayOfAcknowledgmentEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AcknowledgmentEntity" nillable="true" type="tns:AcknowledgmentEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAcknowledgmentEntity" nillable="true" type="tns:ArrayOfAcknowledgmentEntity" />
+  <xs:complexType name="AcknowledgmentEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q3:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Result" nillable="true" type="tns:ResultEntity" />
+          <xs:element minOccurs="0" name="ResultReference" nillable="true" type="q3:EntityReferenceOfResultEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q3:EntityReferenceOfUserEntityJ0a9aH1W" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="AcknowledgmentEntity" nillable="true" type="tns:AcknowledgmentEntity" />
+  <xs:complexType name="ResultEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q4="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q4:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Acknowledgments" nillable="true" type="tns:ArrayOfAcknowledgmentEntity" />
+          <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="DueTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="EscalationTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Level" nillable="true" type="tns:LevelEntity" />
+          <xs:element minOccurs="0" name="LevelReference" nillable="true" type="q4:EntityReferenceOfLevelEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Notifications" nillable="true" type="tns:ArrayOfNotificationEntity" />
+          <xs:element minOccurs="0" name="Ratings" nillable="true" type="tns:ArrayOfRatingEntity" />
+          <xs:element minOccurs="0" name="Receiver" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="ReceiverReference" nillable="true" type="q4:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="ResultContexts" nillable="true" type="tns:ArrayOfResultContextEntity" />
+          <xs:element minOccurs="0" name="Sender" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="SenderProxy" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="SenderProxyReference" nillable="true" type="q4:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="SenderReference" nillable="true" type="q4:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="UserResultTags" nillable="true" type="tns:ArrayOfUserResultTagEntity" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ResultEntity" nillable="true" type="tns:ResultEntity" />
+  <xs:complexType name="LevelEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q5="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q5:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ColorValue" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DirectContactRequired" type="xs:boolean" />
+          <xs:element minOccurs="0" name="DueTimeout" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="EscalationTimeout" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Results" nillable="true" type="tns:ArrayOfResultEntity" />
+          <xs:element minOccurs="0" name="ShortDescription" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TransportLevels" nillable="true" type="tns:ArrayOfTransportLevelEntity" />
+          <xs:element minOccurs="0" name="UserTransports" nillable="true" type="tns:ArrayOfUserTransportEntity" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="LevelEntity" nillable="true" type="tns:LevelEntity" />
+  <xs:complexType name="ArrayOfResultEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ResultEntity" nillable="true" type="tns:ResultEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResultEntity" nillable="true" type="tns:ArrayOfResultEntity" />
+  <xs:complexType name="ArrayOfTransportLevelEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TransportLevelEntity" nillable="true" type="tns:TransportLevelEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTransportLevelEntity" nillable="true" type="tns:ArrayOfTransportLevelEntity" />
+  <xs:complexType name="TransportLevelEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q6="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q6:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Level" nillable="true" type="tns:LevelEntity" />
+          <xs:element minOccurs="0" name="LevelId" type="xs:int" />
+          <xs:element minOccurs="0" name="LevelReference" nillable="true" type="q6:EntityReferenceOfLevelEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Mandatory" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Transport" nillable="true" type="tns:TransportEntity" />
+          <xs:element minOccurs="0" name="TransportId" type="xs:int" />
+          <xs:element minOccurs="0" name="TransportReference" nillable="true" type="q6:EntityReferenceOfTransportEntityJ0a9aH1W" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TransportLevelEntity" nillable="true" type="tns:TransportLevelEntity" />
+  <xs:complexType name="TransportEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q7="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q7:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FriendlyAddressName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="TransportLevels" nillable="true" type="tns:ArrayOfTransportLevelEntity" />
+          <xs:element minOccurs="0" name="TransportURI" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserTransports" nillable="true" type="tns:ArrayOfUserTransportEntity" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TransportEntity" nillable="true" type="tns:TransportEntity" />
+  <xs:complexType name="ArrayOfUserTransportEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserTransportEntity" nillable="true" type="tns:UserTransportEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserTransportEntity" nillable="true" type="tns:ArrayOfUserTransportEntity" />
+  <xs:complexType name="UserTransportEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q8="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q8:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Levels" nillable="true" type="tns:ArrayOfLevelEntity" />
+          <xs:element minOccurs="0" name="Notifications" nillable="true" type="tns:ArrayOfNotificationEntity" />
+          <xs:element minOccurs="0" name="Transport" nillable="true" type="tns:TransportEntity" />
+          <xs:element minOccurs="0" name="TransportReference" nillable="true" type="q8:EntityReferenceOfTransportEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q8:EntityReferenceOfUserEntityJ0a9aH1W" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserTransportEntity" nillable="true" type="tns:UserTransportEntity" />
+  <xs:complexType name="ArrayOfLevelEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="LevelEntity" nillable="true" type="tns:LevelEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfLevelEntity" nillable="true" type="tns:ArrayOfLevelEntity" />
+  <xs:complexType name="ArrayOfNotificationEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="NotificationEntity" nillable="true" type="tns:NotificationEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotificationEntity" nillable="true" type="tns:ArrayOfNotificationEntity" />
+  <xs:complexType name="NotificationEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q9="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q9:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Result" nillable="true" type="tns:ResultEntity" />
+          <xs:element minOccurs="0" name="ResultReference" nillable="true" type="q9:EntityReferenceOfResultEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="UserTransport" nillable="true" type="tns:UserTransportEntity" />
+          <xs:element minOccurs="0" name="UserTransportReference" nillable="true" type="q9:EntityReferenceOfUserTransportEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="NotificationEntity" nillable="true" type="tns:NotificationEntity" />
+  <xs:complexType name="ArrayOfRatingEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RatingEntity" nillable="true" type="tns:RatingEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRatingEntity" nillable="true" type="tns:ArrayOfRatingEntity" />
+  <xs:complexType name="RatingEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q10="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q10:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Result" nillable="true" type="tns:ResultEntity" />
+          <xs:element minOccurs="0" name="ResultReference" nillable="true" type="q10:EntityReferenceOfResultEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q10:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="comments" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="id" type="xs:int" />
+          <xs:element minOccurs="0" name="value" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RatingEntity" nillable="true" type="tns:RatingEntity" />
+  <xs:complexType name="ArrayOfResultContextEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ResultContextEntity" nillable="true" type="tns:ResultContextEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResultContextEntity" nillable="true" type="tns:ArrayOfResultContextEntity" />
+  <xs:complexType name="ResultContextEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q11="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q11:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ContextType" nillable="true" type="tns:ContextTypeEntity" />
+          <xs:element minOccurs="0" name="ContextTypeReference" nillable="true" type="q11:EntityReferenceOfContextTypeEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="JsonValue" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Result" nillable="true" type="tns:ResultEntity" />
+          <xs:element minOccurs="0" name="ResultReference" nillable="true" type="q11:EntityReferenceOfResultEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="XmlValue" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ResultContextEntity" nillable="true" type="tns:ResultContextEntity" />
+  <xs:complexType name="ContextTypeEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q12="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q12:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="JsonTemplate" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="NamespaceUri" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ResultContexts" nillable="true" type="tns:ArrayOfResultContextEntity" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+          <xs:element minOccurs="0" name="XmlSchema" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ContextTypeEntity" nillable="true" type="tns:ContextTypeEntity" />
+  <xs:complexType name="ArrayOfUserResultTagEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserResultTagEntity" nillable="true" type="tns:UserResultTagEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserResultTagEntity" nillable="true" type="tns:ArrayOfUserResultTagEntity" />
+  <xs:complexType name="UserResultTagEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q13="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q13:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Result" nillable="true" type="tns:ResultEntity" />
+          <xs:element minOccurs="0" name="ResultReference" nillable="true" type="q13:EntityReferenceOfResultEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Tag" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q13:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserResultTagEntity" nillable="true" type="tns:UserResultTagEntity" />
+  <xs:complexType name="ArrayOfProxyEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ProxyEntity" nillable="true" type="tns:ProxyEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfProxyEntity" nillable="true" type="tns:ArrayOfProxyEntity" />
+  <xs:complexType name="ArrayOfRoleEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RoleEntity" nillable="true" type="tns:RoleEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRoleEntity" nillable="true" type="tns:ArrayOfRoleEntity" />
+  <xs:complexType name="RoleEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q14="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q14:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Users" nillable="true" type="tns:ArrayOfUserEntity" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RoleEntity" nillable="true" type="tns:RoleEntity" />
+  <xs:complexType name="ArrayOfUserEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserEntity" nillable="true" type="tns:UserEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserEntity" nillable="true" type="tns:ArrayOfUserEntity" />
+  <xs:complexType name="ArrayOfTokenEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TokenEntity" nillable="true" type="tns:TokenEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTokenEntity" nillable="true" type="tns:ArrayOfTokenEntity" />
+  <xs:complexType name="TokenEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q15="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q15:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="CreatedTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Ipv4" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Token" type="ser:guid" />
+          <xs:element minOccurs="0" name="UpdatedTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q15:EntityReferenceOfUserEntityJ0a9aH1W" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TokenEntity" nillable="true" type="tns:TokenEntity" />
+  <xs:complexType name="ArrayOfUserEntryEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserEntryEntity" nillable="true" type="tns:UserEntryEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserEntryEntity" nillable="true" type="tns:ArrayOfUserEntryEntity" />
+  <xs:complexType name="UserEntryEntity">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q16="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" base="q16:EntityObject">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Id" type="xs:int" />
+          <xs:element minOccurs="0" name="Key" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="User" nillable="true" type="tns:UserEntity" />
+          <xs:element minOccurs="0" name="UserReference" nillable="true" type="q16:EntityReferenceOfUserEntityJ0a9aH1W" />
+          <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="XmlValue" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="UserEntryEntity" nillable="true" type="tns:UserEntryEntity" />
+</xs:schema>

@@ -1,0 +1,1644 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Compose Result</title>
+
+
+	<script src="../javascript/jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/jquery.json-1.3.min.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/ui.core.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/ui.tabs.js" type="text/javascript"></script>
+	
+		
+	<script src="../javascript/datetime/DateExtensions.js" type="text/javascript"></script>
+	<script src="../javascript/modalDialog.js" type="text/javascript"></script>
+	<link href="../CSS/custom-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" />
+	<link href="../CSS/StyleSheet.css" rel="stylesheet" type="text/css" />
+	<link href="../CSS/modal.css" rel="stylesheet" type="text/css" />
+	<link href="../javascript/autocomplete/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+
+	<script src="../javascript/autocomplete/jquery.autocomplete.js" type="text/javascript"></script>
+	<script src="../javascript/Utility.js" type="text/javascript"></script>
+
+	<script src="../DynamicScripts/RootUrl.aspx" type="text/javascript"></script>
+	<script src="../javascript/WebClient.js" type="text/javascript"></script>
+	<script src="../Services/DirectoryServices/javascript/ADWebClient.js" type="text/javascript"></script>
+	<script src="../javascript/DefaultExtension.js" type="text/javascript"></script>
+	<script src="../DynamicScripts/Modules.aspx" type="text/javascript"></script>
+
+	<script language="javascript" type="text/javascript">
+		AuthManager = parent.AuthManager;
+	</script>
+	<script language="javascript" type="text/javascript">
+		/// Created 2009-12-01 - John Morgan
+		///		Tracks requiredness of data fields based on transport
+		///		TODO: store in database.
+		var transportInfo = [
+			{
+				transportName: "Pager Transport",
+				name: "pager",
+				fields: [
+					{
+						name: "callbackInformation",
+						displayName: "Callback Information",
+						required: true
+					}
+//,
+//					{
+//						name: "incompleteContactNotes",
+//						displayName: "Comments (non-clinical information)",
+//						required: false
+					//					}
+
+				]
+			},
+
+			{
+				transportName: "SMTP Transport",
+				name: "email",
+				fields: [
+//					{
+//						name: "incompleteContactNotes",
+//						displayName: "Comments (non-clinical information)",
+//						required: false
+//					}
+				]
+			}
+		]
+		
+		var CRManager = parent.Manager;
+		var MANUAL_TRANSPORT = "Manual";
+		var PAGER_TRANSPORT = "Pager Transport";
+		var COMPOSER_DIRECT_CONTACT_REQUIRED_STRING = "A '{0}' result requires that you directly contact the appropriate caregiver.";
+		var COMPOSER_DIRECT_CONTACT_INCOMPLETE_STRING = "I have not spoken with {0} {1}."; //"I have not spoken with {0} {1} as of {2}.";
+		var COMPOSER_DIRECT_CONTACT_PHONE_STRING = "I spoke with {0} {1} on the telephone on {2} at {3}.";
+		var COMPOSER_DIRECT_CONTACT_FACETOFACE_STRING = "I spoke with {0} {1} face to face on {2} at {3}.";
+		var CALLBACKINFO_FIELD_NAME = "callbackInformation";
+		var DIRECT_CONTACT_INCOMPLETE = "incomplete";
+		var DIRECT_CONTACT_FACETOFACE = "facetoface";
+		var DIRECT_CONTACT_PHONE = "phone";
+		var CONTACT_NOTIFY = "notify";
+		var CONTACT_NONREQ_FACETOFACE = "nreqfacetoface";
+		var CONTACT_NONREQ_PHONE = "nreqphone";
+		var DO_NOT_NOTIFY = "donotnotify";
+		
+		var PATIENTID_CONTEXT = "MRN";
+		var EXAMID_CONTEXT = "Accession";
+
+		var Composer = {
+			ContextTypeName: "Radiology",
+			contextTypes: null,
+			contextType: null,
+			contextTemplate: null,
+			context: null,
+			defaultTransports: null,
+			Users: null,
+			Levels: null,
+
+			SelectedLevel: null,
+
+			Sender: null, 	//User object
+			Receiver: null, //User object
+			Cc: null, 		//User object
+			ProxiedUser: null, //User object
+
+			SelectedContactMethod: null,
+			MessageUuid: null,
+			NoContactOK: false,
+
+			isUserSelected: false,
+			isLevelSelected: false,
+			isNotificationSelected: false,
+			userHasContactInfo: false,
+			wasCommunicationTabVisited: false,
+
+			contactInfoEdited: false,
+			contactAttemptsEdited: false,
+
+			cCTransport: "SMTP Transport"
+
+		};
+
+		String.format = Utility.format;
+		Composer.queryString = Utility.queryString;
+
+		$(document).ready(function() { Composer.initialize(); });
+
+		Composer.initialize = function() {
+			$(CRManager.SystemSettings).each(function(index, item) {
+				if (item.EntryKey == "DefaultTransport") {
+					Composer.defaultTransports = item.Value.split(",");
+				}
+			});
+			$("#tabs").tabs();
+			$("#tabs").tabs('disable', 2);
+			$("#tabs").tabs('disable', 1);
+			$("#tabs").tabs('disable', 3);
+
+			//			var senderRoleFound = false;
+			//			$(CRManager.AuthenticatedUser.Roles).each(function(index, item) {
+			//				if (item.Name == CRManager.ROLE_SENDER) {
+			//					senderRoleFound = true;
+			//				}
+			//			});
+			if (CRManager.userCanCreate() == false) {
+				$("#tabs").tabs('disable', 0);
+				CRManager.showAlert("Authenticated user does not have compose result rights.<br /><input type='button' value='Close' onclick='Manager.closeAlert()' style='float:right' />");
+				Composer.cancelResult();
+			}
+			$("#tabs").bind('tabsselect', function(event, ui) { Composer.onTabSelect(event, ui); });
+			$('#tabs').bind('tabsshow', function(event, ui) { Composer.onTabShown(event, ui); });
+			CRManager.WebClient.getAllLevels(this.getAllLevelsSuccess, null);
+			CRManager.WebClient.getAllUsers(this.getAllUsersSuccess, null);
+			CRManager.WebClient.getAllContextTypes(this.getContextTypesSuccess, null);
+			Composer.applyCallback();
+			$("directContactRadioGroup").each(function(i) { this.bind("click", function(e) { Composer.onContactSelected(e); }) });
+
+			$('#ResultNotes').keydown(function() { setTimeout("Composer.validate()", 1000); });
+			$('#ResultNotes').mousedown(function() { setTimeout("Composer.validate()", 3000); });
+			$('#ResultNotes').blur(function() { Composer.validate(); });
+
+			CRManager.closeSearchModal();
+
+		}
+
+		//Description:
+		//Parameters:
+		//Created:
+		//	2009-04, JR - called after loading the user list, to set From field and TO/CC auto complete list
+		//Modified:
+		//	2009-06-01, JR - modified to only load users with 'receiver' role into TO/CC autocomplete lists.
+		Composer.getAllUsersSuccess = function(response) {
+			Composer.Users = response;
+
+			var userName = Composer.queryString()["user"];
+			if (!userName) {
+				Composer.Sender = CRManager.AuthenticatedUser;
+				userName = Composer.Sender.Name;
+			}
+
+			var onBehalfOfUserName = Composer.queryString()["onBehalfOf"];
+			if (!onBehalfOfUserName) {
+				if (CRManager.ProxiedUser) {
+					Composer.ProxiedUser = CRManager.ProxiedUser;
+					onBehalfOfUserName = Composer.ProxiedUser.Name;
+				}
+			}
+
+			var userList = [];
+			var receiverList = [];
+			$.each(Composer.Users, function(index, user) {
+				if (user.Enabled == true) {
+					userList[index] = user.LastName + ", " + user.FirstName + " (" + user.UserName + ")";
+
+					$.each(user.Roles, function(roleIndex, role) {
+						if (role.Name == CRManager.RECEIVER_ROLE || role.Name == CRManager.ROLE_RECEIVER)
+							receiverList[receiverList.length] = userList[index];
+					});
+					if (user.UserName == userName) {
+						Composer.Sender = user;
+					}
+					if (user.UserName == onBehalfOfUserName) {
+						Composer.ProxiedUser = user;
+					}
+				}
+			});
+
+			$("#spanFrom").text(String.format("{0} {1} {2}", Composer.Sender.Title, Composer.Sender.FirstName, Composer.Sender.LastName));
+
+			receiverList.sort();
+			$("#txtTo").autocompleteArray(receiverList, { onItemSelect: Composer.onToSelected });
+			$("#txtCc").autocompleteArray(receiverList, { onItemSelect: Composer.onCcSelected });
+
+			if (CRManager.UriContext.To) {
+				$("#txtTo").val(CRManager.UriContext.To);
+				Composer.onToSelected();
+			}
+		}
+
+		Composer.applyCallback = function() {
+
+			if (!CRManager.UriContext.Application || !CRManager.UriContext.Callback)
+				return;
+
+			$("#callbackInfo").removeClass("hidden");
+			var callBackCookie = Composer.readCallbackCookie();
+			$("#callbackInfo").val(callBackCookie);
+			$("#applicationAnchor").text(CRManager.UriContext.Application);
+			Composer.callback = CRManager.UriContext.Callback;
+		}
+
+		Composer.onCcSelected = function() {
+
+			regexp = /[(].*[)]/;
+			var selectedUser = $("#txtCc").val();
+
+			var userMatch = regexp.exec(selectedUser);
+
+			if (!userMatch) {
+				Composer.Receiver = null;
+				return;
+			}
+			if (!userMatch.lastIndex) {   //Firefox fix for userMatch.lastIndex null if not another match;
+				userMatch.lastIndex = selectedUser.length;
+			}
+
+			var userName = userMatch.input.substring(userMatch.index + 1, userMatch.lastIndex - 1);
+			CRManager.WebClient.getUser(userName, Composer.onGetCCSuccess);
+		}
+
+		Composer.getAllLevelsSuccess = function(response) {
+		//Composer.Levels = response;
+			Composer.Levels = new Array();
+			$(response).each(function(index, item) {
+				if (item.Transports != null && item.Transports.length > 0) {
+					Composer.Levels[Composer.Levels.length] = item;
+				}
+			});
+			Composer.applyLevels()
+		}
+
+		Composer.getContextTypesSuccess = function(response) {
+			Composer.contextTypes = response;
+			Composer.applyContext();
+
+			Composer.ready();
+		}
+
+		Composer.getCurrentUser = function()
+		{
+			var retVal = "";
+			$(CRManager.AuthenticatedUser.UserEntries).each(function(i, entry)
+			{
+				if (entry.Type == "AuthExt" && entry.Key == "Windows")
+				{
+					retVal=entry.Value;
+				}
+			});
+			return retVal;
+		}
+
+		Composer.ready = function()
+		{
+			if (!Composer.getCurrentUser())
+			{
+				$("#lookupExtension").hide();
+			}
+			if (!CRManager.UriContext["MRN"])
+			{
+				$("#lookupExtension").hide();
+			}
+			Extension.extendComposer($("#lookupExtension"));
+			//			$("#txtTo")[0].focus();
+		}
+
+		Composer.applyLevels = function() {
+			$.each(Composer.Levels, function(index, level) {
+				Composer.addLevel(index, level);
+			});
+			$(".colorCell").each(Composer.setLevelColors);
+		}
+
+		Composer.setLevelColors = function(index, item) {
+			var color = $(item).css("background-color");
+			Utility.setLevelColor(item, color);
+		}
+
+		Composer.addLevel = function(index, level) {
+			var inputId = level.Name;
+
+			//$("#levelTableBody").append("<tr><td style=\"background-color:" + level.ColorValue + "\" class=\"field\">" + level.Name + "</td><td><input name=\"level\" id=\"" + inputId + "\" value=\"critical\" type=\"radio\" onclick=\"Composer.onLevelSelected(event);\" /> - " + level.Description + "</td><td>" + level.EscalationTimeout + "</td></tr>");
+			var tr = $("<tr></tr>");
+			var td1 = $("<td class='colorCell' style=\"background-color:" + level.ColorValue + "\" class=\"field\">" + level.Name + "</td>");
+			var td2 = $("<td class='levelSelect'></td>");
+			var input1 = $("<input name=\"level\" id=\"" + inputId + "\" value=\"critical\" type=\"radio\" onclick=\"Composer.onLevelSelected(event);\" />");
+			var label1 = $("<label for='" + inputId + "'>" + level.Description + "</label>");
+			$(tr).append(td1);
+			$(tr).append(td2);
+			$(td2).append(input1);
+			$(td2).append(label1);
+			$("#levelTableBody").append(tr);
+			$(input1).bind("click", function(event) { Composer.onLevelSelected(event); });
+
+
+			//$("#levelTableBody").append("</td><td class='levelSelect'><label for='" + inputId + "'>" + level.Description + "</label></td><td>" + "</td></tr>");
+		}
+
+
+		Composer.applyContext = function() {
+			$('#divFind').html("");
+			$.each(Composer.contextTypes, function(index, contextType) {
+				if (contextType.Name === Composer.ContextTypeName) {
+					Composer.contextType = contextType;
+					Composer.contextTemplate = contextType.JsonTemplate;
+					Composer.contextTemplate = $.evalJSON(Composer.contextTemplate);
+					//suggested improvement, iterate over the initial td to apply the 'field' class instead
+					$.each(Composer.contextTemplate.Fields, Composer.applyContextTemplate);
+				}
+			});
+		}
+		Composer.applyContextTemplate = function(index, contextField) {
+			if (contextField.Enabled == "true") {
+				var value = "";
+				if (CRManager.UriContext[contextField.Name]) {
+					value = CRManager.UriContext[contextField.Name];
+					if (contextField.Name == EXAMID_CONTEXT && value != "") {
+						if (CRManager.SearchForExistingResultsOnCompose == true) {
+							CRManager.searchAlerts("", value, true, false, false, true);
+						}
+					}
+				}
+				var contextRow = "<tr><td class=\"field\">" + contextField.DisplayName + "</td><td><input id=\"" + contextField.Name + "\" type=\"text\" value=\"" + value + "\" />";
+				if (contextField.Name == PATIENTID_CONTEXT) {
+					$('#divFind').append("<a href='#' id='btnSearchPatient'>Find existing alerts for this patient</a>&nbsp;&nbsp;");
+				}
+				if (contextField.Name == EXAMID_CONTEXT) {
+					$('#divFind').append("<a href='#'id='btnSearchExam'>Find existing alerts for this exam </a>");
+				}
+				contextRow += "</td></tr>";
+				$("#contextTableBody").append(contextRow);
+
+				if ($("#btnSearchPatient").length > 0)
+					$("#btnSearchPatient").click(function() { CRManager.searchAlerts($('#' + PATIENTID_CONTEXT).val(), "", false, false, true) });
+				if ($("#btnSearchExam").length > 0)
+					$("#btnSearchExam").click(function() { CRManager.searchAlerts("", $('#' + EXAMID_CONTEXT).val(), false, false, true) });
+
+			}
+		}
+
+		Composer.onToSelected = function(listItem) {
+
+			regexp = /[(].*[)]/;
+			var selectedUser = $("#txtTo").val();
+
+			var userMatch = regexp.exec(selectedUser);
+
+			if (!userMatch) {
+				Composer.Receiver = null;
+				return;
+			}
+			if (!userMatch.lastIndex) {   //Firefox fix for userMatch.lastIndex null if not another match;
+				userMatch.lastIndex = selectedUser.length;
+			}
+			var userName = userMatch.input.substring(userMatch.index + 1, userMatch.lastIndex - 1);
+			CRManager.WebClient.getUser(userName, Composer.onGetUserSuccess);
+			Composer.isUserSelected = true;
+		}
+
+		Composer.onGetUserSuccess = function(data) {
+			Composer.Receiver = data;
+			Composer.resetCommunicationTab();
+			var toLinkTxt = $("#txtTo").val();
+			var idx = toLinkTxt.indexOf("(");
+			toLinkTxt = toLinkTxt.substring(0, idx);
+			$("#vTo").html("Provider:&nbsp;" + toLinkTxt);
+			$("#txtTo").addClass("hidden");
+			$("#lookupExtension").addClass("hidden");
+			$("#hrefTo").html(toLinkTxt);
+			if (Composer.isLevelSelected == true) {
+				Composer.buildNotificationOptions();
+			}
+			$("#receverName").text(data.FirstName + " " + data.LastName);
+
+			Composer.validate();
+		}
+
+		Composer.buildContactList = function(user)
+		{
+			var contactList = "";
+			$(user.Transports).each(function(index, item)
+			{
+				if (item.Address != null && item.Address != "")
+				{
+					if (item.Transport.Name != MANUAL_TRANSPORT)
+					{
+						contactList += item.Transport.FriendlyName + ': ' + item.Address + "&nbsp;";
+						contactList += Extension.extendContact(item.Address, item.Transport);
+						contactList += "<br />";
+					}
+				}
+			});
+			if (user.CellPhone != null && user.CellPhone != "")
+				contactList += "Cell Phone: " + user.CellPhone + "&nbsp;<br />";
+			if (user.OfficePhone != null && user.OfficePhone != "")
+				contactList += "Office Phone: " + user.OfficePhone + "&nbsp;<br />";
+			if (user.HomePhone != null && user.HomePhone != "")
+				contactList += "Home Phone: " + user.HomePhone + "&nbsp;<br />";
+			if (user.Pager != null && user.Pager != "")
+				contactList += "Outside Pager " + user.Pager + "&nbsp;<br />";
+			return contactList;
+		}
+		//Added: 2009-08-19, John Morgan, Handle CC user select
+		Composer.onGetCCSuccess = function(data) {
+			var smtpTransportFound = false;
+			$(data.Transports).each(function(index, item) {
+				if (item.Transport.Name == Composer.cCTransport) {
+					smtpTransportFound = true;
+				}
+			});
+			if (smtpTransportFound == true) {
+				Composer.Cc = data;
+				var ccLink = $("#txtCc").val();
+				var idx = ccLink.indexOf('(');
+				ccLink = ccLink.substring(0, idx);
+				$("#ccField").removeClass("hidden");
+				$("#vCC").html(ccLink);
+				$("#txtCc").addClass("hidden");
+				$("#hrefCc").html(ccLink);
+				$("#ccContact").html(Composer.buildContactList(data));
+			}
+			else {
+				alert("User selected to cc does not have an email address defined.");
+				$("#hrefCc").html("");
+				$("#ccField").addClass("hidden");
+				$("#txtCc").val("");
+				$("#txtCc").removeClass("hidden");
+				Composer.Cc = null;
+			}
+		}
+
+		Composer.resetCommunicationTab = function() {
+			Composer.SelectedContactMethod = null;
+			$("#notificationOptions").hide();
+			$("#directContactNotesDiv").hide();
+			$("#incompleteContactNotesDiv").hide();
+			$("[name='contactRadioGroup']").attr("checked", false);
+			$("[name='directContactRadioGroup']").attr("checked", false);
+		}
+
+		Composer.onLevelSelected = function(event) {
+			Composer.resetCommunicationTab();
+
+			Composer.isLevelSelected = true;
+			var element;
+			if (event.target) {
+				element = event.target;
+			}
+			else if (event.srcElement) {
+				element = event.srcElement;
+			}
+
+			//Safari issue
+			if (element.nodeType == 3) {
+				element = event.parentNode;
+			}
+			var levelName = element.id;
+			$.each(Composer.Levels, function(index, level) {
+				if (level.Name == levelName) {
+
+					Composer.SelectedLevel = level;
+
+					if (level.DirectContactRequired) {
+						$("#directContact").removeClass("hidden");
+						$("#anyContact").addClass("hidden");
+					}
+					else {
+						$("#anyContact").removeClass("hidden");
+						$("#directContact").addClass("hidden");
+					}
+				}
+			});
+
+			$("#vLevel").html("<span style='line-height: 20px'>" + levelName + "</span>");
+			$("#vLevel").css('background-color', Composer.SelectedLevel.ColorValue);
+			$("#vLevel").css('font-weight', 'bold');
+			$("#vLevel").css('vertical-align', 'middle');
+			$("#tdCritFindings").css('background-color', Composer.SelectedLevel.ColorValue);
+			var color = $("#tdCritFindings").css('background-color');
+			Utility.setLevelColor($("#tdCritFindings"), color);
+			Composer.setLevelColors(0, $("#vLevel"));
+			if (Composer.isUserSelected == true) {
+				Composer.buildNotificationOptions();
+				$("#tabs").tabs("enable", 3);
+			}
+			Composer.validate();
+		}
+
+		//Created: 23009-12-01, John Morgan - Dynamically add incomplete contact note fields based on selected transports.
+		Composer.buildIncompleteContactNotes = function() {
+			$("#incompleteContactNotesDiv").html("");
+			$(transportInfo).each(function(i, transport) {
+				$("#notificationOptionsList input").each(function(j, checkbox) {
+					$(transport.fields).each(function(k, field) {
+						if ($(checkbox).attr("checked") == true && checkbox.id == transport.transportName) {
+							if ($("#" + field.name).length == 0) {
+								$("#incompleteContactNotesDiv").append("<h4>" + field.displayName + "</h4>" +
+									"<textarea cols='' rows='2' id='" + field.name + "'></textarea>" +
+									"<span class='errortext hidden'>*</span>");
+								$('#' + field.name).keydown(function() { setTimeout("Composer.validate()", 1000); });
+								$('#' + field.name).mousedown(function() { setTimeout("Composer.validate()", 3000); });
+								$('#' + field.name).focus(function() { Composer.callbackInfoSelected(); });
+								$('#' + field.name).blur(function() { Composer.validate(); });
+								if (field.name == CALLBACKINFO_FIELD_NAME) {
+									$('#' + field.name).text(Composer.readCallbackCookie());
+								}
+							}
+						}
+					});
+				});
+			});
+		}
+
+		Composer.onContactSelected = function(event) {
+			if (event) {
+				var element;
+				if (event.target) {
+					element = event.target;
+				}
+				else if (event.srcElement) {
+					element = event.srcElement;
+				}
+
+				//Safari issue
+				if (element.nodeType == 3) {
+					element = event.parentNode;
+				}
+
+				Composer.SelectedContactMethod = element.id;
+			}
+			else {
+				if (Composer.SelectedLevel.DirectContactRequired == true) {
+					Composer.SelectedContactMethod = DIRECT_CONTACT_INCOMPLETE;
+					$('#incomplete').attr('defaultChecked', true);
+					$('#incomplete').attr('checked', 'checked');
+
+				}
+				else {
+					Composer.SelectedContactMethod = CONTACT_NOTIFY;
+					$('#notify').attr("defaultChecked", true);
+					$('#notify').attr("checked", "checked");
+				}
+			}
+
+			if (Composer.Receiver) {
+				switch (Composer.SelectedContactMethod) {
+					case DIRECT_CONTACT_INCOMPLETE:
+						var formattedString = String.format(COMPOSER_DIRECT_CONTACT_INCOMPLETE_STRING, Composer.Receiver.FirstName, Composer.Receiver.LastName, new Date().dateFormat(Date.patterns.NiceDisplay));
+						$("#directContactNotesDiv").hide("fast");
+						Composer.buildIncompleteContactNotes();
+						$("#incompleteContactNotesDiv").show("fast");
+						
+						$("#notificationOptions").show("fast");
+						break;
+					case DIRECT_CONTACT_PHONE:
+						$("#incompleteContactNotesDiv").hide("fast");
+						var formattedString = String.format(COMPOSER_DIRECT_CONTACT_PHONE_STRING, Composer.Receiver.FirstName, Composer.Receiver.LastName, new Date().dateFormat(Date.patterns.ShortDatePattern), new Date().dateFormat(Date.patterns.ShortTimePattern));
+						$("#directContactNotes").text(formattedString);
+						$("#notificationOptions").hide("fast");
+						$("#directContactNotesDiv").hide();
+						$("#phoneContactCell").append($("#directContactNotesDiv"));
+						$("#directContactNotesDiv").show("fast");
+						break;
+					case DIRECT_CONTACT_FACETOFACE:
+						$("#incompleteContactNotesDiv").hide("fast");
+						var formattedString = String.format(COMPOSER_DIRECT_CONTACT_FACETOFACE_STRING, Composer.Receiver.FirstName, Composer.Receiver.LastName, new Date().dateFormat(Date.patterns.ShortDatePattern), new Date().dateFormat(Date.patterns.ShortTimePattern));
+						$("#directContactNotes").text(formattedString);
+						$("#notificationOptions").hide("fast");
+						$("#directContactNotesDiv").hide();
+						$("#facetofaceContactCell").append($("#directContactNotesDiv"));
+						$("#directContactNotesDiv").show("fast");
+						break;
+					case CONTACT_NOTIFY:
+						$("#directContact").hide("fast");
+						$("#directContactNotesDiv").hide("fast");
+						$("#notificationOptions").show("fast");
+						Composer.buildIncompleteContactNotes();
+						$("#incompleteContactNotesDiv").show("fast");
+						break;
+					case CONTACT_NONREQ_FACETOFACE:
+						var formattedString = String.format(COMPOSER_DIRECT_CONTACT_FACETOFACE_STRING, Composer.Receiver.FirstName, Composer.Receiver.LastName, new Date().dateFormat(Date.patterns.ShortDatePattern), new Date().dateFormat(Date.patterns.ShortTimePattern));
+						$("#directContactNotes").text(formattedString);
+						$("#notificationOptions").hide("fast");
+						$("#nreqfacetofaceContactCell").append($("#directContactNotesDiv"));
+						$("#directContactNotesDiv").show("fast");
+						$("#incompleteContactNotesDiv").hide("fast");
+						break;
+					case CONTACT_NONREQ_PHONE:
+						var formattedString = String.format(COMPOSER_DIRECT_CONTACT_PHONE_STRING, Composer.Receiver.FirstName, Composer.Receiver.LastName, new Date().dateFormat(Date.patterns.ShortDatePattern), new Date().dateFormat(Date.patterns.ShortTimePattern));
+						$("#directContactNotes").text(formattedString);
+						$("#notificationOptions").hide("fast");
+						$("#nreqPhoneContactCell").append($("#directContactNotesDiv"));
+						$("#directContactNotesDiv").show("fast");
+						$("#incompleteContactNotesDiv").hide("fast");
+						break;
+					case DO_NOT_NOTIFY:
+						$("#notificationOptions").hide("fast");
+						$("#directContactNotesDiv").hide("fast");
+						$("#incompleteContactNotesDiv").hide("fast");
+
+						break;
+				}
+			}
+			Composer.validate();
+		}
+
+		///Modified: 2009-12-01, John Morgan
+		///		Altered to perform transport specific validation
+		Composer.validate = function() {
+			var valid = true;
+			var msg = " ";
+			var errors = new Array();
+			var tab0valid = true;
+			var tab1valid = true;
+			var tab2valid = true;
+
+			if (!Composer.Receiver) {
+				valid = false;
+				msg += "To field is blank.\n\r";
+				errors[errors.length] = $("<a href='#'  name='error1'>\"To\" field is blank.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(1); });
+				$("#notificationOptionsList").html("");
+				Composer.showErrorMark("tContact");
+				Composer.showErrorMark("txtTo");
+				tab1valid = false;
+			}
+			else {
+				Composer.hideErrorMark("tContact");
+				Composer.hideErrorMark("txtTo");
+			}
+			if ($("#ResultNotes").val() == "") {
+				valid = false;
+				msg += "No result notes provided.\n\r";
+				errors[errors.length] = $("<a href='#' name='error2'>No result notes provided.</a>")
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(2); });
+				Composer.showErrorMark("tResult");
+				Composer.showErrorMark("ResultNotes");
+				tab2valid = false;
+			}
+			else {
+				Composer.hideErrorMark("tResult");
+				Composer.hideErrorMark("ResultNotes");
+			}
+			if (!Composer.SelectedLevel) {
+				valid = false;
+				msg += "No level selected.\n\r";
+				errors[errors.length] = $("<a href='#' name='error0'>No level selected.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(0); });
+				Composer.showErrorMark("tLevel");
+				tab0valid = false;
+			}
+			else if (Composer.SelectedLevel.DirectContactRequired && !Composer.SelectedContactMethod) {
+				Composer.hideErrorMark("tLevel");
+				Composer.showErrorMark("tNotification");
+				Composer.showErrorMark("directContact");
+				valid = false;
+				msg += "Direct contact is required, but no method is selected.\n\r";
+				errors[errors.length] = $("<a href='#' name='error3'>Direct contact is required, but no method is selected.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+			}
+			else if (!Composer.SelectedContactMethod) {
+				Composer.hideErrorMark("tLevel");
+				Composer.showErrorMark("tNotification");
+				Composer.showErrorMark("anyContact");
+				valid = false;
+				msg += "No contact method is selected.\n\r";
+				errors[errors.length] = $("<a href='#' name='error3'>No contact method is selected.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+			}
+			else {
+				Composer.hideErrorMark("tLevel");
+				Composer.hideErrorMark("tNotification");
+				Composer.hideErrorMark("directContact");
+			}
+
+			if (Composer.SelectedContactMethod == CONTACT_NOTIFY) {
+				var checked = false;
+				$("#notificationOptionsList input").each(function(index, item) {
+					if (item.checked == true) {
+						checked = true;
+						Composer.hideErrorMark("notificationOptionsList");
+					}
+				});
+				if (checked == false) {
+					valid = false;
+					Composer.showErrorMark("notificationOptionsList");
+					msg += "You must select notification method.\n\r";
+					errors[errors.length] = $("<a href='#' name='error3'>Followup notification selection is required.</a>");
+					//$(errors[errors.length]).bind("click", function() { Composer.openTab(3); });
+				}
+			}
+			else {
+				Composer.hideErrorMark("notificationOptionsList");
+			}
+
+			if (Composer.SelectedContactMethod == CONTACT_NOTIFY || Composer.SelectedContactMethod == DIRECT_CONTACT_INCOMPLETE) {
+				var requiredNotificationFields = new Array();
+				var transportSelected = false;
+				$(transportInfo).each(function(i, item) {
+					$("#notificationOptionsList input").each(function(l, checkbox) {
+						if ($(checkbox).attr("checked") == true && checkbox.id == item.transportName) {
+							transportSelected = true;
+						}
+					});
+
+
+					$(item.fields).each(function(j, fld) {
+						Composer.hideErrorMark(fld.name);
+						if (transportSelected == true) {
+							if (fld.required == true) {
+								var fieldFound = false;
+								$(requiredNotificationFields).each(function(k, f) {
+									if (f.name == fld.name) {
+										fieldFound = true;
+									}
+								});
+								if (fieldFound == false) {
+									requiredNotificationFields[requiredNotificationFields.length] = fld;
+								}
+							}
+						}
+					});
+				});
+
+				$(requiredNotificationFields).each(function(i, field) {
+					if ($('#' + field.name).text() == '' || $('#' + field.name).text() == 'Please enter your contact information.' || $('#' + field.name).text() == 'Please note attempts you have made to directly contact the provider.') {
+						valid = false;
+						Composer.showErrorMark(field.name);
+						msg += "You must provide " + field.displayName;
+						errors[errors.length] = $("<a href='#' name='error3'>" + field.displayName + " is required.</a>");
+						//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+					}
+				});
+			}
+
+			if (Composer.SelectedContactMethod == DIRECT_CONTACT_INCOMPLETE && Composer.userHasContactInfo === false) {
+				valid = false;
+				msg += "Reciever has no contact info defined.\n\r";
+				errors[errors.length] = $("<a href='#' name='error3'>System can not contact provider.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+
+			}
+
+			if (Composer.SelectedContactMethod == CONTACT_NOTIFY && Composer.userHasContactInfo === false) {
+				valid = false;
+				msg += "Reciever has no contact info defined.\n\r";
+				errors[errors.length] = $("<a href='#' name='error3'>System can not conact provider.</a>");
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+			}
+			if (Composer.wasCommunicationTabVisited == false) {
+				valid = false;
+				errors[errors.length] = "<a href='#' name='error3'>Please verify communication selections.</a>";
+				//$(errors[errors.length]).bind("click", function(e) { Composer.openTab(3); });
+			}
+			if (valid == true) {
+				$("#vErrors").addClass("hidden");
+				$("#vErrors").html("");
+				$("#btnSubmit").removeAttr("disabled");
+			}
+			else {
+				var errorhtml = $("<ul></ul>");
+				for (var i = 0; i < errors.length; i++) {
+					var li = $("<li></li>");
+					$(li).append($(errors[i]));
+					$(errorhtml).append(li);
+				}
+				$("#vErrors").html("");
+				$("#vErrors").append(errorhtml);
+				$("#btnSubmit").attr("disabled", "disabled");
+				$("#vErrors").addClass("ui-widget ui-state-error");
+				$("#vErrors").removeClass("hidden");
+				$('a[name="error0"]').unbind("click");
+				$('a[name="error1"]').unbind("click");
+				$('a[name="error2"]').unbind("click");
+				$('a[name="error3"]').unbind("click");
+				$('a[name="error0"]').bind("click", function() { Composer.openTab(0); });
+				$('a[name="error1"]').bind("click", function() { Composer.openTab(1); });
+				$('a[name="error2"]').bind("click", function() { Composer.openTab(2); });
+				$('a[name="error3"]').bind("click", function() { Composer.openTab(3); });
+			}
+			//$("#btnSubmit")[0].disabled = !valid;
+			if (tab0valid == true) {
+				$("#tabs").tabs("enable", 1);
+			}
+			if (tab1valid == true) {
+				$("#tabs").tabs("enable", 2);
+			}
+			if (tab2valid == true) {
+				$("#tabs").tabs("enable", 3);
+			}
+
+			Composer.Debug.writeLine("Valid = " + valid + msg);
+			return valid;
+		}
+
+		Composer.showErrorMark = function(objectId) {
+			$('#' + objectId + " + span").removeClass("hidden");
+		}
+
+		Composer.hideErrorMark = function(objectId) {
+			var alertSpan = "<span class='errortext'>&nbsp*</span>";
+			$('#' + objectId + " + span").addClass("hidden");
+		}
+
+		Composer.buildContext = function(index, field) {
+			Composer.context = {};
+			$.each(Composer.contextTemplate.Fields, Composer.processContextField);
+		}
+		Composer.processContextField = function(index, fieldInfo) {
+			var inputElem = $("#contextTableBody #" + fieldInfo.Name);
+			if (fieldInfo.Enabled) {
+				Composer.context[fieldInfo.Name] = {};
+				Composer.context[fieldInfo.Name].name = fieldInfo.Name;
+				Composer.context[fieldInfo.Name].value = $("#contextTableBody #" + fieldInfo.Name).val();
+				Composer.context[fieldInfo.Name].displayName = fieldInfo.DisplayName;
+			}
+		}
+
+		//Save Result
+		//Get Receiver User's level transports
+		//Populate further notification field with level transports
+		//Create acknowledgment if face to face or phone
+		//Populate notes for direct contact
+		Composer.submitResult = function() {
+
+			if (Composer.validate() == true) {
+				$('#btnSubmit').attr('disabled', 'disabled');
+				if (Composer.SelectedContactMethod == DIRECT_CONTACT_INCOMPLETE && Composer.NoContactOK == false) {
+					parent.Manager.showAlert('Page and/or Email will be submitted. This critical result requires that you communicate face to face or over the phone.<br /><input type="button" value="Close" onclick="Manager.closeAlert()" style="float:right" />');
+				}
+
+				Composer.buildContext();
+
+				var result = {
+					Message: $("#ResultNotes").val(),
+					Level: {
+						Name: Composer.SelectedLevel.Name,
+						Uuid: Composer.SelectedLevel.Uuid
+					},
+					Receiver: Composer.Receiver,
+					Sender: Composer.Sender,
+					SenderProxy: Composer.ProxiedUser,
+					Context: [{
+						ContextType: Composer.contextType,
+						JsonValue: $.toJSON(Composer.context),
+						PatientKey: Composer.context["MRN"].value, 	//TODO: Add key names to context type, and add dynamically
+						ExamKey: Composer.context["Accession"].value
+}]
+					};
+
+					var resultJson = $.toJSON(result);
+
+					CRManager.WebClient.createResult(resultJson, Composer.onSubmitResultSuccess, null);
+				}
+			}
+
+			Composer.manualNotificationOk = function() {
+				Composer.NoContactOK = true;
+				Composer.submitResult();
+			}
+
+			Composer.onSubmitResultSuccess = function(message) {
+
+				Composer.Message = message;
+				Composer.MessageUuid = message.Uuid;
+
+				if (Composer.SelectedContactMethod == DIRECT_CONTACT_PHONE || Composer.SelectedContactMethod == DIRECT_CONTACT_FACETOFACE ||
+				Composer.SelectedContactMethod == CONTACT_NONREQ_FACETOFACE || Composer.SelectedContactMethod == CONTACT_NONREQ_PHONE) {
+					var notes = $.toJSON($("#directContactNotes").val());
+					CRManager.WebClient.createAcknowledgment(message.Uuid, message.Sender.UserName, notes, Composer.onCreateAcknowledgementSuccess);
+				}
+				else if (Composer.SelectedContactMethod == DIRECT_CONTACT_INCOMPLETE || Composer.SelectedContactMethod == CONTACT_NOTIFY) {
+					var notes = "";
+					var callbackInfo = "";
+					if ($("#callbackInformation").length > 0) {
+						callbackInfo = $("#callbackInformation").val();
+						Composer.setCallbackCookie(callbackInfo);
+					}
+					var comments = "";
+					if ($("#incompleteContactNotes").length > 0) {
+						comments = ""; //$("#incompleteContactNotes").val();
+					}
+					notes = escape(callbackInfo) + "\r\n" + escape(comments);
+					$("#notificationOptionsList input").each(function(index, listItem) {
+						if (listItem.checked == true) {
+							if (listItem.id == MANUAL_TRANSPORT) {
+								var notification = {};
+								notification.Result = message;
+								notification.UserTransport = Composer.Receiver.Transports;
+								notification.State = MANUAL_TRANSPORT; //TODO: MANUAL_TRANSPORT is NOT a notification state...
+								notification.Notes = notes;
+								CRManager.WebClient.createResultNotification(notification, listItem.id, Composer.onCreateResultNotificationSuccess);
+							}
+							else if (listItem.id == 'chkNoNotification') {
+								Composer.onCreateResultNotificationSuccess();
+							}
+							else {
+								var notification = {};
+								notification.Result = message;
+								notification.UserTransport = Composer.Receiver.Transports;
+								notification.State = "New"; //TODO: "New" should not be defined inline...
+								notification.Notes = notes;
+								CRManager.WebClient.createResultNotification(notification, listItem.id, Composer.onCreateResultNotificationSuccess);
+							}
+						}
+					});
+				}
+				else if (Composer.SelectedContactMethod == DO_NOT_NOTIFY) {
+					Composer.onCreateResultNotificationSuccess();
+				}
+				Composer.context = null;
+				//TODO: Send Notifications
+
+			}
+
+			//Modified: 2009-08-19, John Morgan, Handle create CC notification
+			//Modified: 2010-06-14, John Morgan, Added text to Notes stating that this is a CC notification.
+			Composer.onCreateResultNotificationSuccess = function(data) {
+				if (Composer.Cc != null) {
+					var notification = {};
+					notification.Result = Composer.Message;
+					notification.Result.Receiver = Composer.Cc;
+					notification.UserTransport = Composer.Cc.Transports;
+					notification.Notes = $.toJSON($("#incompleteContactNotes").val() + " - " + $("#callbackInformation").val() + "<br /><b> This is a CC Notification, you will not be able to acknowledge the result.</b>");
+					notification.State = "New";
+					Composer.Cc = null;
+					CRManager.WebClient.createResultNotification(notification, Composer.cCTransport, Composer.onCreateResultNotificationSuccess);
+				}
+				else {
+					CRManager.openResultDetail(Composer.MessageUuid);
+					CRManager.closeModal("composeDiv");
+				}
+			}
+
+			Composer.onCreateAcknowledgementSuccess = function(message) {
+				CRManager.openResultDetail(Composer.MessageUuid);
+				CRManager.closeModal("composeDiv");
+			}
+
+			Composer.cancelResult = function() {
+				parent.Manager.closeModal("composeDiv");
+			}
+
+			Composer.Debug = {};
+
+			Composer.Debug.write = function(msg) {
+				//$("#textDebug").text(msg + $("#textDebug").val());
+			}
+
+			Composer.Debug.writeLine = function(msg) {
+				var date = new Date();
+				Composer.Debug.write(date + ": " + msg + "\r\n");
+			}
+
+			Composer.isUserMissingMandatoryTransport = function() {
+				var missingTransportsList = "";
+				$.each(Composer.SelectedLevel.MandatoryTransports, function(lIndex, lTransport) {
+					var transportFound = false;
+					$.each(Composer.Receiver.Transports, function(rIndex, rTransport) {
+						if (lTransport.Name == rTransport.Transport.Name && rTransport.Address != "") {
+							transportFound = true;
+						}
+						else if (lTransport.Name == MANUAL_TRANSPORT) {
+							transportFound = true;
+						}
+					});
+					if (transportFound == false) {
+						missingTransportsList += "<li>" + lTransport.FriendlyName + "</li>";
+					}
+				});
+				if (missingTransportsList == '')
+					return null;
+				else
+					return missingTransportsList;
+			}
+
+			//Modified: 2010-02-28, Jeremy Richardson, added check for non-mandatory transports to confirm user's address is not null.
+			//			This was already being done in mandatory transports.  Future Refactoring: Parsing logic should be separated from operational logic.
+			Composer.buildNotificationOptions = function() {
+				$('#notificationOptions').hide();
+				var mandatoryTransportRequired = false;
+				var mandatoryTransportFound = false;
+				var mandatoryTransportList = "";
+				if (Composer.SelectedLevel && Composer.SelectedLevel.MandatoryTransports.length > 0) {
+					mandatoryTransportRequired = true;
+				}
+				$("#notificationOptionsList").html("");
+
+				if (Composer.SelectedLevel && Composer.Receiver) {
+					var contactHtml = Composer.buildContactList(Composer.Receiver);
+					var anyConfiguredContacts = false;
+					if (Composer.SelectedLevel.MandatoryTransports.length > 0) {
+						$('#trDoNotNotify').addClass('hidden');
+					}
+					else {
+						$('#trDoNotNotify').removeClass('hidden');
+					}
+					if (Composer.SelectedLevel.MandatoryTransports.length > 0) {
+						$('#requiredTransportMessage').removeClass('hidden');
+					}
+					else {
+						$('#requiredTransportMessage').addClass('hidden');
+					}
+					var missingTransportHtml = "";
+					$.each(Composer.SelectedLevel.MandatoryTransports, function(index, mTransport) {
+
+						if (mTransport.Name != MANUAL_TRANSPORT) {
+							var transportConfigured = true;
+							$.each(Composer.Receiver.Transports, function(k, transport) {
+								if (transport.Transport.Name != MANUAL_TRANSPORT) {
+
+									if (transport.Transport.Name == mTransport.Name) {
+										if (transport.Address == "") {
+											transportConfigured = false;
+										}
+									}
+								}
+							});
+							var html = "<li class='notificationOption'>{0}<input type='checkbox' checked='checked' disabled='true' name='notificationGroup' onclick='Composer.transportSelected()' id='{1}'/>"
+							if (transportConfigured == false) {
+								html += "<span style='color: red'> - Receiver does not have this transport configured.</span>";
+								missingTransportHtml += "<ol>" + mTransport.FriendlyName + "</ol>";
+							}
+							html += "</li>";
+							$("#notificationOptionsList").append(Utility.format(html, mTransport.FriendlyName, mTransport.Name));
+						}
+					});
+					if (missingTransportHtml != "") {
+						Composer.Alert("Provider does not have the required contact information for this level.  System requires: <ol>" +
+				            missingTransportHtml + "</ol><br /><input type='button' value='Close' onclick='Manager.closeAlert()' />");
+					}
+
+
+					$.each(Composer.Receiver.Transports, function(index, transport) {
+
+						if (transport.Address != '') {
+							anyConfiguredContacts = true;
+						}
+						$.each(transport.Levels, function(lindex, level) {
+							if (Composer.SelectedLevel.Name == level.Name) {
+								if (transport.Transport.Name != MANUAL_TRANSPORT) {
+									var mandatoryTransport = false;
+									$.each(Composer.SelectedLevel.MandatoryTransports, function(index, item) {
+										if (item.Name != MANUAL_TRANSPORT) {
+											if (item.Name == transport.Transport.Name) {
+												mandatoryTransport = true;
+											}
+										}
+									});
+									if (mandatoryTransport == false) {
+										var html;
+										if (transport.Address != "") {
+											var isDefaultTransport = false;
+											$(Composer.defaultTransports).each(function(i, tran) {
+												if(transport.Transport.Name == tran)
+													isDefaultTransport = true;
+											});
+											if (isDefaultTransport == true)
+												html = "<li class='notificationOption'>{0}<input type='checkbox' checked='checked' name='notificationGroup' onclick='Composer.transportSelected()' id='{1}'/></li>";
+											else
+												html = "<li class='notificationOption'>{0}<input type='checkbox' name='notificationGroup' onclick='Composer.transportSelected()' id='{1}'/></li>";
+
+										}
+										else {				
+											html = "<li class='notificationOption'>{0}<input type='checkbox' name='notificationGroup' disabled='true' id='{1}'/><span class='textHint'> ( Not Available for this Receiver ) </span></li>";
+										}
+										html = Utility.format(html, transport.Transport.FriendlyName, transport.Transport.Name);
+										$("#notificationOptionsList").append(html);
+									}
+								}
+							}
+						});
+					});
+
+				}
+				$("#contactInfo").html(contactHtml);
+				if (Composer.Receiver) {
+					$(Composer.Receiver.Transports).each(function(index, item) {
+						if (item.Address != "" && item.Address != null) {
+							Composer.userHasContactInfo = true;
+						}
+					});
+					if (Composer.userHasContactInfo === false) {
+						$("#notificationOptionsList").html("");
+						$("#notificationOptionsList").append("<li style='color: red; font-weight: bold;'>Provider has no contact information listed!  Provider must be contacted directly.</li>");
+					}
+				}
+			}
+
+			Composer.transportSelected = function() {
+				Composer.buildIncompleteContactNotes();
+				Composer.validate();
+			}
+
+			Composer.Alert = function(message) {
+				parent.Manager.showAlert(message);
+			}
+
+			Composer.displayTextBox = function(id, src, id2) {
+				$("#" + id).removeClass("hidden");
+				$("#" + id).val("");
+				$("#" + src).html("");
+				if (id2) $("#" + id2).removeClass("hidden");
+			}
+
+			Composer.launchCallback = function() {
+				window.open(Composer.callback);
+			}
+
+			Composer.openTab = function(tabIndex) {
+				$("#tabs").tabs('option', 'selected', tabIndex);
+				Composer.onTabSelect(null, $("#tabs"));
+			}
+
+			Composer.AdvanceWizard = function() {
+				var active = $("#tabs").tabs('option', 'selected');
+				Composer.onTabSelect(null, $("#tabs"));
+				active++;
+				$("#tabs").tabs('option', 'selected', active);
+			}
+
+			Composer.ReverseWizard = function() {
+				var active = $("#tabs").tabs('option', 'selected');
+				Composer.onTabSelect(null, $("#tabs"));
+				active--;
+				$("#tabs").tabs('option', 'selected', active);
+			}
+
+			Composer.onTabSelect = function(event, ui) {
+				Composer.buildContextValid();
+				if (ui.index == 3) {
+					Composer.wasCommunicationTabVisited = true;
+					$("#btnNext").attr("disabled", "disabled");
+				}
+				else {
+					$("#btnNext").removeAttr("disabled");
+
+				}
+				if (Composer.Receiver) {
+					Composer.onContactSelected();
+				}
+			}
+
+			Composer.onTabShown = function(event, ui) {
+				if (ui.index == 2) {
+					$('#ResultNotes').focus();
+				}
+				if (ui.index == 1) {
+					$('#txtTo').focus();
+				}
+			}
+
+			Composer.buildContextValid = function() {
+				var html = "<table style='border: none'><tr><td>{0}</td><td>{1}</td></tr><tr><td colspan='2' style='font-weight: bold'>{2}</td></tr><td>{3}</td><td>{4}</td></tr><td colspan='2' style='font-weight: bold'>{5}</td></tr>";
+				var mrn = $("#MRN").val();
+				var dob = $("#DOB").val();
+				var pName = $("#PatientName").val();
+				var acc = $("#Accession").val();
+				var examTime = $("#ExamTime").val();
+				var examDate = $("#ExamDate").val();
+				var examDesc = $("#ExamDescription").val();
+				html = Utility.format(html, mrn, dob, pName, acc, examTime, examDate, examDesc);
+
+				$("#vExam").html(html);
+
+				var message = $("#ResultNotes").val();
+				$("#vMessage").html(message);
+			}
+
+			Composer.findUser = function(target) {
+				var levelNames = new Array();
+				$(CRManager.Levels).each(function(index, item) {
+					levelNames[levelNames.length] = item.Name;
+				});
+				var confitmationMessage = "";
+				$(CRManager.SystemSettings).each(function(index, item) {
+					if (item.EntryKey == "AccountConfirmationMessage") {
+						confitmationMessage = item.Value;
+					}
+				});
+				var createUserInit = false;
+				if (target == "TO") {
+					createUserInit = parent.CreateUser.initialize(Composer.onUserCreated, levelNames, CRManager, confitmationMessage, $('#txtTo').val());
+				}
+				if (target == "CC") {
+					createUserInit = parent.CreateUser.initialize(Composer.onCCUserCreated, levelNames, CRManager, confitmationMessage, $('#txtCc').val());
+				}
+				if (createUserInit == true) {
+					parent.CreateUser.showCreateUserDialog();
+				}
+			}
+
+			Composer.onUserCreated = function(data) {
+				if (data.Enabled == false) {
+					CRManager.showAlert("This user has an ANCR account, but it has been disabled.  Please contact your system administrator if you believe this to be in error.<br /><input type='button' value='Close' onclick='Manager.closeAlert()' style='float:right' />");
+					$('#txtTo').val('');
+				}
+				else {
+					$('#txtTo').val(data.FirstName + " " + data.LastName + "(" + data.UserName + ")");
+					Composer.onToSelected(null);
+					CRManager.WebClient.getAllUsers(Composer.onGetUsersSuccess);
+				}
+			}
+			Composer.onCCUserCreated = function(data) {
+				if (data.Enabled == false) {
+					CRManager.showAlert("This user has an ANCR account, but it has been disabled.  Please contact your system administrator if you believe this to be in error.<br /><input type='button' value='Close' onclick='Manager.closeAlert()' style='float:right' />");
+					$('#txtCc').val('');
+				}
+				else {
+					$('#txtCc').val(data.FirstName + " " + data.LastName + "(" + data.UserName + ")");
+					Composer.onCcSelected(null);
+					CRManager.WebClient.getAllUsers(Composer.onGetUsersSuccess);
+				}
+			}
+
+			Composer.onGetUsersSuccess = function(data) {
+//				CRManager.AutocompleteReceivers = new Array();
+//				CRManager.AutocompleteSenders = new Array();
+//				CRManager.Users = data;
+//				var userList = new Array();
+//				$.each(CRManager.Users, function(index, user) {
+
+//					userList[index] = user.LastName + ", " + user.FirstName + " (" + user.UserName + ")";
+
+//					$.each(user.Roles, function(roleIndex, role) {
+//						if (role.Name == CRManager.RECEIVER_ROLE || role.Name == CRManager.ROLE_RECEIVER)
+//							CRManager.AutocompleteReceivers[CRManager.AutocompleteReceivers.length] = userList[index];
+
+//						if (role.Name == CRManager.SENDER_ROLE || role.Name == CRManager.ROLE_SENDER)
+//							CRManager.AutocompleteSenders[CRManager.AutocompleteSenders.length] = userList[index];
+//					});
+//				});
+//				CRManager.AutocompleteReceivers.sort();
+//				CRManager.AutocompleteSenders.sort();
+			}
+			Composer.contactNotesSelected = function() {
+				if (Composer.contactAttemptsEdited == false) {
+					$('#incompleteContactNotes').val('');
+					$('#incompleteContactNotes').removeClass('textareahint');
+					Composer.contactAttemptsEdited = true;
+				}
+				Composer.validate();
+			}
+
+			Composer.callbackInfoSelected = function() {
+				if (Composer.contactInfoEdited == false && $("#callbackInformation").val() == "" ) {
+					$('#callbackInformation').val('');
+					$('#callbackInformation').removeClass('textareahint');
+					Composer.contactInfoEdited = true;
+				}
+				Composer.validate();
+			}
+
+			Composer.setCallbackCookie = function(callbackInfo) {
+				var expire = new Date();
+				expire.setFullYear(2040, 1, 1);
+				document.cookie = "ANCRCallbackInfo=" + escape(callbackInfo) + "; expires=" + expire.toGMTString() + ";";
+			}
+
+			Composer.readCallbackCookie = function() {
+			    var nameEQ = "ANCRCallbackInfo=";
+			    var ca = document.cookie.split(';');
+			    for (var i = 0; i < ca.length; i++) {
+			        var c = ca[i];
+			        while (c.charAt(0) == ' ')
+			            c = c.substring(1, c.length);
+			        if (c.indexOf(nameEQ) == 0) {
+			            var val = unescape(c.substring(nameEQ.length, c.length));
+			            return val;
+			        }
+
+			    }
+			    return "";
+			}
+
+	</script>
+
+	<style type="text/css">
+		.button
+		{
+			width:120px;
+		}
+		.levelSelect
+		{
+			background-color: #F1F1F1;
+			padding: 1px 0px 1px 1px;
+		}
+		/* Column Settings */.colmask
+		{
+			position: relative;
+			clear: both;
+			float: left;
+			width: 100%;
+			overflow: hidden;
+			min-height: 400px;		
+		}
+		
+		.colright, .colleft
+		{
+			float: left;
+			position: relative;
+			width: 100%;
+		}
+		.col1, .col2
+		{
+			float: left;
+			position: relative;
+			padding: 0 0 1em 0;
+		}
+		.errortext
+		{
+			color: Red;
+		}
+		.textareahint
+		{
+			font-style: italic;
+			color: Gray;
+		}
+		.rightmenu
+		{
+			/*background: #eee;*/
+			background: #fff;
+		}
+		.rightmenu .colleft
+		{
+			background: #fff;
+		}
+		.rightmenu .col1
+		{
+			width: 73%;
+		}
+		.rightmenu .col2
+		{
+			width: 25%;
+			float: right;
+		}
+		#footer
+		{
+			clear: both;
+			float: left;
+			width: 100%;
+			padding-top: 3px;
+		}
+
+	</style>
+</head>
+<body>
+	<!--<textarea id="textDebug" cols="80" rows="4" class="hidden"></textarea>-->
+	<div class="colmask rightmenu">
+		<div class="colleft">
+			<div class="col1">
+				<div id="tabs">
+					<ul>
+						<li><a href="#levels"><span id="tLevel">Level</span><span class="errortext hidden">*</span></a></li>
+						<li><a href="#ContactTab"><span id="tContact">Contact</span><span class="errortext hidden">*</span></a></li>
+						<li><a href="#ContextTab"><span id="tResult">Result</span><span class="errortext hidden">*</span></a></li>
+						<li><a href="#NotificationTab"><span id="tNotification">Communication Options</span><span
+							class="errortext hidden">*</span></a></li>
+					</ul>
+					<div id="ContactTab">
+						<table class="noBorder">
+							<tbody>
+								<tr>
+									<td class="field" style='width: 50px;'>
+										From
+									</td>
+									<td>
+										<span id="spanFrom"></span>
+									</td>
+								</tr>
+								<tr>
+									<td class="field" style='width: 50px;'>
+										To
+									</td>
+									<td>
+										<input id="txtTo" type="text" value="" size="50" /><span class="errortext hidden">*</span><a
+											href="#" id="hrefTo" onclick="Composer.displayTextBox('txtTo', 'hrefTo', 'lookupExtension');"></a>
+                                        <span id="lookupExtension">
+                                        </span>
+									</td>
+								</tr>
+								<tr>
+									<td class="field" style='width: 50px;'>
+									</td>
+									<td>
+										Enter the provider's name above: <i>lastname, firstname</i><br />
+										If the provider's name/email are not displayed in the list:<br />
+										<a href="" id="A2" onclick="Composer.findUser('TO');return false;">click here to add
+											the provider from the Partners Paging Directory</a>
+									</td>
+								</tr>
+								<tr>
+									<td colspan='2'>
+										&nbsp;
+									</td>
+								</tr>
+								<tr>
+									<td class="field" style='width: 50px;'>
+										Cc
+									</td>
+									<td>
+										<input id="txtCc" type="text" value="" size="50" /><a href="#" id="hrefCc" onclick="Composer.displayTextBox('txtCc', 'hrefCc')"></a>
+									</td>
+								</tr>
+								<tr>
+									<td class="field" style='width: 50px;'>
+									</td>
+									<td>
+										Enter the provider's name above: <i>lastname, firstname</i><br />
+										If the provider's name/email are not displayed in the list:<br />
+										<a href="" id="A1" onclick="Composer.findUser('CC');return false;">click here to add
+											the provider from the Partners Paging Directory</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="ContextTab">
+						<h2>
+							Context</h2>
+						<table id="contextTable">
+							<tbody id="contextTableBody">
+							</tbody>
+						</table>
+						<h2 id='tdCritFindings'>
+							Enter Critical Findings Description Below *</h2>
+						<table>
+							<tbody>
+								<!--<tr><td><textarea cols="" rows="5" id="ResultNotes" class="textHint" onclick="">...Enter Result Here...</textarea></td></tr>-->
+								<tr>
+									<td>
+										<textarea cols="" rows="5" id="ResultNotes"></textarea><span
+											class="errortext hidden">*</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div id="divFind" style="padding: 6px 0px 6px 0px"></div>
+						<span id="callbackInfo" class="hidden">A link to the relevant exam and report will be
+							included with this alert: <a id="applicationAnchor" onclick="Composer.launchCallback();">
+							</a></span>
+					</div>
+					<div id="levels">
+						<table id="levelTable">
+							<tbody id="levelTableBody">
+							</tbody>
+						</table>
+					</div>
+					<div id="NotificationTab">
+						<div id="directContact" class="hidden">
+							<h2>
+								Direct Contact - <span class="emphasis">selected alert level requires direct communication</span><span
+									class="errortext hidden">*</span></h2>
+							<table>
+								<tbody>
+									<tr>
+										<td class="field" style="font-weight: bold; width:30%">
+											contact provider
+										</td>
+										<td id="incompleteContactCell" style="font-weight: bold">
+											<input name="directContactRadioGroup" id="incomplete" type="radio" onclick="Composer.onContactSelected(event);" />
+											Use ANCR to notify the provider
+										</td>
+									</tr>
+									<tr>
+										<td class="field">
+											Acknowledge:&nbsp;face&nbsp;to&nbsp;face
+										</td>
+										<td id="facetofaceContactCell">
+											<input name="directContactRadioGroup" id="facetoface" type="radio" onclick="Composer.onContactSelected(event);" />
+											I have already communicated with the provider.
+										</td>
+									</tr>
+									<tr>
+										<td class="field">
+											Acknowledge:&nbsp;phone
+										</td>
+										<td id="phoneContactCell">
+											<input name="directContactRadioGroup" id="phone" type="radio" onclick="Composer.onContactSelected(event);" />
+											I have already communicated with the provider.
+										</td>
+									</tr>
+
+								</tbody>
+							</table>
+							<div id="directContactNotesDiv" class="hidden">							
+								<h4>
+									Notes</h4>
+								<textarea cols="" rows="4" id="directContactNotes"></textarea><span class="errortext hidden">*</span>
+							</div>
+						</div>
+
+						<div id="anyContact" class="hidden">
+							<h2>
+								Communication Options<span class="errortext hidden">*</span></h2>
+							<table>
+								<tr>
+									<td class="field" style="font-weight: bold; width:30%">
+										send notification
+									</td>
+									<td id='notifyReceiverCell' style="font-weight: bold">
+										<input name="contactRadioGroup" id="notify" type="radio" onclick="Composer.onContactSelected(event);" />
+										Use ANCR to notify provider.
+									</td>
+								</tr>
+								<tr>
+									<td class="field">
+										Acknowledge:&nbsp;face&nbsp;to&nbsp;face
+									</td>
+									<td id="nreqfacetofaceContactCell">
+										<input name="contactRadioGroup" id="nreqfacetoface" type="radio" onclick="Composer.onContactSelected(event);" />
+										I have already communicated with the provider.
+									</td>
+								</tr>
+								<tr>
+									<td class="field">
+										Acknowledge:&nbsp;phone
+									</td>
+									<td id="nreqPhoneContactCell">
+										<input name="contactRadioGroup" id="nreqphone" type="radio" onclick="Composer.onContactSelected(event);" />
+										I have already communicated with the provider.
+									</td>
+								</tr>
+								<tr class='hidden' id='trDoNotNotify'>
+									<td class="field">
+										do not notify provider
+									</td>
+									<td>
+										<input name="contactRadioGroup" id="donotnotify" type="radio" onclick="Composer.onContactSelected(event);" />
+										I do not wish to send a notification for this result.
+									</td>
+								</tr>
+							</table>
+						</div>
+
+						<div id="notificationOptions" class="hidden">
+							<div id="followUpNotificationDiv">
+								<h2>
+									ANCR will notify&nbsp;<span id='receverName'></span>&nbsp;with selected option.<span
+										class="errortext hidden">*</span></h2>
+							</div>
+							<span id="requiredTransportMessage">The grayed-out selection is the required mode of communication. 
+								You may also send the alert via the optional mode by clicking on that box.</span>
+							<ul id="notificationOptionsList">
+							</ul>
+						</div>
+						<div id="incompleteContactNotesDiv" class="hidden">
+<!--								<h4>Callback Information</h4>
+								<textarea class="textareahint" cols="" rows="2" id="callbackInformation" onkeypress="Composer.callbackInfoSelected();" onfocus="Composer.callbackInfoSelected();">Please enter your contact information.</textarea>
+								<span class="errortext hidden">*</span>
+								<h4>Comments</h4>
+								<textarea class="textareahint" cols="" rows="2" id="incompleteContactNotes" onkeypress="Composer.contactNotesSelected();" onfocus="Composer.contactNotesSelected();">Please note attempts you have made to directly contact the provider.</textarea>
+								<span class="errortext hidden">*</span>-->
+						</div>
+					</div>
+				</div>				
+			</div>   			
+			<div id="verify" class="col2">	
+			    <div></div>		
+				<div id="levelVerify">				    
+					<h4>
+						Level</h4>
+					<div id="vLevel" style="width: 100%; height: 20px;"></div>															
+				</div>
+				<div></div>
+				<div id="contactVerify">				    				
+					<h4>				
+						To</h4>
+					<span id="vTo"></span>
+					<div id="contactInfo">
+					</div>
+					<div></div>
+					<div id="ccField" class="hidden">
+						<h4>
+							CC</h4>
+						<span id="vCC"></span>
+						<div id='ccContact'>
+						</div>
+					</div>
+				</div>
+				<div></div>
+				<div id="contextVerify">
+					<h4>
+						Message</h4>
+					<div id="vExam">
+					</div>
+					<div id="vMessage" style="border: solid 1px black">
+					</div>
+				</div>
+				<div id="notificationVerify">
+					<h4>
+						Notification</h4>
+					<div id="vNotification">
+						After speaking to provider, please acknowledge your communication in ANCR.</div>
+				</div>
+				<div id="vErrors" class="hidden">
+				</div>
+			</div>
+		</div>
+	</div>
+	<br />
+	<p style="text-align:center; background-color:White;">
+		<input type="button" id="btnPrev" class="button" onclick="Composer.ReverseWizard();" value="Previous" />
+		<input type="button" id="btnNext" class="button" onclick="Composer.AdvanceWizard();" value="Next" />
+	</p>
+	<hr />
+	<div id="footer">
+		<p style="text-align:center">			
+			<input type="button" id="btnSubmit" class="button" value="Submit" disabled="disabled" onclick="parent.showDashboard();Composer.submitResult();" />
+			<input type="button" id="btnCancel" class="button" value="Cancel" onclick="parent.showDashboard();Composer.cancelResult();" />			
+		</p>
+	</div>
+	<div style="float:left; color: Red">* - Required Field</div>
+</body>
+</html>

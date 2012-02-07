@@ -1,0 +1,2 @@
+﻿http://www.pidder.com/pidcrypt/
+http://www.pidder.com/pidcrypt/?page=base64

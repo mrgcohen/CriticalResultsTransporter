@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="23682dce-6333-467b-bf33-592177be916a" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Management.xsd" MetadataType="Schema" ID="be846311-c475-4f01-89a1-72e049ad436c" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd0" />
+    <MetadataFile FileName="Management1.xsd" MetadataType="Schema" ID="bff0916e-3f6d-45bb-8c49-408ef810d238" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd1" />
+    <MetadataFile FileName="Management2.xsd" MetadataType="Schema" ID="96ed3c85-96b1-411a-be53-a34dca1879bc" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd2" />
+    <MetadataFile FileName="Management3.xsd" MetadataType="Schema" ID="fab45c09-f2eb-410e-b75e-6b668b1e5806" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd3" />
+    <MetadataFile FileName="Management4.xsd" MetadataType="Schema" ID="c73eedb0-2830-4199-a1c2-2bd4e87e683d" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd4" />
+    <MetadataFile FileName="Management5.xsd" MetadataType="Schema" ID="0d39f828-24d4-4c51-9eb4-5015b54ab0d9" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?xsd=xsd5" />
+    <MetadataFile FileName="ManagementService.wsdl" MetadataType="Wsdl" ID="6a54ab58-ae8e-48ac-b9d7-13793cf12fb9" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?wsdl" />
+    <MetadataFile FileName="Management.disco" MetadataType="Disco" ID="8c04c6cd-b75e-4dd9-aabd-980e751f53ec" SourceId="1" SourceUrl="http://localhost:50182/CriticalResultsTransporter/WebServices/Management.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

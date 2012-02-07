@@ -1,0 +1,26 @@
+﻿You have unacknowledged Critical Radiology Result Alerts.
+
+Please do not reply to this email.
+
+To view your alerts, please login to ANCR - Alert Notification of Critical Radiology Results: 
+	From inside the Partners Firewall, click here and you will be automatically logged into ANCR
+	http://ancr.partners.org/CriticalResultsTransporter/Web/Default.htm
+	
+	From outside the Partners firewall, click here to login to ANCR using your Partners user name and password
+	https://ancr.partners.org/CriticalResultsTransporter/Web/Default.htm
+
+Critical Radiology Result Alert Definitions:
+Red Alert: Immediately life threatening 
+(must be communicated within 60 minutes of discovery of findings)
+
+Orange Alert: Urgent
+(must be communicated within 3 hours of discovery of findings)
+
+Yellow Alert: Not immediately life threatening or urgent
+(must be communicated within 3 days of discovery of findings)
+
+To view the BWH policy for communication of critical/discrepant radiology results follow the link below:
+http://ancr.partners.org/criticalresultstransporter/web/resources/standards_table_final.pdf
+
+
+Any questions on the ANCR system please contact Allen Dufault (adufault@partners.org).

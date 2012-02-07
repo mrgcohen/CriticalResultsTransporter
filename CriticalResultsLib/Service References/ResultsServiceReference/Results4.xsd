@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://partners.org/brigham/criticalresults/" xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" elementFormDefault="qualified" targetNamespace="http://partners.org/brigham/criticalresults/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:50182/CriticalResultsTransporter/WebServices/Results.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:complexType name="ArrayOfUserEntry">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserEntry" nillable="true" type="tns:UserEntry" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserEntry" nillable="true" type="tns:ArrayOfUserEntry" />
+  <xs:complexType name="UserEntry">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Key" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="XmlValue" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserEntry" nillable="true" type="tns:UserEntry" />
+  <xs:complexType name="User">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Credentials" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsSystemAccount" type="xs:boolean" />
+      <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="MiddleName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProxiedUsers" nillable="true" type="tns:ArrayOfUser" />
+      <xs:element minOccurs="0" name="ProxyUsers" nillable="true" type="tns:ArrayOfUser" />
+      <xs:element minOccurs="0" name="Roles" nillable="true" type="tns:ArrayOfRole" />
+      <xs:element minOccurs="0" name="Tags" nillable="true" type="tns:ArrayOfUserResultTag" />
+      <xs:element minOccurs="0" name="Title" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Transports" nillable="true" type="tns:ArrayOfUserTransport" />
+      <xs:element minOccurs="0" name="UserEntries" nillable="true" type="tns:ArrayOfUserEntry" />
+      <xs:element minOccurs="0" name="UserName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="User" nillable="true" type="tns:User" />
+  <xs:complexType name="ArrayOfUser">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="User" nillable="true" type="tns:User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUser" nillable="true" type="tns:ArrayOfUser" />
+  <xs:complexType name="ArrayOfRole">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Role" nillable="true" type="tns:Role" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRole" nillable="true" type="tns:ArrayOfRole" />
+  <xs:complexType name="Role">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Users" nillable="true" type="tns:ArrayOfUser" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Role" nillable="true" type="tns:Role" />
+  <xs:complexType name="ArrayOfUserResultTag">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserResultTag" nillable="true" type="tns:UserResultTag" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserResultTag" nillable="true" type="tns:ArrayOfUserResultTag" />
+  <xs:complexType name="UserResultTag">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Result" nillable="true" type="tns:Result" />
+      <xs:element minOccurs="0" name="Tag" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserResultTag" nillable="true" type="tns:UserResultTag" />
+  <xs:complexType name="Result">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Acknowledgment" nillable="true" type="tns:ArrayOfAcknowledgment" />
+      <xs:element minOccurs="0" name="Context" nillable="true" type="tns:ArrayOfResultContext" />
+      <xs:element minOccurs="0" name="CreationTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EscalationTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EscalationTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Level" nillable="true" type="tns:Level" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Notifications" nillable="true" type="tns:ArrayOfNotification" />
+      <xs:element minOccurs="0" name="Rating" nillable="true" type="tns:ArrayOfRating" />
+      <xs:element minOccurs="0" name="Receiver" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="Sender" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="SenderProxy" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="Tags" nillable="true" type="tns:ArrayOfUserResultTag" />
+      <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Result" nillable="true" type="tns:Result" />
+  <xs:complexType name="ArrayOfAcknowledgment">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Acknowledgment" nillable="true" type="tns:Acknowledgment" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAcknowledgment" nillable="true" type="tns:ArrayOfAcknowledgment" />
+  <xs:complexType name="Acknowledgment">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CreationTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Result" nillable="true" type="tns:Result" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Acknowledgment" nillable="true" type="tns:Acknowledgment" />
+  <xs:complexType name="ArrayOfResultContext">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ResultContext" nillable="true" type="tns:ResultContext" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResultContext" nillable="true" type="tns:ArrayOfResultContext" />
+  <xs:complexType name="ResultContext">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ContextType" nillable="true" type="tns:ContextType" />
+      <xs:element minOccurs="0" name="JsonValue" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="XmlValue" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResultContext" nillable="true" type="tns:ResultContext" />
+  <xs:complexType name="ContextType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="JsonTemplate" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="NamespaceUri" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+      <xs:element minOccurs="0" name="XmlSchema" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ContextType" nillable="true" type="tns:ContextType" />
+  <xs:complexType name="Level">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ColorValue" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DirectContactRequired" type="xs:boolean" />
+      <xs:element minOccurs="0" name="DueTimeout" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EscalationTimeout" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="MandatoryTransports" nillable="true" type="tns:ArrayOfTransport" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Results" nillable="true" type="tns:ArrayOfResult" />
+      <xs:element minOccurs="0" name="ShortDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Transports" nillable="true" type="tns:ArrayOfTransport" />
+      <xs:element minOccurs="0" name="UserTransports" nillable="true" type="tns:ArrayOfUserTransport" />
+      <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Level" nillable="true" type="tns:Level" />
+  <xs:complexType name="ArrayOfTransport">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Transport" nillable="true" type="tns:Transport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTransport" nillable="true" type="tns:ArrayOfTransport" />
+  <xs:complexType name="Transport">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="FriendlyName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Levels" nillable="true" type="tns:ArrayOfLevel" />
+      <xs:element minOccurs="0" name="MandatoryLevels" nillable="true" type="tns:ArrayOfLevel" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="TransportUri" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserTransports" nillable="true" type="tns:ArrayOfUserTransport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Transport" nillable="true" type="tns:Transport" />
+  <xs:complexType name="ArrayOfLevel">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Level" nillable="true" type="tns:Level" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfLevel" nillable="true" type="tns:ArrayOfLevel" />
+  <xs:complexType name="ArrayOfUserTransport">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UserTransport" nillable="true" type="tns:UserTransport" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUserTransport" nillable="true" type="tns:ArrayOfUserTransport" />
+  <xs:complexType name="UserTransport">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Address" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Levels" nillable="true" type="tns:ArrayOfLevel" />
+      <xs:element minOccurs="0" name="Notifications" nillable="true" type="tns:ArrayOfNotification" />
+      <xs:element minOccurs="0" name="Transport" nillable="true" type="tns:Transport" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UserTransport" nillable="true" type="tns:UserTransport" />
+  <xs:complexType name="ArrayOfNotification">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Notification" nillable="true" type="tns:Notification" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotification" nillable="true" type="tns:ArrayOfNotification" />
+  <xs:complexType name="Notification">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CreationTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Result" nillable="true" type="tns:Result" />
+      <xs:element minOccurs="0" name="State" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="UserTransport" nillable="true" type="tns:UserTransport" />
+      <xs:element minOccurs="0" name="Uuid" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Notification" nillable="true" type="tns:Notification" />
+  <xs:complexType name="ArrayOfResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Result" nillable="true" type="tns:Result" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResult" nillable="true" type="tns:ArrayOfResult" />
+  <xs:complexType name="ArrayOfRating">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Rating" nillable="true" type="tns:Rating" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRating" nillable="true" type="tns:ArrayOfRating" />
+  <xs:complexType name="Rating">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Comments" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Result" nillable="true" type="tns:Result" />
+      <xs:element minOccurs="0" name="User" nillable="true" type="tns:User" />
+      <xs:element minOccurs="0" name="Value" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Rating" nillable="true" type="tns:Rating" />
+  <xs:complexType name="ArrayOfContextType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ContextType" nillable="true" type="tns:ContextType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfContextType" nillable="true" type="tns:ArrayOfContextType" />
+  <xs:complexType name="ArrayOfResultViewEntry">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ResultViewEntry" nillable="true" type="tns:ResultViewEntry" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfResultViewEntry" nillable="true" type="tns:ArrayOfResultViewEntry" />
+  <xs:complexType name="ResultViewEntry">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AcknowledgmentTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="AcknowledgmentTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ContextTypeName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ContextTypeUri" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="CreationTime" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="CreationTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EscalationTime" nillable="true" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="EscalationTimeFormatted" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EscalationTimeOffset" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="LevelUuid" type="ser:guid" />
+      <xs:element minOccurs="0" name="ReceiverName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ReceiverUserName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ResultContextJson" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ResultContextXml" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ResultMessage" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ResultUuid" type="ser:guid" />
+      <xs:element minOccurs="0" name="SenderName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SenderUserName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ResultViewEntry" nillable="true" type="tns:ResultViewEntry" />
+</xs:schema>

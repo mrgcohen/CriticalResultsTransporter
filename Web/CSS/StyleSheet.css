@@ -1,0 +1,291 @@
+﻿
+/*Tag Styles*/
+a
+{
+	color: #0066FF;
+	font-size: 11px;
+}
+body 
+{
+    font-family:Verdana;
+    font-size: 11px;
+    margin:5px;
+}
+caption
+{
+	
+}
+div
+{
+
+}
+fieldset
+{
+	color:black;
+	padding:5px, 5px, 5px, 5px;
+}
+h1
+{
+	text-align:center;
+	padding: 3px;
+	background-color:#305481;
+	color:White;
+	margin:4px;
+	font: x-large Arial;
+}
+h2
+{
+	padding:5px;
+	text-align:left;
+	font:bold 11px verdana;
+	background-color:#305481;
+	color:White;
+	margin:0px;
+}
+h3
+{
+	padding:5px;
+	text-align:left;
+	font:bold 11px verdana;
+	background-color:#305481;
+	color:White;
+	margin: 20px 0px 20px 0px;
+}
+h4
+{
+	background-color:#4C4C4C;
+	color:White;
+	font:bold 11px verdana;
+	padding: 3px;
+	margin-bottom:1px;
+}
+input, select, textarea
+{
+	font: 11px verdana;
+}
+table
+{
+    background-color: white;
+    border: 1px black solid;
+    border-collapse: collapse;
+    width:100%;   
+}
+textarea
+{
+	width:98%;
+}
+th {
+	padding:5px;
+	text-align:center;
+	font:bold 11px verdana;
+	background-color:#305481;
+	color:White;
+	border:solid 1px white;
+	height:10px;
+	cursor: default;
+	border: 1px solid #FFF
+}
+tr
+{
+    background-color: White;
+    margin: 1px;
+}
+td
+{
+	border-bottom:solid 1px white;
+	font:11px verdana;
+	padding:1px 2px 1px 2px;
+}
+/*Tag Classes*/
+a.header
+{
+	color: White;
+}
+a:hover
+{
+	color: #CC6600;
+}
+div.resultListMessage
+{
+	height:50px;
+	overflow:hidden;
+}
+div.timeUntilDue
+{
+	
+	font-size:24px;
+	text-align:center;
+	font-family:Arial;
+}
+li.acknowledgment
+{
+	background-color: White;
+	border: none;
+	list-style-type:none;
+}
+span.timeLabel
+{
+	font-size:10px;
+}
+table.noBorder
+{
+	border:0px;
+}
+table.tablesorter thead tr .header {
+	background-image: url(bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../graphics/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown 
+{
+	background-image: url(../graphics/desc.gif);
+}
+tr.evenRow
+{
+	background-color:#BBBBBB;
+}
+td.foot {
+	padding:5px;
+	text-align:center;
+	font:bold 11px verdana;
+	background-color:#305481;
+	color:White;
+	border:solid 1px white;
+	height:10px;
+	cursor: pointer;
+	border: 1px solid #FFF
+}
+tr.selected
+{
+	text-decoration:underline;
+}
+tr.modalRow
+{
+	background-color: #D4D4D4;
+}
+tr.oddRow 
+{
+    background-color: #D4D4D4;
+}
+tr.evenRow
+{
+	background-color:#BBBBBB;
+}
+tr.highlight
+{
+	color: #FFFFFF;
+	background-color: #888888;
+	cursor: pointer;
+}
+th.filterRow
+{
+	border: 1px outset silver;
+	color: #FFFFFF;
+}
+tr.selected
+{
+	text-decoration:underline;
+}
+ul.acknowledgment
+{
+	background-color: White;
+	border: none;
+	margin: 5px 5px 5px 5px;
+}
+
+/*Classes*/
+.blink
+{
+	font-weight:bold;
+	color:White;
+}
+.blinkAlt
+{
+	font-weight:bold;
+	color:Black;
+}
+.context
+{
+	padding-left:5px;
+}
+.criticalResult
+{
+	padding:20px;
+	font-style:italic;
+	font-size:14px;
+}
+.colorSpan
+{
+	padding:2px 2px 2px 4px;
+}
+.hidden
+{
+	display:none;
+}
+.field
+{
+	width:150px;
+}
+.value
+{
+	width:auto;
+}
+.emphasis
+{
+	color:Orange;
+	font-style:italic;
+	font-size: larger;
+}
+.tight
+{
+	padding-top: 1px;
+	padding-bottom: 1px;
+	margin-bottom: 1px;
+	margin-top: 1px;
+}
+.title
+{
+	font-size:15px;
+	padding-top:12px;
+	padding-bottom: 12px;
+}
+
+.overdue
+{
+	font:12px verdana;
+	text-align:center;
+}
+.pending
+{
+	font:12px verdana;
+	text-align:center;
+}
+.complete
+{
+	font:12px verdana;
+	text-align:center;
+}
+.textHint
+{
+	color:Gray;
+	font-style:italic;
+}
+.visible
+{
+	display:block;
+}
+
+.clickable
+{
+	cursor: pointer;
+}
+
+/*Non-Visual Classes*/
+.sender{}
+.receiver{}
+.clinicalAdmin{}
+.sysAdmin{}

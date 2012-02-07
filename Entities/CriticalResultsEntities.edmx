@@ -1,0 +1,1641 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CriticalResultsTransporterModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+        <EntityContainer Name="CriticalResultsTransporterModelStoreContainer">
+          <EntitySet Name="acknowledgments" EntityType="CriticalResultsTransporterModel.Store.acknowledgments" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="context_types" EntityType="CriticalResultsTransporterModel.Store.context_types" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="levels" EntityType="CriticalResultsTransporterModel.Store.levels" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="notifications" EntityType="CriticalResultsTransporterModel.Store.notifications" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="proxies" EntityType="CriticalResultsTransporterModel.Store.proxies" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ratings" EntityType="CriticalResultsTransporterModel.Store.ratings" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="result_contexts" EntityType="CriticalResultsTransporterModel.Store.result_contexts" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="results" EntityType="CriticalResultsTransporterModel.Store.results" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="roles" EntityType="CriticalResultsTransporterModel.Store.roles" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="settings" EntityType="CriticalResultsTransporterModel.Store.settings" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tokens" EntityType="CriticalResultsTransporterModel.Store.tokens" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="transport_levels" EntityType="CriticalResultsTransporterModel.Store.transport_levels" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="transports" EntityType="CriticalResultsTransporterModel.Store.transports" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="user_entries" EntityType="CriticalResultsTransporterModel.Store.user_entries" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="user_results" EntityType="CriticalResultsTransporterModel.Store.user_results" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="user_roles" EntityType="CriticalResultsTransporterModel.Store.user_roles" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="user_transport_levels" EntityType="CriticalResultsTransporterModel.Store.user_transport_levels" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="user_transports" EntityType="CriticalResultsTransporterModel.Store.user_transports" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="users" EntityType="CriticalResultsTransporterModel.Store.users" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="list_views" EntityType="CriticalResultsTransporterModel.Store.list_views" store:Type="Views" store:Schema="dbo" store:Name="list_views">
+            <DefiningQuery>SELECT 
+      [list_views].[result_uuid] AS [result_uuid], 
+      [list_views].[result_message] AS [result_message], 
+      [list_views].[creation_time] AS [creation_time], 
+      [list_views].[sender_user_name] AS [sender_user_name], 
+      [list_views].[sender_title] AS [sender_title], 
+      [list_views].[sender_last_name] AS [sender_last_name], 
+      [list_views].[sender_first_name] AS [sender_first_name], 
+      [list_views].[receiver_user_name] AS [receiver_user_name], 
+      [list_views].[receiver_last_name] AS [receiver_last_name], 
+      [list_views].[receiver_first_Name] AS [receiver_first_Name], 
+      [list_views].[receiver_title] AS [receiver_title], 
+      [list_views].[result_context_json] AS [result_context_json], 
+      [list_views].[result_context_xml] AS [result_context_xml], 
+      [list_views].[level_uuid] AS [level_uuid], 
+      [list_views].[context_type_name] AS [context_type_name], 
+      [list_views].[context_type] AS [context_type], 
+      [list_views].[escalation_time] AS [escalation_time], 
+      [list_views].[due_time] AS [due_time], 
+      [list_views].[exam_key] AS [exam_key], 
+      [list_views].[patient_key] AS [patient_key], 
+      [list_views].[acknowledgment_time] AS [acknowledgment_time]
+      FROM [dbo].[list_views] AS [list_views]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_acknowledgments_results" Association="CriticalResultsTransporterModel.Store.FK_acknowledgments_results">
+            <End Role="results" EntitySet="results" />
+            <End Role="acknowledgments" EntitySet="acknowledgments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_acknowledgments_users" Association="CriticalResultsTransporterModel.Store.FK_acknowledgments_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="acknowledgments" EntitySet="acknowledgments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_credentials_users" Association="CriticalResultsTransporterModel.Store.FK_credentials_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="user_entries" EntitySet="user_entries" />
+          </AssociationSet>
+          <AssociationSet Name="FK_notifications_results" Association="CriticalResultsTransporterModel.Store.FK_notifications_results">
+            <End Role="results" EntitySet="results" />
+            <End Role="notifications" EntitySet="notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_notifications_user_transports" Association="CriticalResultsTransporterModel.Store.FK_notifications_user_transports">
+            <End Role="user_transports" EntitySet="user_transports" />
+            <End Role="notifications" EntitySet="notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_proxies_users" Association="CriticalResultsTransporterModel.Store.FK_proxies_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="proxies" EntitySet="proxies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_proxies_users_proxy" Association="CriticalResultsTransporterModel.Store.FK_proxies_users_proxy">
+            <End Role="users" EntitySet="users" />
+            <End Role="proxies" EntitySet="proxies" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ratings_results" Association="CriticalResultsTransporterModel.Store.FK_ratings_results">
+            <End Role="results" EntitySet="results" />
+            <End Role="ratings" EntitySet="ratings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ratings_users" Association="CriticalResultsTransporterModel.Store.FK_ratings_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="ratings" EntitySet="ratings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_result_contexts_context_types" Association="CriticalResultsTransporterModel.Store.FK_result_contexts_context_types">
+            <End Role="context_types" EntitySet="context_types" />
+            <End Role="result_contexts" EntitySet="result_contexts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_result_contexts_results" Association="CriticalResultsTransporterModel.Store.FK_result_contexts_results">
+            <End Role="results" EntitySet="results" />
+            <End Role="result_contexts" EntitySet="result_contexts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_levels" Association="CriticalResultsTransporterModel.Store.FK_results_levels">
+            <End Role="levels" EntitySet="levels" />
+            <End Role="results" EntitySet="results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_users" Association="CriticalResultsTransporterModel.Store.FK_results_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="results" EntitySet="results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_users_receiver" Association="CriticalResultsTransporterModel.Store.FK_results_users_receiver">
+            <End Role="users" EntitySet="users" />
+            <End Role="results" EntitySet="results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_users_sender" Association="CriticalResultsTransporterModel.Store.FK_results_users_sender">
+            <End Role="users" EntitySet="users" />
+            <End Role="results" EntitySet="results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tokens_users" Association="CriticalResultsTransporterModel.Store.FK_tokens_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="tokens" EntitySet="tokens" />
+          </AssociationSet>
+          <AssociationSet Name="FK_transport_levels_levels" Association="CriticalResultsTransporterModel.Store.FK_transport_levels_levels">
+            <End Role="levels" EntitySet="levels" />
+            <End Role="transport_levels" EntitySet="transport_levels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_transport_levels_transports" Association="CriticalResultsTransporterModel.Store.FK_transport_levels_transports">
+            <End Role="transports" EntitySet="transports" />
+            <End Role="transport_levels" EntitySet="transport_levels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_results_results" Association="CriticalResultsTransporterModel.Store.FK_user_results_results">
+            <End Role="results" EntitySet="results" />
+            <End Role="user_results" EntitySet="user_results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_results_users" Association="CriticalResultsTransporterModel.Store.FK_user_results_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="user_results" EntitySet="user_results" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_roles_roles" Association="CriticalResultsTransporterModel.Store.FK_user_roles_roles">
+            <End Role="roles" EntitySet="roles" />
+            <End Role="user_roles" EntitySet="user_roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_roles_users" Association="CriticalResultsTransporterModel.Store.FK_user_roles_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="user_roles" EntitySet="user_roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_transport_levels_levels" Association="CriticalResultsTransporterModel.Store.FK_user_transport_levels_levels">
+            <End Role="levels" EntitySet="levels" />
+            <End Role="user_transport_levels" EntitySet="user_transport_levels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_transport_levels_user_transports" Association="CriticalResultsTransporterModel.Store.FK_user_transport_levels_user_transports">
+            <End Role="user_transports" EntitySet="user_transports" />
+            <End Role="user_transport_levels" EntitySet="user_transport_levels" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_transports_transports" Association="CriticalResultsTransporterModel.Store.FK_user_transports_transports">
+            <End Role="transports" EntitySet="transports" />
+            <End Role="user_transports" EntitySet="user_transports" />
+          </AssociationSet>
+          <AssociationSet Name="FK_user_transports_users" Association="CriticalResultsTransporterModel.Store.FK_user_transports_users">
+            <End Role="users" EntitySet="users" />
+            <End Role="user_transports" EntitySet="user_transports" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="acknowledgments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="result_id" Type="int" Nullable="false" />
+          <Property Name="creation_time" Type="datetime" Nullable="false" />
+          <Property Name="notes" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="context_types">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="namespace_uri" Type="varchar(max)" Nullable="false" />
+          <Property Name="name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="description" Type="varchar(max)" Nullable="false" />
+          <Property Name="xml_schema" Type="xml" />
+          <Property Name="json_template" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="levels">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="description" Type="varchar(max)" Nullable="false" />
+          <Property Name="short_description" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="color_value" Type="varchar" Nullable="false" MaxLength="25" />
+          <Property Name="escalation_timeout" Type="datetime" Nullable="false" />
+          <Property Name="due_timeout" Type="datetime" Nullable="false" />
+          <Property Name="direct_contact_required" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="notifications">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="user_transport_id" Type="int" Nullable="false" />
+          <Property Name="result_id" Type="int" Nullable="false" />
+          <Property Name="creation_time" Type="datetime" Nullable="false" />
+          <Property Name="notes" Type="varchar(max)" Nullable="false" />
+          <Property Name="state" Type="varchar" Nullable="false" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="proxies">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="relationship_description" Type="varchar" Nullable="false" MaxLength="128" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="proxy_user_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ratings">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="result_id" Type="int" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="value" Type="int" Nullable="false" />
+          <Property Name="comments" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="result_contexts">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="result_id" Type="int" Nullable="false" />
+          <Property Name="context_type_id" Type="int" Nullable="false" />
+          <Property Name="json_value" Type="varchar(max)" />
+          <Property Name="xml_value" Type="xml" />
+          <Property Name="exam_key" Type="varchar" Nullable="false" MaxLength="64" />
+          <Property Name="patient_key" Type="varchar" Nullable="false" MaxLength="64" />
+        </EntityType>
+        <EntityType Name="results">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="message" Type="varchar(max)" Nullable="false" />
+          <Property Name="sender_user_id" Type="int" Nullable="false" />
+          <Property Name="receiver_user_id" Type="int" Nullable="false" />
+          <Property Name="level_id" Type="int" Nullable="false" />
+          <Property Name="creation_time" Type="datetime" Nullable="false" />
+          <Property Name="proxy_sender_user_id" Type="int" />
+          <Property Name="escalation_time" Type="datetime" Nullable="false" />
+          <Property Name="due_time" Type="datetime" Nullable="false" />
+          <Property Name="acknowledgment_time" Type="datetime" />
+        </EntityType>
+        <EntityType Name="roles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="varchar" Nullable="false" MaxLength="25" />
+          <Property Name="description" Type="varchar" Nullable="false" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="settings">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="owner" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="entry_key" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="value" Type="varchar(max)" />
+          <Property Name="xml_value" Type="xml" />
+        </EntityType>
+        <EntityType Name="tokens">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="token" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ipv4" Type="varchar" Nullable="false" MaxLength="15" />
+          <Property Name="created_time" Type="datetime" Nullable="false" />
+          <Property Name="updated_time" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="transport_levels">
+          <Key>
+            <PropertyRef Name="transport_id" />
+            <PropertyRef Name="level_id" />
+          </Key>
+          <Property Name="transport_id" Type="int" Nullable="false" />
+          <Property Name="level_id" Type="int" Nullable="false" />
+          <Property Name="mandatory" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="transports">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="transport_uri" Type="varchar(max)" Nullable="false" />
+          <Property Name="friendly_address_name" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="user_entries">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="type" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="entry_key" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="value" Type="varchar(max)" />
+          <Property Name="xml_value" Type="xml" />
+          <Property Name="restricted_access" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="user_results">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="result_id" Type="int" Nullable="false" />
+          <Property Name="tag" Type="varchar" Nullable="false" MaxLength="128" />
+          <Property Name="description" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="user_roles">
+          <Key>
+            <PropertyRef Name="user_id" />
+            <PropertyRef Name="role_id" />
+          </Key>
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="role_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="user_transport_levels">
+          <Key>
+            <PropertyRef Name="user_transport_id" />
+            <PropertyRef Name="level_id" />
+          </Key>
+          <Property Name="user_transport_id" Type="int" Nullable="false" />
+          <Property Name="level_id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="user_transports">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="int" Nullable="false" />
+          <Property Name="transport_id" Type="int" Nullable="false" />
+          <Property Name="address" Type="varchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="users">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="user_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="first_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="last_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="middle_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="title" Type="varchar" MaxLength="100" />
+          <Property Name="is_homo_sapien" Type="bit" Nullable="false" />
+          <Property Name="credentials" Type="varchar" MaxLength="50" />
+          <Property Name="enabled" Type="bit" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="50" />
+          <Property Name="address" Type="varchar" MaxLength="100" />
+          <Property Name="cell_phone" Type="varchar" MaxLength="50" />
+          <Property Name="office_phone" Type="varchar" MaxLength="50" />
+          <Property Name="home_phone" Type="varchar" MaxLength="50" />
+          <Property Name="city" Type="varchar" MaxLength="50" />
+          <Property Name="state" Type="varchar" MaxLength="50" />
+          <Property Name="zip" Type="varchar" MaxLength="50" />
+          <Property Name="country" Type="varchar" MaxLength="50" />
+          <Property Name="npi" Type="varchar" MaxLength="50" />
+          <Property Name="cell_phone_provider" Type="varchar" MaxLength="50" />
+          <Property Name="pager" Type="varchar" MaxLength="50" />
+          <Property Name="pager_id" Type="varchar" MaxLength="50" />
+          <Property Name="pager_type" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <!--Errors Found During Generation:
+      warning 6002: The table/view 'CriticalResultsTransporterDevDB.dbo.list_views' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="list_views">
+          <Key>
+            <PropertyRef Name="result_uuid" />
+            <PropertyRef Name="result_message" />
+            <PropertyRef Name="creation_time" />
+            <PropertyRef Name="sender_user_name" />
+            <PropertyRef Name="sender_last_name" />
+            <PropertyRef Name="sender_first_name" />
+            <PropertyRef Name="receiver_user_name" />
+            <PropertyRef Name="receiver_last_name" />
+            <PropertyRef Name="receiver_first_Name" />
+            <PropertyRef Name="level_uuid" />
+            <PropertyRef Name="escalation_time" />
+            <PropertyRef Name="due_time" />
+          </Key>
+          <Property Name="result_uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="result_message" Type="varchar(max)" Nullable="false" />
+          <Property Name="creation_time" Type="datetime" Nullable="false" />
+          <Property Name="sender_user_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="sender_title" Type="varchar" MaxLength="100" />
+          <Property Name="sender_last_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="sender_first_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="receiver_user_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="receiver_last_name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="receiver_first_Name" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="receiver_title" Type="varchar" MaxLength="100" />
+          <Property Name="result_context_json" Type="varchar(max)" />
+          <Property Name="result_context_xml" Type="xml" />
+          <Property Name="level_uuid" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="context_type_name" Type="varchar" MaxLength="100" />
+          <Property Name="context_type" Type="varchar(max)" />
+          <Property Name="escalation_time" Type="datetime" Nullable="false" />
+          <Property Name="due_time" Type="datetime" Nullable="false" />
+          <Property Name="exam_key" Type="varchar" MaxLength="64" />
+          <Property Name="patient_key" Type="varchar" MaxLength="64" />
+          <Property Name="acknowledgment_time" Type="datetime" />
+        </EntityType>
+        <Association Name="FK_acknowledgments_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="1" />
+          <End Role="acknowledgments" Type="CriticalResultsTransporterModel.Store.acknowledgments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="results">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="acknowledgments">
+              <PropertyRef Name="result_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_acknowledgments_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="acknowledgments" Type="CriticalResultsTransporterModel.Store.acknowledgments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="acknowledgments">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_credentials_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="user_entries" Type="CriticalResultsTransporterModel.Store.user_entries" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_entries">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_notifications_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="1" />
+          <End Role="notifications" Type="CriticalResultsTransporterModel.Store.notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="results">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="notifications">
+              <PropertyRef Name="result_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_notifications_user_transports">
+          <End Role="user_transports" Type="CriticalResultsTransporterModel.Store.user_transports" Multiplicity="1" />
+          <End Role="notifications" Type="CriticalResultsTransporterModel.Store.notifications" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user_transports">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="notifications">
+              <PropertyRef Name="user_transport_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_proxies_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="proxies" Type="CriticalResultsTransporterModel.Store.proxies" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="proxies">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_proxies_users_proxy">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="proxies" Type="CriticalResultsTransporterModel.Store.proxies" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="proxies">
+              <PropertyRef Name="proxy_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ratings_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="1" />
+          <End Role="ratings" Type="CriticalResultsTransporterModel.Store.ratings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="results">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ratings">
+              <PropertyRef Name="result_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ratings_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="ratings" Type="CriticalResultsTransporterModel.Store.ratings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="ratings">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_result_contexts_context_types">
+          <End Role="context_types" Type="CriticalResultsTransporterModel.Store.context_types" Multiplicity="1" />
+          <End Role="result_contexts" Type="CriticalResultsTransporterModel.Store.result_contexts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="context_types">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="result_contexts">
+              <PropertyRef Name="context_type_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_result_contexts_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="1" />
+          <End Role="result_contexts" Type="CriticalResultsTransporterModel.Store.result_contexts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="results">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="result_contexts">
+              <PropertyRef Name="result_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_results_levels">
+          <End Role="levels" Type="CriticalResultsTransporterModel.Store.levels" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="levels">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="results">
+              <PropertyRef Name="level_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_results_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="0..1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="results">
+              <PropertyRef Name="proxy_sender_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_results_users_receiver">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="results">
+              <PropertyRef Name="receiver_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_results_users_sender">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="results">
+              <PropertyRef Name="sender_user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tokens_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="tokens" Type="CriticalResultsTransporterModel.Store.tokens" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="tokens">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_transport_levels_levels">
+          <End Role="levels" Type="CriticalResultsTransporterModel.Store.levels" Multiplicity="1" />
+          <End Role="transport_levels" Type="CriticalResultsTransporterModel.Store.transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="levels">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="transport_levels">
+              <PropertyRef Name="level_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_transport_levels_transports">
+          <End Role="transports" Type="CriticalResultsTransporterModel.Store.transports" Multiplicity="1" />
+          <End Role="transport_levels" Type="CriticalResultsTransporterModel.Store.transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="transports">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="transport_levels">
+              <PropertyRef Name="transport_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_results_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.Store.results" Multiplicity="1" />
+          <End Role="user_results" Type="CriticalResultsTransporterModel.Store.user_results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="results">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_results">
+              <PropertyRef Name="result_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_results_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="user_results" Type="CriticalResultsTransporterModel.Store.user_results" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_results">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_roles_roles">
+          <End Role="roles" Type="CriticalResultsTransporterModel.Store.roles" Multiplicity="1" />
+          <End Role="user_roles" Type="CriticalResultsTransporterModel.Store.user_roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="roles">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_roles">
+              <PropertyRef Name="role_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_roles_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="user_roles" Type="CriticalResultsTransporterModel.Store.user_roles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_roles">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_transport_levels_levels">
+          <End Role="levels" Type="CriticalResultsTransporterModel.Store.levels" Multiplicity="1" />
+          <End Role="user_transport_levels" Type="CriticalResultsTransporterModel.Store.user_transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="levels">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_transport_levels">
+              <PropertyRef Name="level_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_transport_levels_user_transports">
+          <End Role="user_transports" Type="CriticalResultsTransporterModel.Store.user_transports" Multiplicity="1" />
+          <End Role="user_transport_levels" Type="CriticalResultsTransporterModel.Store.user_transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="user_transports">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_transport_levels">
+              <PropertyRef Name="user_transport_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_transports_transports">
+          <End Role="transports" Type="CriticalResultsTransporterModel.Store.transports" Multiplicity="1" />
+          <End Role="user_transports" Type="CriticalResultsTransporterModel.Store.user_transports" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="transports">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_transports">
+              <PropertyRef Name="transport_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_user_transports_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.Store.users" Multiplicity="1" />
+          <End Role="user_transports" Type="CriticalResultsTransporterModel.Store.user_transports" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="user_transports">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CriticalResultsTransporterModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+        <EntityContainer Name="CriticalResultsTransporterEntities">
+          <EntitySet Name="ContextTypeEntitySet" EntityType="CriticalResultsTransporterModel.ContextTypeEntity" />
+          <EntitySet Name="LevelEntitySet" EntityType="CriticalResultsTransporterModel.LevelEntity" />
+          <EntitySet Name="ResultContextEntitySet" EntityType="CriticalResultsTransporterModel.ResultContextEntity" />
+          <EntitySet Name="ResultEntitySet" EntityType="CriticalResultsTransporterModel.ResultEntity" />
+          <EntitySet Name="RoleEntitySet" EntityType="CriticalResultsTransporterModel.RoleEntity" />
+          <EntitySet Name="TransportEntitySet" EntityType="CriticalResultsTransporterModel.TransportEntity" />
+          <EntitySet Name="UserEntitySet" EntityType="CriticalResultsTransporterModel.UserEntity" />
+          <AssociationSet Name="FK_result_contexts_context_types" Association="CriticalResultsTransporterModel.FK_result_contexts_context_types">
+            <End Role="context_types" EntitySet="ContextTypeEntitySet" />
+            <End Role="result_contexts" EntitySet="ResultContextEntitySet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_levels" Association="CriticalResultsTransporterModel.FK_results_levels">
+            <End Role="levels" EntitySet="LevelEntitySet" />
+            <End Role="results" EntitySet="ResultEntitySet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_result_contexts_results" Association="CriticalResultsTransporterModel.FK_result_contexts_results">
+            <End Role="results" EntitySet="ResultEntitySet" />
+            <End Role="result_contexts" EntitySet="ResultContextEntitySet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_users" Association="CriticalResultsTransporterModel.FK_results_users">
+            <End Role="users" EntitySet="UserEntitySet" />
+            <End Role="results" EntitySet="ResultEntitySet" />
+          </AssociationSet>
+          <AssociationSet Name="FK_results_users1" Association="CriticalResultsTransporterModel.FK_results_users1">
+            <End Role="users" EntitySet="UserEntitySet" />
+            <End Role="results" EntitySet="ResultEntitySet" />
+          </AssociationSet>
+          <AssociationSet Name="user_roles" Association="CriticalResultsTransporterModel.user_roles">
+            <End Role="roles" EntitySet="RoleEntitySet" />
+            <End Role="users" EntitySet="UserEntitySet" />
+          </AssociationSet>
+          <EntitySet Name="AcknowledgmentEntitySet" EntityType="CriticalResultsTransporterModel.AcknowledgmentEntity" />
+          <EntitySet Name="NotificationEntitySet" EntityType="CriticalResultsTransporterModel.NotificationEntity" />
+          <EntitySet Name="UserTransportEntitySet" EntityType="CriticalResultsTransporterModel.UserTransportEntity" />
+          <AssociationSet Name="FK_acknowledgments_results" Association="CriticalResultsTransporterModel.FK_acknowledgments_results">
+            <End Role="ResultEntity" EntitySet="ResultEntitySet" />
+            <End Role="acknowledgments" EntitySet="AcknowledgmentEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_acknowledgments_users" Association="CriticalResultsTransporterModel.FK_acknowledgments_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="acknowledgments" EntitySet="AcknowledgmentEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_user_transports_transports" Association="CriticalResultsTransporterModel.FK_user_transports_transports">
+            <End Role="TransportEntity" EntitySet="TransportEntitySet" />
+            <End Role="user_transports" EntitySet="UserTransportEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_user_transports_users" Association="CriticalResultsTransporterModel.FK_user_transports_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="user_transports" EntitySet="UserTransportEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_notifications_results1" Association="CriticalResultsTransporterModel.FK_notifications_results1">
+            <End EntitySet="ResultEntitySet" Role="ResultEntity" />
+            <End EntitySet="NotificationEntitySet" Role="NotificationsEntity" /></AssociationSet>
+          <AssociationSet Name="FK_notifications_user_transports1" Association="CriticalResultsTransporterModel.FK_notifications_user_transports1">
+            <End EntitySet="UserTransportEntitySet" Role="UserTransportEntity" />
+            <End EntitySet="NotificationEntitySet" Role="NotificationsEntity" /></AssociationSet>
+          <EntitySet Name="RatingEntitySet" EntityType="CriticalResultsTransporterModel.RatingEntity" />
+          <AssociationSet Name="FK_ratings_results" Association="CriticalResultsTransporterModel.FK_ratings_results">
+            <End Role="ResultEntity" EntitySet="ResultEntitySet" />
+            <End Role="ratings" EntitySet="RatingEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_ratings_users" Association="CriticalResultsTransporterModel.FK_ratings_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="ratings" EntitySet="RatingEntitySet" /></AssociationSet>
+          <AssociationSet Name="user_transport_levels" Association="CriticalResultsTransporterModel.user_transport_levels">
+            <End Role="LevelEntity" EntitySet="LevelEntitySet" />
+            <End Role="UserTransportEntity" EntitySet="UserTransportEntitySet" /></AssociationSet>
+          <EntitySet Name="ProxyEntitySet" EntityType="CriticalResultsTransporterModel.ProxyEntity" />
+          <EntitySet Name="TokenEntitySet" EntityType="CriticalResultsTransporterModel.TokenEntity" />
+          <EntitySet Name="UserResultTagEntitySet" EntityType="CriticalResultsTransporterModel.UserResultTagEntity" />
+          <AssociationSet Name="FK_proxies_users" Association="CriticalResultsTransporterModel.FK_proxies_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="proxies" EntitySet="ProxyEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_proxies_users_proxy" Association="CriticalResultsTransporterModel.FK_proxies_users_proxy">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="proxies" EntitySet="ProxyEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_user_results_results" Association="CriticalResultsTransporterModel.FK_user_results_results">
+            <End Role="ResultEntity" EntitySet="ResultEntitySet" />
+            <End Role="user_results" EntitySet="UserResultTagEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_tokens_users" Association="CriticalResultsTransporterModel.FK_tokens_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="tokens" EntitySet="TokenEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_user_results_users" Association="CriticalResultsTransporterModel.FK_user_results_users">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="user_results" EntitySet="UserResultTagEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_results_users2" Association="CriticalResultsTransporterModel.FK_results_users2">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="ResultEntity" EntitySet="ResultEntitySet" /></AssociationSet>
+          <EntitySet Name="ResultListEntitySet" EntityType="CriticalResultsTransporterModel.ResultListEntity" />
+          <EntitySet Name="UserEntryEntitySet" EntityType="CriticalResultsTransporterModel.UserEntryEntity" />
+          <AssociationSet Name="FK_credentials_users1" Association="CriticalResultsTransporterModel.FK_credentials_users1">
+            <End Role="UserEntity" EntitySet="UserEntitySet" />
+            <End Role="user_entries" EntitySet="UserEntryEntitySet" /></AssociationSet>
+          <EntitySet Name="TransportLevelEntitySet" EntityType="CriticalResultsTransporterModel.TransportLevelEntity" />
+          <AssociationSet Name="FK_transport_levels_levels" Association="CriticalResultsTransporterModel.FK_transport_levels_levels">
+            <End Role="LevelEntity" EntitySet="LevelEntitySet" />
+            <End Role="transport_levels" EntitySet="TransportLevelEntitySet" /></AssociationSet>
+          <AssociationSet Name="FK_transport_levels_transports" Association="CriticalResultsTransporterModel.FK_transport_levels_transports">
+            <End Role="TransportEntity" EntitySet="TransportEntitySet" />
+            <End Role="transport_levels" EntitySet="TransportLevelEntitySet" /></AssociationSet>
+          <EntitySet Name="SettingEntitySet" EntityType="CriticalResultsTransporterModel.SettingEntity" /></EntityContainer>
+        <EntityType Name="ContextTypeEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="ResultContexts" Relationship="CriticalResultsTransporterModel.FK_result_contexts_context_types" FromRole="context_types" ToRole="result_contexts" />
+          <Property Name="NamespaceUri" Type="String" Nullable="false" />
+          <Property Name="XmlSchema" Type="String" Nullable="true" />
+          <Property Name="JsonTemplate" Type="String" Nullable="true" /></EntityType>
+        <EntityType Name="LevelEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="ColorValue" Type="String" Nullable="false" />
+          <NavigationProperty Name="Results" Relationship="CriticalResultsTransporterModel.FK_results_levels" FromRole="levels" ToRole="results" />
+          <Property Name="EscalationTimeout" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="UserTransports" Relationship="CriticalResultsTransporterModel.user_transport_levels" FromRole="LevelEntity" ToRole="UserTransportEntity" />
+          <Property Name="ShortDescription" Type="String" Nullable="false" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="DirectContactRequired" Type="Boolean" Nullable="false" />
+          <Property Name="DueTimeout" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="TransportLevels" Relationship="CriticalResultsTransporterModel.FK_transport_levels_levels" FromRole="LevelEntity" ToRole="transport_levels" /></EntityType>
+        <EntityType Name="ResultContextEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ContextType" Relationship="CriticalResultsTransporterModel.FK_result_contexts_context_types" FromRole="result_contexts" ToRole="context_types" />
+          <NavigationProperty Name="Result" Relationship="CriticalResultsTransporterModel.FK_result_contexts_results" FromRole="result_contexts" ToRole="results" />
+          <Property Name="JsonValue" Type="String" Nullable="true" />
+          <Property Name="XmlValue" Type="String" Nullable="true" />
+          <Property Name="ExamKey" Type="String" Nullable="false" />
+          <Property Name="PatientKey" Type="String" Nullable="false" /></EntityType>
+        <EntityType Name="ResultEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="CreationTime" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Level" Relationship="CriticalResultsTransporterModel.FK_results_levels" FromRole="results" ToRole="levels" />
+          <NavigationProperty Name="ResultContexts" Relationship="CriticalResultsTransporterModel.FK_result_contexts_results" FromRole="results" ToRole="result_contexts" />
+          <NavigationProperty Name="Sender" Relationship="CriticalResultsTransporterModel.FK_results_users" FromRole="results" ToRole="users" />
+          <NavigationProperty Name="Receiver" Relationship="CriticalResultsTransporterModel.FK_results_users1" FromRole="results" ToRole="users" />
+          <NavigationProperty Name="Acknowledgments" Relationship="CriticalResultsTransporterModel.FK_acknowledgments_results" FromRole="ResultEntity" ToRole="acknowledgments" />
+          <NavigationProperty Name="Notifications" Relationship="CriticalResultsTransporterModel.FK_notifications_results1" FromRole="ResultEntity" ToRole="NotificationsEntity" />
+          <NavigationProperty Name="Ratings" Relationship="CriticalResultsTransporterModel.FK_ratings_results" FromRole="ResultEntity" ToRole="ratings" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="UserResultTags" Relationship="CriticalResultsTransporterModel.FK_user_results_results" FromRole="ResultEntity" ToRole="user_results" />
+          <NavigationProperty Name="SenderProxy" Relationship="CriticalResultsTransporterModel.FK_results_users2" FromRole="ResultEntity" ToRole="UserEntity" />
+          <Property Name="EscalationTime" Type="DateTime" Nullable="false" />
+          <Property Name="DueTime" Type="DateTime" Nullable="false" />
+          <Property Name="AcknowledgmentTime" Type="DateTime" Nullable="true" /></EntityType>
+        <EntityType Name="RoleEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="10" Unicode="true" FixedLength="true" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="10" Unicode="true" FixedLength="true" />
+          <NavigationProperty Name="Users" Relationship="CriticalResultsTransporterModel.user_roles" FromRole="roles" ToRole="users" />
+        </EntityType>
+        <EntityType Name="TransportEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="UserTransports" Relationship="CriticalResultsTransporterModel.FK_user_transports_transports" FromRole="TransportEntity" ToRole="user_transports" />
+          <Property Name="TransportURI" Type="String" Nullable="false" />
+          <Property Name="FriendlyAddressName" Type="String" Nullable="true" />
+          <NavigationProperty Name="TransportLevels" Relationship="CriticalResultsTransporterModel.FK_transport_levels_transports" FromRole="TransportEntity" ToRole="transport_levels" /></EntityType>
+        <EntityType Name="UserEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="LastName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="MiddleName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="ResultsSent" Relationship="CriticalResultsTransporterModel.FK_results_users" FromRole="users" ToRole="results" />
+          <NavigationProperty Name="ResultsReceived" Relationship="CriticalResultsTransporterModel.FK_results_users1" FromRole="users" ToRole="results" />
+          <NavigationProperty Name="Roles" Relationship="CriticalResultsTransporterModel.user_roles" FromRole="users" ToRole="roles" />
+          <Property Name="Title" Type="String" Nullable="false" />
+          <Property Name="IsHomoSapien" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Acknowledgments" Relationship="CriticalResultsTransporterModel.FK_acknowledgments_users" FromRole="UserEntity" ToRole="acknowledgments" />
+          <NavigationProperty Name="UserTransports" Relationship="CriticalResultsTransporterModel.FK_user_transports_users" FromRole="UserEntity" ToRole="user_transports" />
+          <NavigationProperty Name="Ratings" Relationship="CriticalResultsTransporterModel.FK_ratings_users" FromRole="UserEntity" ToRole="ratings" />
+          <NavigationProperty Name="ProxyUsers" Relationship="CriticalResultsTransporterModel.FK_proxies_users" FromRole="UserEntity" ToRole="proxies" />
+          <NavigationProperty Name="ProxiedUsers" Relationship="CriticalResultsTransporterModel.FK_proxies_users_proxy" FromRole="UserEntity" ToRole="proxies" />
+          <NavigationProperty Name="Tokens" Relationship="CriticalResultsTransporterModel.FK_tokens_users" FromRole="UserEntity" ToRole="tokens" />
+          <NavigationProperty Name="UserResultTags" Relationship="CriticalResultsTransporterModel.FK_user_results_users" FromRole="UserEntity" ToRole="user_results" />
+          <NavigationProperty Name="Results" Relationship="CriticalResultsTransporterModel.FK_results_users2" FromRole="UserEntity" ToRole="ResultEntity" />
+          <Property Name="Credentials" Type="String" Nullable="true" />
+          <NavigationProperty Name="UserEntries" Relationship="CriticalResultsTransporterModel.FK_credentials_users1" FromRole="UserEntity" ToRole="user_entries" />
+          <Property Name="Enabled" Type="Boolean" Nullable="false" />
+          <Property Name="EMail" Type="String" Nullable="true" />
+          <Property Name="Address" Type="String" Nullable="true" />
+          <Property Name="CellPhone" Type="String" Nullable="true" />
+          <Property Name="OfficePhone" Type="String" Nullable="true" />
+          <Property Name="HomePhone" Type="String" Nullable="true" />
+          <Property Name="City" Type="String" Nullable="true" />
+          <Property Name="State" Type="String" Nullable="true" />
+          <Property Name="Zip" Type="String" Nullable="true" />
+          <Property Name="Country" Type="String" Nullable="true" />
+          <Property Name="NPI" Type="String" Nullable="true" />
+          <Property Name="CellPhoneProvider" Type="String" Nullable="true" />
+          <Property Name="Pager" Type="String" Nullable="true" />
+          <Property Name="PagerId" Type="String" Nullable="true" />
+          <Property Name="PagerType" Type="String" Nullable="true" /></EntityType>
+        <Association Name="FK_result_contexts_context_types">
+          <End Role="context_types" Type="CriticalResultsTransporterModel.ContextTypeEntity" Multiplicity="1" />
+          <End Role="result_contexts" Type="CriticalResultsTransporterModel.ResultContextEntity" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_results_levels">
+          <End Role="levels" Type="CriticalResultsTransporterModel.LevelEntity" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.ResultEntity" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_result_contexts_results">
+          <End Role="results" Type="CriticalResultsTransporterModel.ResultEntity" Multiplicity="1" />
+          <End Role="result_contexts" Type="CriticalResultsTransporterModel.ResultContextEntity" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_results_users">
+          <End Role="users" Type="CriticalResultsTransporterModel.UserEntity" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.ResultEntity" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_results_users1">
+          <End Role="users" Type="CriticalResultsTransporterModel.UserEntity" Multiplicity="1" />
+          <End Role="results" Type="CriticalResultsTransporterModel.ResultEntity" Multiplicity="*" />
+        </Association>
+        <Association Name="user_roles">
+          <End Role="roles" Type="CriticalResultsTransporterModel.RoleEntity" Multiplicity="*" />
+          <End Role="users" Type="CriticalResultsTransporterModel.UserEntity" Multiplicity="*" />
+        </Association>
+        <EntityType Name="AcknowledgmentEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="CreationTime" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Result" Relationship="CriticalResultsTransporterModel.FK_acknowledgments_results" FromRole="acknowledgments" ToRole="ResultEntity" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_acknowledgments_users" FromRole="acknowledgments" ToRole="UserEntity" />
+          <Property Name="Notes" Type="String" Nullable="false" /></EntityType>
+        <EntityType Name="NotificationEntity">
+          <Key>
+            <PropertyRef Name="Id" />
+            </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="CreationTime" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Result" Relationship="CriticalResultsTransporterModel.FK_notifications_results1" FromRole="NotificationsEntity" ToRole="ResultEntity" />
+          <NavigationProperty Name="UserTransport" Relationship="CriticalResultsTransporterModel.FK_notifications_user_transports1" FromRole="NotificationsEntity" ToRole="UserTransportEntity" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="Notes" Type="String" Nullable="false" />
+          <Property Name="State" Type="String" Nullable="false" /></EntityType>
+        <EntityType Name="UserTransportEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Address" Type="String" Nullable="false" />
+          <NavigationProperty Name="Transport" Relationship="CriticalResultsTransporterModel.FK_user_transports_transports" FromRole="user_transports" ToRole="TransportEntity" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_user_transports_users" FromRole="user_transports" ToRole="UserEntity" />
+          <NavigationProperty Name="Notifications" Relationship="CriticalResultsTransporterModel.FK_notifications_user_transports1" FromRole="UserTransportEntity" ToRole="NotificationsEntity" />
+          <NavigationProperty Name="Levels" Relationship="CriticalResultsTransporterModel.user_transport_levels" FromRole="UserTransportEntity" ToRole="LevelEntity" /></EntityType>
+        <Association Name="FK_acknowledgments_results">
+          <End Type="CriticalResultsTransporterModel.ResultEntity" Role="ResultEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.AcknowledgmentEntity" Role="acknowledgments" Multiplicity="*" /></Association>
+        <Association Name="FK_acknowledgments_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.AcknowledgmentEntity" Role="acknowledgments" Multiplicity="*" /></Association>
+        <Association Name="FK_user_transports_transports">
+          <End Type="CriticalResultsTransporterModel.TransportEntity" Role="TransportEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.UserTransportEntity" Role="user_transports" Multiplicity="*" /></Association>
+        <Association Name="FK_user_transports_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.UserTransportEntity" Role="user_transports" Multiplicity="*" /></Association>
+        <Association Name="FK_notifications_results1">
+          <End Type="CriticalResultsTransporterModel.ResultEntity" Multiplicity="1" Role="ResultEntity" />
+          <End Type="CriticalResultsTransporterModel.NotificationEntity" Multiplicity="*" Role="NotificationsEntity" />
+          </Association>
+        <Association Name="FK_notifications_user_transports1">
+          <End Type="CriticalResultsTransporterModel.UserTransportEntity" Multiplicity="1" Role="UserTransportEntity" />
+          <End Type="CriticalResultsTransporterModel.NotificationEntity" Multiplicity="*" Role="NotificationsEntity" />
+          </Association>
+        <EntityType Name="RatingEntity">
+          <Key>
+            <PropertyRef Name="id" /></Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="value" Type="Int32" Nullable="false" />
+          <Property Name="comments" Type="String" Nullable="false" />
+          <NavigationProperty Name="Result" Relationship="CriticalResultsTransporterModel.FK_ratings_results" FromRole="ratings" ToRole="ResultEntity" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_ratings_users" FromRole="ratings" ToRole="UserEntity" /></EntityType>
+        <Association Name="FK_ratings_results">
+          <End Type="CriticalResultsTransporterModel.ResultEntity" Role="ResultEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.RatingEntity" Role="ratings" Multiplicity="*" /></Association>
+        <Association Name="FK_ratings_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.RatingEntity" Role="ratings" Multiplicity="*" /></Association>
+        <Association Name="user_transport_levels">
+          <End Type="CriticalResultsTransporterModel.LevelEntity" Role="LevelEntity" Multiplicity="*" />
+          <End Type="CriticalResultsTransporterModel.UserTransportEntity" Role="UserTransportEntity" Multiplicity="*" /></Association>
+        <EntityType Name="ProxyEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="RelationshipDescription" Type="String" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_proxies_users" FromRole="proxies" ToRole="UserEntity" />
+          <NavigationProperty Name="ProxyUser" Relationship="CriticalResultsTransporterModel.FK_proxies_users_proxy" FromRole="proxies" ToRole="UserEntity" /></EntityType>
+        <EntityType Name="TokenEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Token" Type="Guid" Nullable="false" />
+          <Property Name="Ipv4" Type="String" Nullable="false" />
+          <Property Name="CreatedTime" Type="DateTime" Nullable="false" />
+          <Property Name="UpdatedTime" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_tokens_users" FromRole="tokens" ToRole="UserEntity" /></EntityType>
+        <EntityType Name="UserResultTagEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="Tag" Type="String" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" />
+          <NavigationProperty Name="Result" Relationship="CriticalResultsTransporterModel.FK_user_results_results" FromRole="user_results" ToRole="ResultEntity" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_user_results_users" FromRole="user_results" ToRole="UserEntity" /></EntityType>
+        <Association Name="FK_proxies_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.ProxyEntity" Role="proxies" Multiplicity="*" /></Association>
+        <Association Name="FK_proxies_users_proxy">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.ProxyEntity" Role="proxies" Multiplicity="*" /></Association>
+        <Association Name="FK_user_results_results">
+          <End Type="CriticalResultsTransporterModel.ResultEntity" Role="ResultEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.UserResultTagEntity" Role="user_results" Multiplicity="*" /></Association>
+        <Association Name="FK_tokens_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.TokenEntity" Role="tokens" Multiplicity="*" /></Association>
+        <Association Name="FK_user_results_users">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.UserResultTagEntity" Role="user_results" Multiplicity="*" /></Association>
+        <Association Name="FK_results_users2">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="0..1" />
+          <End Type="CriticalResultsTransporterModel.ResultEntity" Role="ResultEntity" Multiplicity="*" /></Association>
+        <EntityType Name="ResultListEntity">
+          <Key>
+            <PropertyRef Name="ResultUuid" />
+            <PropertyRef Name="ResultMessage" />
+            <PropertyRef Name="CreationTime" />
+            <PropertyRef Name="SenderUserName" />
+            <PropertyRef Name="SenderLastName" />
+            <PropertyRef Name="SenderFirstName" />
+            <PropertyRef Name="ReceiverUserName" />
+            <PropertyRef Name="ReceiverLastName" />
+            <PropertyRef Name="ReceiverFirstName" />
+            <PropertyRef Name="LevelUuid" />
+            <PropertyRef Name="EscalationTime" />
+            <PropertyRef Name="DueTime" /></Key>
+          <Property Name="ResultUuid" Type="Guid" Nullable="false" />
+          <Property Name="ResultMessage" Type="String" Nullable="false" />
+          <Property Name="CreationTime" Type="DateTime" Nullable="false" />
+          <Property Name="SenderUserName" Type="String" Nullable="false" />
+          <Property Name="SenderTitle" Type="String" Nullable="true" />
+          <Property Name="SenderLastName" Type="String" Nullable="false" />
+          <Property Name="SenderFirstName" Type="String" Nullable="false" />
+          <Property Name="ReceiverUserName" Type="String" Nullable="false" />
+          <Property Name="ReceiverLastName" Type="String" Nullable="false" />
+          <Property Name="ReceiverFirstName" Type="String" Nullable="false" />
+          <Property Name="ReceiverTitle" Type="String" Nullable="true" />
+          <Property Name="ResultContextJson" Type="String" Nullable="true" />
+          <Property Name="ResultContextXml" Type="String" Nullable="true" />
+          <Property Name="LevelUuid" Type="Guid" Nullable="false" />
+          <Property Name="ContextTypeName" Type="String" Nullable="true" />
+          <Property Name="ContextTypeUri" Type="String" Nullable="true" />
+          <Property Name="AcknowledgmentTime" Type="DateTime" Nullable="true" />
+          <Property Name="EscalationTime" Type="DateTime" Nullable="false" />
+          <Property Name="DueTime" Type="DateTime" Nullable="false" />
+          <Property Name="ExamKey" Type="String" Nullable="true" />
+          <Property Name="PatientKey" Type="String" Nullable="true" /></EntityType>
+        <EntityType Name="UserEntryEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Type" Type="String" Nullable="false" />
+          <Property Name="Key" Type="String" Nullable="false" />
+          <Property Name="Value" Type="String" Nullable="true" />
+          <Property Name="XmlValue" Type="String" Nullable="true" />
+          <NavigationProperty Name="User" Relationship="CriticalResultsTransporterModel.FK_credentials_users1" FromRole="user_entries" ToRole="UserEntity" />
+          <Property Name="RestrictedAccess" Type="Boolean" Nullable="false" /></EntityType>
+        <Association Name="FK_credentials_users1">
+          <End Type="CriticalResultsTransporterModel.UserEntity" Role="UserEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.UserEntryEntity" Role="user_entries" Multiplicity="*" /></Association>
+        <EntityType Name="TransportLevelEntity">
+          <Key>
+            <PropertyRef Name="TransportId" />
+            <PropertyRef Name="LevelId" /></Key>
+          <Property Name="TransportId" Type="Int32" Nullable="false" />
+          <Property Name="LevelId" Type="Int32" Nullable="false" />
+          <Property Name="Mandatory" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Level" Relationship="CriticalResultsTransporterModel.FK_transport_levels_levels" FromRole="transport_levels" ToRole="LevelEntity" />
+          <NavigationProperty Name="Transport" Relationship="CriticalResultsTransporterModel.FK_transport_levels_transports" FromRole="transport_levels" ToRole="TransportEntity" /></EntityType>
+        <Association Name="FK_transport_levels_levels">
+          <End Type="CriticalResultsTransporterModel.LevelEntity" Role="LevelEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.TransportLevelEntity" Role="transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LevelEntity">
+              <PropertyRef Name="Id" /></Principal>
+            <Dependent Role="transport_levels">
+              <PropertyRef Name="LevelId" /></Dependent></ReferentialConstraint></Association>
+        <Association Name="FK_transport_levels_transports">
+          <End Type="CriticalResultsTransporterModel.TransportEntity" Role="TransportEntity" Multiplicity="1" />
+          <End Type="CriticalResultsTransporterModel.TransportLevelEntity" Role="transport_levels" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TransportEntity">
+              <PropertyRef Name="Id" /></Principal>
+            <Dependent Role="transport_levels">
+              <PropertyRef Name="TransportId" /></Dependent></ReferentialConstraint></Association>
+        <EntityType Name="SettingEntity">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Uuid" Type="Guid" Nullable="false" />
+          <Property Name="Owner" Type="String" Nullable="false" />
+          <Property Name="EntryKey" Type="String" Nullable="false" />
+          <Property Name="Value" Type="String" Nullable="true" />
+          <Property Name="XmlValue" Type="String" Nullable="true" /></EntityType></Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
+        <EntityContainerMapping StorageEntityContainer="CriticalResultsTransporterModelStoreContainer" CdmEntityContainer="CriticalResultsTransporterEntities">
+          <EntitySetMapping Name="ContextTypeEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.ContextTypeEntity)">
+              <MappingFragment StoreEntitySet="context_types">
+                <ScalarProperty Name="JsonTemplate" ColumnName="json_template" />
+                <ScalarProperty Name="XmlSchema" ColumnName="xml_schema" />
+                <ScalarProperty Name="NamespaceUri" ColumnName="namespace_uri" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="Name" ColumnName="name" />
+                <ScalarProperty Name="Description" ColumnName="description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LevelEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.LevelEntity)">
+              <MappingFragment StoreEntitySet="levels">
+                <ScalarProperty Name="DueTimeout" ColumnName="due_timeout" />
+                <ScalarProperty Name="DirectContactRequired" ColumnName="direct_contact_required" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="ShortDescription" ColumnName="short_description" />
+                <ScalarProperty Name="EscalationTimeout" ColumnName="escalation_timeout" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="Name" ColumnName="name" />
+                <ScalarProperty Name="Description" ColumnName="description" />
+                <ScalarProperty Name="ColorValue" ColumnName="color_value" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResultContextEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.ResultContextEntity)">
+              <MappingFragment StoreEntitySet="result_contexts">
+                <ScalarProperty Name="PatientKey" ColumnName="patient_key" />
+                <ScalarProperty Name="ExamKey" ColumnName="exam_key" />
+                <ScalarProperty Name="XmlValue" ColumnName="xml_value" />
+                <ScalarProperty Name="JsonValue" ColumnName="json_value" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ResultEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.ResultEntity)">
+              <MappingFragment StoreEntitySet="results">
+                <ScalarProperty Name="AcknowledgmentTime" ColumnName="acknowledgment_time" />
+                <ScalarProperty Name="DueTime" ColumnName="due_time" />
+                <ScalarProperty Name="EscalationTime" ColumnName="escalation_time" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="Message" ColumnName="message" />
+                <ScalarProperty Name="CreationTime" ColumnName="creation_time" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoleEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.RoleEntity)">
+              <MappingFragment StoreEntitySet="roles">
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="Name" ColumnName="name" />
+                <ScalarProperty Name="Description" ColumnName="description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TransportEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.TransportEntity)">
+              <MappingFragment StoreEntitySet="transports">
+                <ScalarProperty Name="FriendlyAddressName" ColumnName="friendly_address_name" />
+                <ScalarProperty Name="TransportURI" ColumnName="transport_uri" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="Name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.UserEntity)">
+              <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="PagerType" ColumnName="pager_type" />
+                <ScalarProperty Name="PagerId" ColumnName="pager_id" />
+                <ScalarProperty Name="Pager" ColumnName="pager" />
+                <ScalarProperty Name="CellPhoneProvider" ColumnName="cell_phone_provider" />
+                <ScalarProperty Name="NPI" ColumnName="npi" />
+                <ScalarProperty Name="Country" ColumnName="country" />
+                <ScalarProperty Name="Zip" ColumnName="zip" />
+                <ScalarProperty Name="State" ColumnName="state" />
+                <ScalarProperty Name="City" ColumnName="city" />
+                <ScalarProperty Name="HomePhone" ColumnName="home_phone" />
+                <ScalarProperty Name="OfficePhone" ColumnName="office_phone" />
+                <ScalarProperty Name="CellPhone" ColumnName="cell_phone" />
+                <ScalarProperty Name="Address" ColumnName="address" />
+                <ScalarProperty Name="EMail" ColumnName="email" />
+                <ScalarProperty Name="Enabled" ColumnName="enabled" />
+                <ScalarProperty Name="Credentials" ColumnName="credentials" />
+                <ScalarProperty Name="IsHomoSapien" ColumnName="is_homo_sapien" />
+                <ScalarProperty Name="Title" ColumnName="title" />
+                <ScalarProperty Name="Id" ColumnName="id" />
+                <ScalarProperty Name="UserName" ColumnName="user_name" />
+                <ScalarProperty Name="FirstName" ColumnName="first_name" />
+                <ScalarProperty Name="LastName" ColumnName="last_name" />
+                <ScalarProperty Name="MiddleName" ColumnName="middle_name" />
+                </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_result_contexts_context_types" TypeName="CriticalResultsTransporterModel.FK_result_contexts_context_types" StoreEntitySet="result_contexts">
+            <EndProperty Name="context_types">
+              <ScalarProperty Name="Id" ColumnName="context_type_id" />
+            </EndProperty>
+            <EndProperty Name="result_contexts">
+              <ScalarProperty Name="Id" ColumnName="id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_results_levels" TypeName="CriticalResultsTransporterModel.FK_results_levels" StoreEntitySet="results">
+            <EndProperty Name="levels">
+              <ScalarProperty Name="Id" ColumnName="level_id" />
+            </EndProperty>
+            <EndProperty Name="results">
+              <ScalarProperty Name="Id" ColumnName="id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_result_contexts_results" TypeName="CriticalResultsTransporterModel.FK_result_contexts_results" StoreEntitySet="result_contexts">
+            <EndProperty Name="results">
+              <ScalarProperty Name="Id" ColumnName="result_id" />
+            </EndProperty>
+            <EndProperty Name="result_contexts">
+              <ScalarProperty Name="Id" ColumnName="id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_results_users" TypeName="CriticalResultsTransporterModel.FK_results_users" StoreEntitySet="results">
+            <EndProperty Name="users">
+              <ScalarProperty Name="Id" ColumnName="sender_user_id" />
+            </EndProperty>
+            <EndProperty Name="results">
+              <ScalarProperty Name="Id" ColumnName="id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_results_users1" TypeName="CriticalResultsTransporterModel.FK_results_users1" StoreEntitySet="results">
+            <EndProperty Name="users">
+              <ScalarProperty Name="Id" ColumnName="receiver_user_id" />
+            </EndProperty>
+            <EndProperty Name="results">
+              <ScalarProperty Name="Id" ColumnName="id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="user_roles" TypeName="CriticalResultsTransporterModel.user_roles" StoreEntitySet="user_roles">
+            <EndProperty Name="roles">
+              <ScalarProperty Name="Id" ColumnName="role_id" />
+            </EndProperty>
+            <EndProperty Name="users">
+              <ScalarProperty Name="Id" ColumnName="user_id" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <EntitySetMapping Name="AcknowledgmentEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.AcknowledgmentEntity)">
+              <MappingFragment StoreEntitySet="acknowledgments">
+                <ScalarProperty Name="Notes" ColumnName="notes" />
+                <ScalarProperty Name="CreationTime" ColumnName="creation_time" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="NotificationEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.NotificationEntity)">
+              <MappingFragment StoreEntitySet="notifications">
+                <ScalarProperty Name="State" ColumnName="state" />
+                <ScalarProperty Name="Notes" ColumnName="notes" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="CreationTime" ColumnName="creation_time" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="UserTransportEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.UserTransportEntity)">
+              <MappingFragment StoreEntitySet="user_transports">
+                <ScalarProperty Name="Address" ColumnName="address" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_acknowledgments_results" TypeName="CriticalResultsTransporterModel.FK_acknowledgments_results" StoreEntitySet="acknowledgments">
+            <EndProperty Name="acknowledgments">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="ResultEntity">
+              <ScalarProperty Name="Id" ColumnName="result_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_acknowledgments_users" TypeName="CriticalResultsTransporterModel.FK_acknowledgments_users" StoreEntitySet="acknowledgments">
+            <EndProperty Name="acknowledgments">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_user_transports_transports" TypeName="CriticalResultsTransporterModel.FK_user_transports_transports" StoreEntitySet="user_transports">
+            <EndProperty Name="user_transports">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="TransportEntity">
+              <ScalarProperty Name="Id" ColumnName="transport_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_user_transports_users" TypeName="CriticalResultsTransporterModel.FK_user_transports_users" StoreEntitySet="user_transports">
+            <EndProperty Name="user_transports">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_notifications_results1" TypeName="CriticalResultsTransporterModel.FK_notifications_results1" StoreEntitySet="notifications">
+            <EndProperty Name="NotificationsEntity">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="ResultEntity">
+              <ScalarProperty Name="Id" ColumnName="result_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_notifications_user_transports1" TypeName="CriticalResultsTransporterModel.FK_notifications_user_transports1" StoreEntitySet="notifications">
+            <EndProperty Name="NotificationsEntity">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserTransportEntity">
+              <ScalarProperty Name="Id" ColumnName="user_transport_id" /></EndProperty>
+            </AssociationSetMapping>
+          <EntitySetMapping Name="RatingEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.RatingEntity)">
+              <MappingFragment StoreEntitySet="ratings">
+                <ScalarProperty Name="comments" ColumnName="comments" />
+                <ScalarProperty Name="value" ColumnName="value" />
+                <ScalarProperty Name="id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_ratings_results" TypeName="CriticalResultsTransporterModel.FK_ratings_results" StoreEntitySet="ratings">
+            <EndProperty Name="ratings">
+              <ScalarProperty Name="id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="ResultEntity">
+              <ScalarProperty Name="Id" ColumnName="result_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_ratings_users" TypeName="CriticalResultsTransporterModel.FK_ratings_users" StoreEntitySet="ratings">
+            <EndProperty Name="ratings">
+              <ScalarProperty Name="id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="user_transport_levels" TypeName="CriticalResultsTransporterModel.user_transport_levels" StoreEntitySet="user_transport_levels">
+            <EndProperty Name="UserTransportEntity">
+              <ScalarProperty Name="Id" ColumnName="user_transport_id" /></EndProperty>
+            <EndProperty Name="LevelEntity">
+              <ScalarProperty Name="Id" ColumnName="level_id" /></EndProperty></AssociationSetMapping>
+          <EntitySetMapping Name="ProxyEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.ProxyEntity)">
+              <MappingFragment StoreEntitySet="proxies">
+                <ScalarProperty Name="RelationshipDescription" ColumnName="relationship_description" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="TokenEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.TokenEntity)">
+              <MappingFragment StoreEntitySet="tokens">
+                <ScalarProperty Name="UpdatedTime" ColumnName="updated_time" />
+                <ScalarProperty Name="CreatedTime" ColumnName="created_time" />
+                <ScalarProperty Name="Ipv4" ColumnName="ipv4" />
+                <ScalarProperty Name="Token" ColumnName="token" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="UserResultTagEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.UserResultTagEntity)">
+              <MappingFragment StoreEntitySet="user_results">
+                <ScalarProperty Name="Description" ColumnName="description" />
+                <ScalarProperty Name="Tag" ColumnName="tag" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_proxies_users" TypeName="CriticalResultsTransporterModel.FK_proxies_users" StoreEntitySet="proxies">
+            <EndProperty Name="proxies">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_proxies_users_proxy" TypeName="CriticalResultsTransporterModel.FK_proxies_users_proxy" StoreEntitySet="proxies">
+            <EndProperty Name="proxies">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="proxy_user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_user_results_results" TypeName="CriticalResultsTransporterModel.FK_user_results_results" StoreEntitySet="user_results">
+            <EndProperty Name="user_results">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="ResultEntity">
+              <ScalarProperty Name="Id" ColumnName="result_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_tokens_users" TypeName="CriticalResultsTransporterModel.FK_tokens_users" StoreEntitySet="tokens">
+            <EndProperty Name="tokens">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_user_results_users" TypeName="CriticalResultsTransporterModel.FK_user_results_users" StoreEntitySet="user_results">
+            <EndProperty Name="user_results">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_results_users2" TypeName="CriticalResultsTransporterModel.FK_results_users2" StoreEntitySet="results">
+            <EndProperty Name="ResultEntity">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="proxy_sender_user_id" /></EndProperty>
+            <Condition ColumnName="proxy_sender_user_id" IsNull="false" /></AssociationSetMapping>
+          <EntitySetMapping Name="ResultListEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.ResultListEntity)">
+              <MappingFragment StoreEntitySet="list_views">
+                <ScalarProperty Name="PatientKey" ColumnName="patient_key" />
+                <ScalarProperty Name="ExamKey" ColumnName="exam_key" />
+                <ScalarProperty Name="DueTime" ColumnName="due_time" />
+                <ScalarProperty Name="EscalationTime" ColumnName="escalation_time" />
+                <ScalarProperty Name="AcknowledgmentTime" ColumnName="acknowledgment_time" />
+                <ScalarProperty Name="ContextTypeUri" ColumnName="context_type" />
+                <ScalarProperty Name="ContextTypeName" ColumnName="context_type_name" />
+                <ScalarProperty Name="LevelUuid" ColumnName="level_uuid" />
+                <ScalarProperty Name="ResultContextXml" ColumnName="result_context_xml" />
+                <ScalarProperty Name="ResultContextJson" ColumnName="result_context_json" />
+                <ScalarProperty Name="ReceiverTitle" ColumnName="receiver_title" />
+                <ScalarProperty Name="ReceiverFirstName" ColumnName="receiver_first_Name" />
+                <ScalarProperty Name="ReceiverLastName" ColumnName="receiver_last_name" />
+                <ScalarProperty Name="ReceiverUserName" ColumnName="receiver_user_name" />
+                <ScalarProperty Name="SenderFirstName" ColumnName="sender_first_name" />
+                <ScalarProperty Name="SenderLastName" ColumnName="sender_last_name" />
+                <ScalarProperty Name="SenderTitle" ColumnName="sender_title" />
+                <ScalarProperty Name="SenderUserName" ColumnName="sender_user_name" />
+                <ScalarProperty Name="CreationTime" ColumnName="creation_time" />
+                <ScalarProperty Name="ResultMessage" ColumnName="result_message" />
+                <ScalarProperty Name="ResultUuid" ColumnName="result_uuid" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="UserEntryEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.UserEntryEntity)">
+              <MappingFragment StoreEntitySet="user_entries">
+                <ScalarProperty Name="RestrictedAccess" ColumnName="restricted_access" />
+                <ScalarProperty Name="XmlValue" ColumnName="xml_value" />
+                <ScalarProperty Name="Value" ColumnName="value" />
+                <ScalarProperty Name="Key" ColumnName="entry_key" />
+                <ScalarProperty Name="Type" ColumnName="type" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_credentials_users1" TypeName="CriticalResultsTransporterModel.FK_credentials_users1" StoreEntitySet="user_entries">
+            <EndProperty Name="user_entries">
+              <ScalarProperty Name="Id" ColumnName="id" /></EndProperty>
+            <EndProperty Name="UserEntity">
+              <ScalarProperty Name="Id" ColumnName="user_id" /></EndProperty></AssociationSetMapping>
+          <EntitySetMapping Name="TransportLevelEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.TransportLevelEntity)">
+              <MappingFragment StoreEntitySet="transport_levels">
+                <ScalarProperty Name="Mandatory" ColumnName="mandatory" />
+                <ScalarProperty Name="LevelId" ColumnName="level_id" />
+                <ScalarProperty Name="TransportId" ColumnName="transport_id" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="FK_transport_levels_levels" TypeName="CriticalResultsTransporterModel.FK_transport_levels_levels" StoreEntitySet="transport_levels">
+            <EndProperty Name="transport_levels">
+              <ScalarProperty Name="LevelId" ColumnName="level_id" />
+              <ScalarProperty Name="TransportId" ColumnName="transport_id" /></EndProperty>
+            <EndProperty Name="LevelEntity">
+              <ScalarProperty Name="Id" ColumnName="level_id" /></EndProperty></AssociationSetMapping>
+          <AssociationSetMapping Name="FK_transport_levels_transports" TypeName="CriticalResultsTransporterModel.FK_transport_levels_transports" StoreEntitySet="transport_levels">
+            <EndProperty Name="transport_levels">
+              <ScalarProperty Name="LevelId" ColumnName="level_id" />
+              <ScalarProperty Name="TransportId" ColumnName="transport_id" /></EndProperty>
+            <EndProperty Name="TransportEntity">
+              <ScalarProperty Name="Id" ColumnName="transport_id" /></EndProperty></AssociationSetMapping>
+          <EntitySetMapping Name="SettingEntitySet">
+            <EntityTypeMapping TypeName="IsTypeOf(CriticalResultsTransporterModel.SettingEntity)">
+              <MappingFragment StoreEntitySet="settings">
+                <ScalarProperty Name="XmlValue" ColumnName="xml_value" />
+                <ScalarProperty Name="Value" ColumnName="value" />
+                <ScalarProperty Name="EntryKey" ColumnName="entry_key" />
+                <ScalarProperty Name="Owner" ColumnName="owner" />
+                <ScalarProperty Name="Uuid" ColumnName="uuid" />
+                <ScalarProperty Name="Id" ColumnName="id" /></MappingFragment></EntityTypeMapping></EntitySetMapping></EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram Name="CriticalResultsEntities" ZoomLevel="88">
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.ContextTypeEntity" Width="1.5" PointX="11.25" PointY="2.25" Height="2.5571907552083326" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.LevelEntity" Width="1.5" PointX="7.125" PointY="6.625" Height="3.3263964843749996" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.ResultContextEntity" Width="1.5" PointX="9.125" PointY="2.625" Height="1.9802864583333326" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.ResultEntity" Width="1.5" PointX="7.125" PointY="2.5" Height="3.7109993489583326" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.RoleEntity" Width="1.5" PointX="0.75" PointY="2.375" Height="1.5923063151041672" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.TransportEntity" Width="1.5" PointX="10.125" PointY="8.125" Height="1.9210009765624996" IsExpanded="true" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.UserEntity" Width="1.5" PointX="3" PointY="2.625" Height="6.6870735677083335" IsExpanded="true" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_result_contexts_context_types" ManuallyRouted="false">
+          <ConnectorPoint PointX="11.25" PointY="3.6151432291666663" />
+          <ConnectorPoint PointX="10.625" PointY="3.6151432291666663" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_results_levels" ManuallyRouted="false">
+          <ConnectorPoint PointX="8.109373999999999" PointY="6.625" />
+          <ConnectorPoint PointX="8.109373999999999" PointY="5.900126953125" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_result_contexts_results" ManuallyRouted="false">
+          <ConnectorPoint PointX="8.625" PointY="3.6151432291666663" />
+          <ConnectorPoint PointX="9.125" PointY="3.6151432291666663" /></AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_results_users" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="3.0397948802792389" />
+          <ConnectorPoint PointX="7.125" PointY="3.0397948802792389" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_results_users1" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="3.4929198802792394" />
+          <ConnectorPoint PointX="7.125" PointY="3.4929198802792394" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.user_roles" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="3.2961531575520837" />
+          <ConnectorPoint PointX="3" PointY="3.2961531575520837" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.AcknowledgmentEntity" Width="1.5" PointX="3" PointY="0.5" Height="1.5923063151041665" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.NotificationEntity" PointX="11.25" PointY="5.125" Width="1.5" Height="1.9802864583333326" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.UserTransportEntity" Width="1.5" PointX="3" PointY="8.5" Height="2.1725878906249996" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_acknowledgments_results" >
+          <ConnectorPoint PointX="7.875" PointY="2.5" />
+          <ConnectorPoint PointX="7.875" PointY="1.4901432291666668" />
+          <ConnectorPoint PointX="4.5" PointY="1.4901432291666668" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_acknowledgments_users" >
+          <ConnectorPoint PointX="3.75" PointY="2.625" />
+          <ConnectorPoint PointX="3.75" PointY="2.2566536458333335" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_user_transports_transports" ManuallyRouted="false" >
+          <ConnectorPoint PointX="10.125" PointY="9.82029296875" />
+          <ConnectorPoint PointX="4.5" PointY="9.82029296875" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_user_transports_users" >
+          <ConnectorPoint PointX="3.75" PointY="9.3120735677083335" />
+          <ConnectorPoint PointX="3.75" PointY="10.6710009765625" />
+          <ConnectorPoint PointX="3.75" PointY="10.6710009765625" />
+          <ConnectorPoint PointX="3.75" PointY="10.4210009765625" /></AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_notifications_results1" >
+          <ConnectorPoint PointX="8.625" PointY="5.5125634765625" />
+          <ConnectorPoint PointX="11.25" PointY="5.5125634765625" />
+          </AssociationConnector>
+        <AssociationConnector ManuallyRouted="false" Association="CriticalResultsTransporterModel.FK_notifications_user_transports1">
+          <ConnectorPoint PointX="4.5" PointY="10.516337890625" />
+          <ConnectorPoint PointX="12.21875" PointY="10.516337890625" />
+          <ConnectorPoint PointX="12.21875" PointY="7.4898893229166656" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.RatingEntity" Width="1.5" PointX="4.875" PointY="4.25" Height="1.9802864583333326" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_ratings_results" >
+          <ConnectorPoint PointX="7.125" PointY="5.2304996744791659" />
+          <ConnectorPoint PointX="6.375" PointY="5.2304996744791659" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_ratings_users" >
+          <ConnectorPoint PointX="4.5" PointY="5.1283268229166659" />
+          <ConnectorPoint PointX="4.875" PointY="5.1283268229166659" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.user_transport_levels" >
+          <ConnectorPoint PointX="7.125" PointY="9.01604248046875" />
+          <ConnectorPoint PointX="4.5" PointY="9.01604248046875" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.ProxyEntity" Width="1.5" PointX="0.75" PointY="4.25" Height="1.9802864583333326" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.TokenEntity" Width="1.5" PointX="0.75" PointY="6.375" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.UserResultTagEntity" Width="1.5" PointX="4.875" PointY="6.5" Height="2.1725878906249996" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_proxies_users" >
+          <ConnectorPoint PointX="3" PointY="5.4704237005552825" />
+          <ConnectorPoint PointX="2.25" PointY="5.4704237005552825" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_proxies_users_proxy" >
+          <ConnectorPoint PointX="3" PointY="4.7977118502776417" />
+          <ConnectorPoint PointX="2.25" PointY="4.7977118502776417" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_user_results_results" >
+          <ConnectorPoint PointX="7.468748" PointY="6.2109993489583326" />
+          <ConnectorPoint PointX="7.468748" PointY="6.4609993489583317" />
+          <ConnectorPoint PointX="6.875" PointY="6.4609993489583317" />
+          <ConnectorPoint PointX="6.875" PointY="7.5862939453125" />
+          <ConnectorPoint PointX="6.375" PointY="7.5862939453125" /></AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_tokens_users" ManuallyRouted="false" >
+          <ConnectorPoint PointX="3" PointY="7.33550048828125" />
+          <ConnectorPoint PointX="2.25" PointY="7.33550048828125" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_user_results_users" >
+          <ConnectorPoint PointX="4.5" PointY="7.46050048828125" />
+          <ConnectorPoint PointX="4.875" PointY="7.46050048828125" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_results_users2" >
+          <ConnectorPoint PointX="4.5" PointY="3.9027099401396197" />
+          <ConnectorPoint PointX="7.125" PointY="3.9027099401396197" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.ResultListEntity" Width="1.5" PointX="13.5" PointY="2.125" Height="4.480205078125" />
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.UserEntryEntity" Width="1.5" PointX="0.75" PointY="8.875" Height="2.172587890625" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_credentials_users1" >
+          <ConnectorPoint PointX="3" PointY="9.0935367838541659" />
+          <ConnectorPoint PointX="2.25" PointY="9.0935367838541659" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.TransportLevelEntity" Width="1.5" PointX="9.25" PointY="6" Height="1.7566536458333353" />
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_transport_levels_levels" >
+          <ConnectorPoint PointX="8.625" PointY="7.1908268229166676" />
+          <ConnectorPoint PointX="9.25" PointY="7.1908268229166676" />
+          </AssociationConnector>
+        <AssociationConnector Association="CriticalResultsTransporterModel.FK_transport_levels_transports" >
+          <ConnectorPoint PointX="10.4375" PointY="8.125" />
+          <ConnectorPoint PointX="10.4375" PointY="7.7566536458333353" />
+          </AssociationConnector>
+        <EntityTypeShape EntityType="CriticalResultsTransporterModel.SettingEntity" Width="1.5" PointX="5.375" PointY="10.75" Height="2.1725878906249996" /></Diagram></edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

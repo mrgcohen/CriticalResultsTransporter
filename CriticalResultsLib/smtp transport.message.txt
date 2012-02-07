@@ -1,0 +1,17 @@
+﻿A patient in your care has a Critical Radiology Result that requires your acknowledgement.  The {LEVEL_NAME} was created by {SENDER} on {CURRENT_TIME}.
+
+To view and acknowledge this alert from a Partners PC follow this link:
+
+{ALERT_URI}
+
+To view and acknowledge this alert from a NON-Partners PC follow this link: (Your Partners user name will have to be entered as: partners\username)
+
+{SECURE_ALERT_URI}
+
+
+Important Notes: 
+Red Alert (<= 60 Minutes to Acknowledge): Immediately Life Threatening 
+Orange Alert (<= 3 Hours to Acknowledge): Urgent 
+Yellow Alert (<= 15 Days to Acknowledge): :Not immediately Life Threatening or Urgent 
+        
+Any questions on the ANCR system please contact Allen Dufault (adufault@partners.org). 

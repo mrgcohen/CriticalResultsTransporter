@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="0849fc6b-9cfe-4182-abc4-9faf8a4679e0" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:50356/SmtpTransport.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SmtpTransport.xsd" MetadataType="Schema" ID="fbc3ea17-ab1a-460b-9646-4cb9ad67c29e" SourceId="1" SourceUrl="http://localhost:50356/SmtpTransport.svc?xsd=xsd0" />
+    <MetadataFile FileName="SmtpTransportService.wsdl" MetadataType="Wsdl" ID="269f9e7a-dd4f-47a5-baac-2a90d5c5e3f4" SourceId="1" SourceUrl="http://localhost:50356/SmtpTransport.svc?wsdl" />
+    <MetadataFile FileName="SmtpTransport.disco" MetadataType="Disco" ID="ea1ac91e-37ca-4dc4-84bd-2f6b4e48c73b" SourceId="1" SourceUrl="http://localhost:50356/SmtpTransport.svc?disco" />
+    <MetadataFile FileName="SmtpTransport1.xsd" MetadataType="Schema" ID="b88e1cf6-f723-4592-a8b3-33502a9c5aeb" SourceId="1" SourceUrl="http://localhost:50356/SmtpTransport.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

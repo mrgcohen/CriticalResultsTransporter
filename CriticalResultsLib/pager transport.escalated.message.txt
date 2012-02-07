@@ -1,0 +1,1 @@
+﻿Unacknowledged Critical Radiology Result: ({LEVEL_NAME}) for {PatientName}.  Please login to ANCR.

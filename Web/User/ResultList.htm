@@ -1,0 +1,1052 @@
+﻿<html>
+<head>
+    <title>Critical Results :: Result List</title>
+	<link href="../CSS/StyleSheet.css" rel="stylesheet" type="text/css" />
+	
+	<script src="../javascript/jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="../javascript/jquery/jquery.json-1.3.min.js" type="text/javascript"></script>
+	<script src="../javascript/datetime/DateExtensions.js" type="text/javascript"></script>
+
+    <link href="../CSS/menu.css" rel="stylesheet" type="text/css" />
+	<link href="../CSS/modal.css" rel="stylesheet" type="text/css" />
+	<link href="../javascript/autocomplete/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+
+	
+    <script src="../javascript/CheckboxMenu.js" type="text/javascript"></script>
+	<script src="../javascript/datetime/Timespan2.js" type="text/javascript"></script>
+
+	
+	<script src="../javascript/Utility.js" type="text/javascript"></script>
+
+	<script src="../javascript/Filters/LevelFilter.js" type="text/javascript"></script>
+	<!--<script src="../javascript/Filters/UserFilter.js" type="text/javascript"></script>-->
+	<script src="../javascript/Filters/StatusTimeFilter.js" type="text/javascript"></script>
+			
+	<script src="../javascript/autocomplete/jquery.autocomplete.js" type="text/javascript"></script>
+	
+	<!--<script src="../javascript/ContextMenu.js" type="text/javascript"></script>-->
+
+	<script src="../javascript/objects/RadiologyContextFormatter.js" type="text/javascript"></script>
+
+	<style type="text/css">
+	input:text 
+	{
+		width: 1000px;
+	}
+	h5
+	{
+		margin:5px 0px 5px 0px;
+		padding: 0px 0px 0px 0px;
+		font-family:Verdana;
+		font-size:10px;
+		color:rgb (43,73,115);
+		
+	}
+	td
+	{
+		border-right:solid 1px #DDDDDD;
+	}
+	
+	div#tbl-container {
+		width: 100%;
+		height: 100%;
+		overflow: auto; /* Required for the table scrolling */
+	}
+	thead th{
+		/* header style */
+		padding:  0px 18px 0px 0px;
+		border-right: 1px solid silver;
+		border-left: 1px solid #5A81C3;
+		position:relative;
+		top: expression(document.getElementById("tbl-container").scrollTop-1); /*IE5+ only*/
+		z-index: 20;
+		white-space:nowrap;
+		vertical-align:middle;
+		cursor: default;
+	}
+	.accession
+	{
+		font-weight: bold;
+		padding: 0px 0px 0px 3px;
+	}
+	.acknowledgmentTimeColumn
+	{
+		text-align:center;
+	}
+	.creationTimeColumn
+	{
+		text-align:center;
+	}
+	.dueTimeColumn
+	{
+		text-align:center;
+		display:none;
+	}
+	.contextBR
+	{
+		line-height:50%;
+	}
+		.contextColumn
+	{
+		vertical-align:middle;
+	}
+
+	.contextDIV
+	{
+		height:100%;
+		width:100%;
+		vertical-align:middle;
+	}
+
+	.examDescription
+	{
+		font-weight: bold;
+		padding: 0px 3px 0px 0px;
+	}
+	.filterSelect
+	{
+		width: 120px;
+	}
+	.filterCell
+	{
+		color:#000000;
+		padding:2px 2px 2px 2px;
+		background-color:#EEEEEE;
+		border: solid 1px #FFFFFF;
+		text-align: center;
+	}
+	.levelColumn
+	{
+	
+	}
+	.messageColumn
+	{
+		padding: 10px 10px 10px 10px;
+	}
+			.mrn
+	{
+		font-weight: bold;
+		padding: 0px 0px 0px 3px;
+	}
+	
+	.patientName
+	{
+		font-weight: bold;
+		padding: 0px 3px 0px 0px;
+	}
+		.right
+	{
+		float: right;
+	}
+
+	.timeColumn
+	{
+		text-align:center;
+		width:160px;
+	}
+	.userColumn
+	{
+		text-align:center;
+	}
+	#filterColumn
+	{
+		width:50px;
+	}
+	#levelColumn
+	{
+		width:50px;
+	}
+	</style>
+
+	<script type="text/javascript" >
+		CRManager = parent.Manager;
+		
+		var LAST_COMPLETE_FILTER_SETTING = "lastCompleteFilter";
+		
+		var ListManager = {
+			
+			isRefreshing: false,
+			refreshTime: 60000,
+			blinkTime: 500,
+			LevelMenu: null,
+			StatusMenu: null	
+		};
+
+		$(document).ready(function() {
+			ListManager.initialize();
+			ListManager.startBlink();
+			ListManager.startRefresh();
+		});
+
+
+		ListManager.isInitialized = function() {
+			if (!CRManager.ListResults)
+				return false;
+			if (!CRManager.Levels)
+				return false;
+			return true;
+		}
+
+		ListManager.initialize = function() {
+			StatusTimeFilter.initialize(CRManager);
+			ListManager.updateTimeStatusFilterText();
+
+			$.each(CRManager.AuthenticatedUser.Roles, function(index, role) {
+				if (role.Name == CRManager.ROLE_SENDER) {
+					$("#ComposeResult").removeClass("hidden");
+				}
+			});
+
+			ListManager.applyLevels();
+			ListManager.updateTimeStatusFilterText();
+			//ListManager.refresh();
+			var usersList = [];
+			$(CRManager.Users).each(function(index, item) {
+				usersList[usersList.length] = item.LastName + ", " + item.FirstName;
+			});
+			usersList.sort();
+			$("#txtUserFilter").autocompleteArray(usersList, {
+				maxItemsToShow: 15,
+				delay: 10,
+				onItemSelect: ListManager.onNameFilterSelected
+			});
+		}
+		
+		ListManager.onNameFilterSelected = function(listItem) {
+			var names = listItem.innerText.split(",");
+			$("#txtUserFilter").val(trim(names[1]) + " " + trim(names[0]));
+
+		}
+
+		function trim(stringToTrim) {
+			return stringToTrim.replace(/^\s+|\s+$/g, "");
+		}
+
+		ListManager.getQueryStringValue = function(key, default_) {
+			if (default_ == null) default_ = "";
+			key = key.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regex = new RegExp("[\\?&]" + key + "=([^&#]*)");
+			var qs = regex.exec(window.location.href);
+			if (qs == null)
+				return default_;
+			else
+				return qs[1];
+		}
+
+		ListManager.applyLevels = function() {
+			ListManager.LevelFilterOptions = [];
+			$.each(CRManager.Levels, function(index, item) {
+				ListManager.AddLevelToFilter(index, item);
+			});
+
+			ListManager.BuildMenus();
+			$('#anchorlevelFilter').html(ListManager.buildCheckboxMenuLink(ListManager.LevelFilterOptions));
+
+			if (ListManager.isInitialized()) {
+				ListManager.buildList();
+			}
+		}
+
+		ListManager.refresh = function() {
+
+			$(".listRow").remove();
+
+			if (ListManager.isInitialized()) {
+				ListManager.buildList();
+			}
+
+			ListManager.updateTimeStatusFilterText();
+		}
+		ListManager.getPageSize = function() {
+			var size = {};
+			if (window.pageXOffset) { //Everyone else
+				size.y = window.pageYOffset;
+				size.x = window.pageXOffset;
+			}
+			else { //IE
+				size.scrollY = document.body.scrollHeight;// || document;
+				size.scrollX = document.body.scrollLeft || document.documentElement.scrollLeft;
+				size.y = document.body.offsetHeight;
+				size.x = document.body.offsetWidth;
+			}
+			return size;
+		}
+		ListManager.displayRefreshMessage = function() {
+			var size = ListManager.getPageSize();
+			$('#refreshMask').css({ "height": size.y + size.scrollY, "width": size.x + size.scrollX });
+			var xpos = -((size.x + size.scrollX) / 4);
+			$('#refreshBox').css({ "position": "absolute", "top": Math.round(xpos) });
+			$('#refreshMessage').css({ "display": "block" });
+		}
+
+		ListManager.hideRefreshMessage = function() {
+			$('#refreshMessage').css({ "display": "none" });
+		}
+
+		ListManager.applyRole = function() {
+
+			var a = "";
+			if (a != a) {
+				alert("I defy logic");
+			}
+			$(CRManager.AuthenticatedUser.Roles).each(function(index, item) {
+				if (item.Name == CRManager.ROLE_CLIN_ADMIN) {
+					$('#ShowSavedFilters').removeClass('hidden');
+				}
+			});
+
+			if (CRManager.ActiveRole === CRManager.ROLE_SENDER) {
+				$(".senderColumn").addClass("hidden");
+				$(".receiverColumn").removeClass("hidden");
+			}
+			else if (CRManager.ActiveRole === CRManager.ROLE_RECEIVER) {
+				$(".receiverColumn").addClass("hidden");
+				$(".senderColumn").removeClass("hidden");
+			}
+			else if (CRManager.ActiveRole === CRManager.ROLE_CLIN_ADMIN) {
+				$(".receiverColumn").removeClass("hidden");
+				$(".senderColumn").removeClass("hidden");
+			}
+			else {
+				//no known role
+			}
+		}
+
+		ListManager.setFreeTextFilters = function() {
+		    $("#textContextFilter").val(CRManager.Filter.contextFilter);
+		    $("#textMessageFilter").val(CRManager.Filter.messageFilter);
+		    $("#txtUserFilter").val(CRManager.Filter.receiverFilter);
+		    $("#textSenderFilter").val(CRManager.Filter.senderFilter);
+        }
+		
+		ListManager.updateUserFilter = function() {
+
+			var senderFilterFormatString = "it.senderUserName = '{0}'";
+			var receiverFilterFormatString = "it.receiverUserName = '{0}'";
+
+			ListManager.Filter.senderFilter = null;
+			ListManager.Filter.receiverFilter = null;
+
+			if (!CRManager.ProxiedUser) {
+				if (CRManager.ActiveRole == CRManager.ROLE_SENDER) {
+					ListManager.Filter.senderFilter = Utility.format(senderFilterFormatString, CRManager.AuthenticatedUser.UserName);
+				} else if (CRManager.ActiveRole == CRManager.ROLE_RECEIVER) {
+					ListManager.Filter.receiverFilter = Utility.format(receiverFilterFormatString, CRManager.AuthenticatedUser.UserName);
+				} else if (CRManager.ActiveRole == CRManager.ROLE_CLIN_ADMIN) {
+					//Clinical Admin can see all
+				} else {
+					ListManager.Filter.senderFilter = Utility.format(senderFilterFormatString, "");
+					ListManager.Filter.receiverFilter = Utility.format(receiverFilterFormatString, "");
+				}
+			} else {
+				if (CRManager.ActiveRole == CRManager.ROLE_SENDER) {
+					ListManager.Filter.senderFilter = Utility.format(senderFilterFormatString, CRManager.ProxiedUser.UserName);
+				} else if (CRManager.ActiveRole == CRManager.ROLE_RECEIVER) {
+					ListManager.Filter.senderFilter = Utility.format(receiverFilterFormatString, CRManager.ProxiedUser.UserName);
+				} else if (CRManager.ActiveRole == CRManager.ROLE_CLIN_ADMIN) {
+					//Clinical Admin can see all
+				} else {
+					ListManager.Filter.senderFilter = Utility.format(senderFilterFormatString, "");
+					ListManager.Filter.senderFilter = Utility.format(receiverFilterFormatString, "");
+				}
+			}
+		}
+
+		ListManager.AddLevelToFilter = function(index, item) {
+
+		}
+
+		ListManager.buildList = function() {
+			ListManager.Debug.writeLine("ListManager.buildList");
+			$.each(CRManager.ListResults, function(index, item) {
+				ListManager.buildEntry(index, item);
+			});
+
+			$(".levelColumn").each(ListManager.setLevelColors);
+
+			ListManager.applyRole();
+			ListManager.applyFilter();
+		}
+		
+		ListManager.setLevelColors = function(index, item){
+			var color = $(item).css("background-color");
+			Utility.setLevelColor(item, color);
+		}
+
+		ListManager.buildEntry = function(index, item) {
+
+			var level;
+			level = ListManager.getLevel(item.LevelUuid);
+
+			var rowClassName;
+			if (index % 2 === 0)
+				rowClassName = "oddRow";
+			else
+				rowClassName = "evenRow";
+
+			var contextCell = this.buildContextCell(index, item);
+			var messageCell = this.buildMessageCell(index, item);
+			var senderCell = this.buildSenderCell(index, item);
+			var receiverCell = this.buildReceiverCell(index, item);
+			var proxyCell = this.buildProxyCell(index, item);
+
+			var ackTime = item.AcknowledgmentTimeFormatted
+			var escalationTime = "complete";
+			if (!ackTime) {
+				ackTime = "*";
+				escalationTime = item.EscalationTimeOffset;
+			}
+
+			var creationTime = Utility.parseJsonDate(item.CreationTime);
+			var dueTime = Utility.parseJsonDate(item.DueTime);
+			var acknowledgmentTime = Utility.parseJsonDate(item.AcknowledgmentTime);
+
+			var delta = new Timespan();
+			delta.fromDates(dueTime, new Date());
+
+			Date.patterns["CriticalResults"] = "J\\h K\\m";
+
+			var creationTimeString = "*";
+			var dueTimeString = "*";
+			var acknowledgmentTimeString = "*"
+			var deltaString = "";
+			var status = "";
+			var statusClass = "";
+
+			if (creationTime)
+				creationTimeString = creationTime.dateFormat(Date.patterns.NiceDisplay);
+			if (dueTime)
+				dueTimeString = dueTime.dateFormat(Date.patterns.NiceDisplay);
+			if (acknowledgmentTime) {
+				acknowledgmentTimeString = acknowledgmentTime.dateFormat(Date.patterns.NiceDisplay);
+				status = 'complete';
+				statusClass = status;
+			}
+			else {
+				if (Math.abs(delta.totalDays()) >= 1) {
+
+					var dayString = "day";
+					if (Math.abs(delta.totalDays()) >= 2)
+						dayString = "days";
+
+					if (delta.base >= 0)
+						deltaString = '>' + Math.floor(delta.totalDays()) + Utility.format('<span class="timeLabel">{0}</span>', dayString);
+					else
+						deltaString = Math.ceil(delta.totalDays()) + Utility.format('<span class="timeLabel">{0}</span> ', dayString) + delta.hours + '<span class="timeLabel">hr</span>';
+				} else {
+					if (delta.base >= 0)
+						deltaString = Math.floor(delta.totalHours()) + '<span class="timeLabel">hr</span> ' + delta.minutes + '<span class="timeLabel">min</span>';
+					else
+						deltaString = Math.ceil(delta.totalHours()) + '<span class="timeLabel">hr</span> ' + delta.minutes + '<span class="timeLabel">min</span>';
+				}
+
+				if (delta.base > 0) {
+					status = 'pending';
+					statusClass = status;
+				}
+				else {
+					status = 'overdue';
+					statusClass = status + " " + "blink";
+				}
+			}
+			var entry = Utility.format('<tr id="listRow_{0}" class="listRow {1}"></tr>', item.ResultUuid, rowClassName);
+			entry = $(entry);
+
+			var levelCol = Utility.format('<td colspan="2" class="levelColumn" style="background-color:{0};"><div id="levelName" style="visibility:hidden">{4}</div><div class="timeUntilDue">{1}</div><div class="{2} centerText">{3}</div><div id="levelName" style="visibility:hidden">{4}</div></td>', level.ColorValue, deltaString, statusClass, status, level.Name);
+			levelCol = $(entry).append(levelCol);
+
+			var contextCol = Utility.format('<td class="contextColumn">{0}</td>', contextCell);
+			contextCol = $(entry).append(contextCol);
+
+			var messageCol = Utility.format('<td class="messageColumn">{0}</td>', messageCell);
+			messageCol = $(entry).append(messageCol);
+
+			var userCol = Utility.format('<td class="userColumn"><h5 class="tight">Alert created by</h5><div class="tight">{0}</div><h5 class="tight">Alert sent to</h5><div>{1}</div><h5 class="hidden tight">Proxy Status</h5><div class="hidden">{2}</div></td>', senderCell, receiverCell, proxyCell);
+			userCol = $(entry).append(userCol);
+
+			var timeCol = "";
+			if (acknowledgmentTime) {
+				timeCol = Utility.format('<td class="timeColumn"><h5 class="tight">Created on</h5><span class="tight">{0}</span><h5 class="tight">Acknowledged on</h5><span>{1}</span></td>', creationTimeString, acknowledgmentTimeString);
+			}
+			else {
+				timeCol = Utility.format('<td class="timeColumn"><h5 class="tight">Created on</h5><span class="tight">{0}</span><h5 class="tight">Due on</h5><span>{1}</span></td>', creationTimeString, dueTimeString);
+			}
+			timeCol = $(entry).append(timeCol);
+
+			$("#tbodyList").append(entry);
+
+			entry.bind("click", function(e) { ListManager.selectResult(e); });
+			entry.bind("mouseover", function(e) { ListManager.highlightResult(e); });
+			entry.bind("mouseout", function(e) { ListManager.highlightResult(e); });
+			entry.bind("mousehover", function(e) { ListManager.highlightResult(e); });
+		}
+
+		ListManager.buildContextCell = function(index, item) {
+
+			var contextCell = '';
+
+			var ctx = [];
+			if (item.ResultContextJson != null)
+				ctx = $.evalJSON(item.ResultContextJson);
+
+			var formatter = ContextFormatters.getFormatter(item.ContextTypeName, item.ContextTypeUri);
+			contextCell = formatter.format(ctx);
+
+			contextCell += '';
+			return contextCell;
+		}
+		
+		ListManager.buildMessageCell = function(index, item) {
+			var msg2 = new String( item.ResultMessage);
+			if (msg2.length > 100) {
+				msg2 = msg2.substr(0, 100) + "...";
+			}
+			var messageCell = '<div>' + item.ResultMessage + '<div>';
+			return messageCell;
+		}
+		ListManager.buildSenderCell = function(index, item) {
+			var usersCell = item.SenderName;
+			return usersCell;
+		}
+		ListManager.buildReceiverCell = function(index, item) {
+			var usersCell = item.ReceiverName;
+			return usersCell;
+		}
+		ListManager.buildProxyCell = function(index, item) {
+			var cell = "-";
+
+			var FORMAT_STRING = "Acting on behalf of {0}";
+
+			switch (CRManager.ActiveRole) {
+				case CRManager.ROLE_CLIN_ADMIN:
+					if (CRManager.AuthenticatedUser.UserName != item.SenderUserName || CRManager.AuthenticatedUser.UserName != item.ReceiverUserName) {
+						cell = "Acting as Clinical Manager";
+					}
+					break;
+				case CRManager.ROLE_SYS_ADMIN: 
+						cell = "Acting as Sys. Admin."
+					break; 
+				case CRManager.ROLE_SENDER:
+					if (CRManager.AuthenticatedUser.UserName != item.SenderUserName) {
+						cell = Utility.format(FORMAT_STRING, item.ReceiverName);
+					}
+					break;
+				case CRManager.ROLE_RECEIVER:
+					if (CRManager.AuthenticatedUser.UserName != item.ReceiverUserName) {
+						cell = Utility.format(FORMAT_STRING, item.ReceiverName);
+					}
+					break;
+			}
+
+			return cell;
+		}
+		ListManager.getRowStatus = function(index, item){
+		
+		}
+
+		ListManager.getLevel = function(uuid) {
+			for (var i = 0; i < CRManager.Levels.length; i++) {
+				if (CRManager.Levels[i].Uuid == uuid) {
+					return CRManager.Levels[i];
+				}
+			}
+			return null;
+		}
+
+		ListManager.Debug = {};
+
+		ListManager.Debug.write = function(msg) {
+			$("#textDebug").text(msg + $("#textDebug").text());
+		}
+		ListManager.Debug.writeLine = function(msg) {
+			var date = new Date();
+			ListManager.Debug.write(date + ": " + msg + "\r\n");
+		}
+
+		ListManager.selectResult = function(event) {
+			event.stopPropagation();
+			ListManager.selectFired = true;
+			var element;
+
+			if (event.target) {
+				element = event.target;
+			}
+			else if (event.srcElement) {
+				element = event.srcElement;
+			}
+
+			//Safari issue
+			if (element.nodeType == 3) {
+				element = event.parentNode;
+			}
+
+			//while (element.tagName != "TR") {
+			while (!$(element).hasClass("listRow")) {
+				if (!element.parentNode)
+					return;
+				element = element.parentNode;
+			}
+
+			var idComponents = element.id.split("_");
+			var uuid = idComponents[1];
+
+			ListManager.showDetail(uuid);
+		}
+
+		ListManager.highlightResult = function(event) {
+			event.stopPropagation();
+			var element;
+
+			if (event.target) {
+				element = event.target;
+			}
+			else if (event.srcElement) {
+				element = event.srcElement;
+			}
+
+			//Safari issue
+			if (element.nodeType == 3) {
+				element = event.parentNode;
+			}
+
+			//while (element.tagName != "TR") {
+			while (!$(element).hasClass("listRow")) {
+				if (!element.parentNode)
+					return;
+				element = element.parentNode;
+			}
+
+			var idComponents = element.id.split("_");
+			var uuid = idComponents[1];
+
+			$(element).toggleClass("highlight");
+		}
+
+		
+
+
+		/////////////////////////////
+		//*** BEGIN: Context Menu ***
+		/////////////////////////////
+		ListManager.onclickFilterLevels = function() {
+//			var uri = "LevelFilterMenu.htm";
+//			
+//			ListManager.showFilterLevelMenu = {};
+//			ListManager.showFilterLevelMenu.width = event.srcElement.clientWidth;
+//			ListManager.showFilterLevelMenu.maxHeight = document.body.scrollHeight+50;
+//			ListManager.showFilterLevelMenu.xLoc = window.screenLeft + event.srcElement.offsetParent.offsetLeft + event.srcElement.offsetLeft + 4;
+//			ListManager.showFilterLevelMenu.yLoc = event.screenY + 8;
+
+//			WebClient.getHtml(uri, ListManager.onFilterLevelMenuLoaded, null);
+		}
+		ListManager.onFilterLevelMenuLoaded = function(menuContent) {
+					
+//			ListManager.ContextMenu.PrepMenu(menuContent, ListManager.showFilterLevelMenu.width, ListManager.showFilterLevelMenu.maxHeight);
+//			ListManager.ContextMenu.ShowMenu(ListManager.showFilterLevelMenu.xLoc, ListManager.showFilterLevelMenu.yLoc);
+		}
+
+//		var contextMenu = new ContextMenu();
+//		function showContextMenu() {
+//			contextMenu.PrepMenu("<div onclick='parent.hi();'>hi</div>", 100, 500);
+//			var xLoc = window.screenLeft + event.srcElement.offsetParent.offsetLeft + event.srcElement.offsetLeft + 4;
+//			var yLoc = event.screenY + 8;
+//			contextMenu.ShowMenu(xLoc, yLoc);
+//		}
+		
+		ListManager.onselectFilterLevels = function(filterLevels)
+		{
+			//Filter HERE
+		}
+		/////////////////////////////
+		//*** BEGIN: Context Menu ***
+		/////////////////////////////
+
+
+		ListManager.startBlink = function() {
+			setInterval("ListManager.blink();", ListManager.blinkTime);
+		}
+		ListManager.blink = function() {
+			if ($(".blink").length > 0) {
+				$(".blink").addClass("blinkAlt");
+				$(".blink").removeClass("blink");
+			}
+			else if ($(".blinkAlt").length > 0) {
+				$(".blinkAlt").addClass("blink");
+				$(".blinkAlt").removeClass("blinkAlt");
+			}
+		}
+		ListManager.startRefresh = function() {
+			//setInterval("CRManager.refresh();", ListManager.refreshTime);
+		}
+		ListManager.applyFilter = function() {
+			var levelFilter = ListManager.getQueryStringValue("level");
+			if (levelFilter) {
+				$(CRManager.Filter.levelFilter).each(function(i, fltr) {
+					if (fltr.name == levelFilter) {
+						fltr.value = true;
+					}
+					else {
+						fltr.value = false;
+					}
+				});
+			}
+			var levelFilterText = "";
+			var levelFilterAll = true;
+			$(CRManager.Filter.levelFilter).each(function(index, item) {
+				if (item.value === true) {
+					if (index == 0)
+						levelFilterText += "<a href='#'>" + item.name + "</a>";
+					else
+						levelFilterText += "<br /><a href='#'>" + item.name + "</a>";
+				}
+				else {
+					levelFilterAll = false;
+				}
+			});
+			if (levelFilterAll === true || levelFilterText == "") {
+				$('#anchorlevelFilter').html("<a href='#'>All</a>");
+			}
+			else {
+				$('#anchorlevelFilter').html(levelFilterText);
+			}
+
+			$('#anchorlevelFilter a').bind('click', ListManager.showLevelFilter);
+
+			var statusFilterText = "";
+			var statusFilterAll = true;
+			$(CRManager.Filter.statusFilter).each(function(index, item) {
+				if (item.value === true) {
+					if (index == 0)
+						statusFilterText += "<a href='#'>" + item.name + "</a>";
+					else
+						statusFilterText += "<br /><a href='#'>" + item.name + "</a>";
+				}
+				else {
+					statusFilterAll = false;
+				}
+			});
+			if (statusFilterAll === true || statusFilterText == "") {
+				$('#anchorStatusFilter').html("<a href='#'>All</a>");
+			}
+			else {
+				$('#anchorStatusFilter').html(statusFilterText);
+			}
+			$('#anchorStatusFilter').bind("click", function() {
+				ListManager.showStatusFIlter();
+			});
+
+			CRManager.Filter.contextFilter = $("#textContextFilter").val();
+			CRManager.Filter.messageFilter = $("#textMessageFilter").val();
+			CRManager.Filter.receiverFilter = $("#txtUserFilter").val();
+			CRManager.Filter.senderFilter = "";
+			//CRManager.Filter.senderFilter = $("#textSenderFilter").val();
+
+			$(".listRow").each(function(index, item) {
+				ListManager.applyRowFilter(index, item);
+			});
+
+			$("#dueTimeColumn").addClass("hidden");
+		}
+		
+		ListManager.applyRowFilter = function(index, row) {
+			var match = false;
+			var pattern = new RegExp();
+			if (CRManager.Filter.levelFilter) {
+				$(CRManager.Filter.levelFilter).each(function(index, item) {
+					if (item.value === false) {
+						pattern.compile(item.name.toLowerCase());
+						if (pattern.test($(".levelColumn", row).text().toLowerCase()) === true)
+							match = true;
+					}
+				});
+			}
+
+			if (CRManager.Filter.statusFilter) {
+				$(CRManager.Filter.statusFilter).each(function(index, item) {
+					if (item.value === false) {
+						pattern.compile(item.name.toLowerCase());
+						if (pattern.test($(".levelColumn", row).text().toLowerCase()) === true)
+							match = true;
+					}
+				});
+			}
+
+			var contextFilter = $('#textContextFilter').val();
+			if (contextFilter != "") {
+				pattern.compile(contextFilter.toLowerCase());
+				if (pattern.test($(".contextColumn", row).text().toLowerCase()) === false)
+					match = true;
+			}
+
+			var messageFilter = $('#textMessageFilter').val();
+			if (messageFilter != "") {
+				pattern.compile(messageFilter.toLowerCase());
+				if (pattern.test($(".messageColumn", row).text().toLowerCase()) === false)
+					match = true;
+			}
+
+			var userFilter = $('#txtUserFilter').val();
+			if (userFilter != "") {
+				pattern.compile(userFilter.toLowerCase());
+				if (pattern.test($(".userColumn", row).text().toLowerCase()) === false)
+					match = true;
+			}
+			if (match === false)
+				$(row).removeClass("hidden");
+			else
+				$(row).addClass("hidden");
+		}
+
+		ListManager.BuildMenus = function() {
+			ListManager.LevelMenu = new CheckboxMenu("anchorlevelFilter", ListManager.LevelFilterOptions, "LevelMenu", "ListManager.filterLevelCallback" );
+			ListManager.StatusMenu = new CheckboxMenu("anchorstatusFilter", ListManager.StatusFilterOptions, "StatusMenu", "ListManager.filterStatusCallback" );
+		}
+
+		ListManager.filterLevelClick = function(event) {
+			CRManager.LevelFilter.Show("LevelFilter");
+		}
+
+		ListManager.filterStatusClick = function(event) {
+			var linkId = event.srcElement.id;
+			CheckboxMenu.click(event, ListManager.StatusMenu, null, ListManager.StatusFilterOptions);
+
+		}
+
+		ListManager.filterLevelCallback = function(data) {
+			ListManager.LevelFilterOptions = data;
+			$('#anchorlevelFilter').html(ListManager.buildCheckboxMenuLink(data));
+			ListManager.applyFilter();
+		}
+
+		ListManager.filterStatusCallback = function(data) {
+			ListManager.StatusFilterOptions = data;
+			$('#anchorStatusFilter').html(ListManager.buildCheckboxMenuLink(data));
+			ListManager.applyFilter();
+		}
+
+		ListManager.buildCheckboxMenuLink = function(data) {
+			var filterLink = "All";
+			var isFiltered = false;
+			var allUnchecked = true;
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].value === false) {
+					isFiltered = true;
+				}
+				if (data[i].value === true) {
+					allUnchecked = false;
+				}
+			}
+			if (isFiltered == true) {
+				if (allUnchecked == true) {
+					filterLink = "none";
+				}
+				else {
+					filterLink = "";
+					for (var i = 0; i < data.length; i++) {
+						if (data[i].value === true) {
+							if (filterLink!="") filterLink += data[i].name + '<br />';
+						}
+					}
+				}
+			}
+			return filterLink;
+		}
+		///	<summary>
+		///	jQuery event
+		///	</summary>
+		ListManager.onTimeChange = function(eventObject) {
+
+			var selectedOptionValue = $(this).children("option:selected").val();
+			var formatString;
+
+			if (selectedOptionValue === "all") {
+				formatString = "";
+			} else if (selectedOptionValue === "today") {
+				formatString = " {0} > DATETIME'" + startOfDay().dateFormat(Date.patterns.ISO8601LongPattern) + "' AND {0} < DATETIME'" + endOfDay().dateFormat(Date.patterns.ISO8601LongPattern) + "' ";
+			} else {
+				var delta = new Timespan();
+				delta.fromMilliseconds(selectedOptionValue);
+				var time = parseInt(new Date().getTime()) + parseInt(delta.totalMilliseconds());
+				var dateTime = new Date();
+				dateTime.setTime(time);
+
+				if (delta.base > 0) {
+					formatString = "{0} < DATETIME'" + dateTime.dateFormat(Date.patterns.ISO8601LongPattern) + "' ";
+				}
+				else {
+					formatString = "{0} > DATETIME'" + dateTime.dateFormat(Date.patterns.ISO8601LongPattern) + "' ";
+				}
+			}
+
+			var field = "";
+			switch (eventObject.target.id) {
+				case "selectCreationTimeFilter":
+					ListManager.Filter.createdFilter = Utility.format(formatString, "it.CreationTime");
+					break;
+				case "selectDueTimeFilter":
+					ListManager.Filter.dueFilter = Utility.format(formatString, "it.EscalationTime");
+					break;
+				case "selectAcknowledgmentTimeFilter":
+					ListManager.Filter.acknowledgedFilter = Utility.format(formatString + "OR it.AcknowledgmentTime IS NULL ", "it.AcknowledgmentTime");
+					break;
+				default:
+					return;
+			}
+			ListManager.refresh();
+
+		}
+
+		ListManager.showDetail = function(uuid) {
+			CRManager.openResultDetail(uuid);
+		}
+		
+		function endOfDay() {
+			var end = new Date();
+			end.setHours(23, 59, 59, 999);
+			return end;
+		}
+		function startOfDay() {
+			var start = new Date();
+			start.setHours(0, 0, 0, 0);
+			return start;
+		}
+
+		///Level Filter
+		ListManager.showLevelFilter = function() {
+		parent.LevelFilter = LevelFilter;
+		if (CRManager.Filter.levelFilter == null) {
+				CRManager.Filter.levelFilter = new Array();
+				for (var i = 0; i < CRManager.Levels.length; i++) {
+					CRManager.Filter.levelFilter[CRManager.Filter.levelFilter.length] = { name: CRManager.Levels[i].Name, value: true };
+				}
+			}
+			var levelFilterHtml = LevelFilter.getFilter(CRManager.Filter.levelFilter, "levelFilter", "levelFilter", ListManager.onLevelFilter, ListManager.CancelLevelFilter);
+			parent.Manager.addModal("modalLevelFilter", levelFilterHtml, "Level Filter");
+		}
+		
+		ListManager.CancelLevelFilter = function() {
+			parent.Manager.closeModal("modalLevelFilter");
+		}
+
+		ListManager.onLevelFilter = function(filterData) {
+			CRManager.Filter.levelFilter = filterData;
+			ListManager.CancelLevelFilter();
+			ListManager.applyFilter();
+		}
+		
+		///Status/Time filter
+		ListManager.showTimeFilter = function() {
+			parent.StatusTimeFilter = StatusTimeFilter;
+			var statusTimeFilterHtml = StatusTimeFilter.getHtml(CRManager.Filter.statusFilter, CRManager.Filter.timeFilter, "timeFilter", "timeFilter", ListManager.onTimeFilter, ListManager.CancelTimeFilter);
+			parent.Manager.addModal("modalTimeFilter", statusTimeFilterHtml, "Status/Time Filter");
+			parent.StatusTimeFilter.applySavedFilter(parent.Manager.getObjectReference("modalTimeFilter"), CRManager.Filter.statusFilter, CRManager.Filter.timeFilter);
+		}
+		
+		ListManager.CancelTimeFilter = function() {
+			parent.Manager.closeModal("modalTimeFilter");
+		}
+
+		ListManager.onTimeFilter = function(filterData) {
+			CRManager.Filter.timeFilter = filterData.TimeFilter;
+			CRManager.Filter.statusFilter = filterData.StatusFilter;
+			ListManager.updateTimeStatusFilterText();
+			ListManager.CancelTimeFilter();
+			CRManager.refresh();
+		}
+
+		ListManager.updateTimeStatusFilterText = function() {
+			$(CRManager.Filter.statusFilter).each(function(i, data) {
+				if (data.value === true) {
+					$('#lnk' + data.name).text(data.text);
+				}
+				else {
+					$('#lnk' + data.name).text("None");
+				}
+			});
+		}
+
+		///User Filter
+		ListManager.showUserFilter = function() {
+			parent.UserFilter = UserFilter;
+			var userFilterHtml = UserFilter.getFilter("userfilter", "userFilter", ListManager.onUserFilter, ListManager.userFilterCancel);
+			var modal = parent.Manager.addModal("modalUserFilter", userFilterHtml, "User Filter");
+			//parent.UserFilter.enableAutoComplete(parent.Manager.AutocompleteReceivers, parent.Manager.AutocompleteSenders, modal);
+		}
+		ListManager.userFilterCancel = function() {
+			parent.Manager.closeModal("modalUserFilter");
+		}
+
+		ListManager.onUserFilter = function(filterData) {
+			CRManager.Filter.userFilter = filterData;
+			//ListManager.userFilterCancel();
+			CRManager.refresh();
+		}
+
+		ListManager.filterUser = function() {
+			var filter = new Array();
+			filter[0] = $('#txtUserFilter').val();
+			var userFilter = { Senders: filter, Receivers: filter };
+
+
+			ListManager.onUserFilter(userFilter);
+		}
+
+	</script>
+</head>
+<body>
+	<textarea class="hidden" id="textDebug" cols="80" rows="4"></textarea>
+	<div id="divResultList" class="hidden"></div>
+	<div id="divLevels" class="hidden"></div>
+	<div id="tbl-container">
+	<table style="border: solid 1px #AAAAAA;">
+		<thead>
+<!--		<tr>
+			<th colspan="6" style="background-color: White; border-top: solid 1px #AAAAAA; text-align: left">
+				<div style="padding-left: 5px; padding-bottom: 6px; padding-top: 12px; font-family:Arial; font-size:medium; color:#888888">My Alerts:</div>
+			</th>
+		</tr>-->
+		<tr>
+			<th colspan="2"><div style="width:50px;">Alert Level</div></th>
+			<th class="contextColumn">Patient/Exam Info</th>
+			<th class="messageColumn">Critical Alert Description</th>
+			<th class="userColumn">Providers</th>
+			<th class="timeColumn">Alert Timeline</th>
+		</tr>
+			
+			<tr> 
+				<th class="filterCell" id="filterColumn"><input type='button' style="text-align:center;" id="btnFilter" value="Search" onclick="ListManager.applyFilter();" /></th>
+				<th class="filterCell" id="levelColumn"><div id="anchorlevelFilter"><a href="#" onclick="ListManager.showLevelFilter(); return false;">All</a></div></th>
+				<th class="filterCell"  style="white-space:nowrap"><input id="textContextFilter" type="text" value="" style="width:220px;" /></th>
+				<th class="filterCell" ><input id="textMessageFilter" type="text" value="" style="width:200px;" /></th>			
+				<th class="filterCell" ><input type="text" id="txtUserFilter" value="" /></th>
+				<th class="filterCell"  style="text-align:left;" id="anchorTimeFilter">
+					<div>
+						<span id="mnuPending">Pending: <a href="#" id="lnkPending" onclick="ListManager.showTimeFilter(); return false;">All</a></span><br /> 
+						<span id="mnuOverdue">Overdue: <a href="#" id="lnkOverdue" onclick="ListManager.showTimeFilter(); return false;">All</a></span><br /> 
+						<span id="mnuComplete">Acknowledged: <a href="#" id="lnkComplete" onclick="ListManager.showTimeFilter(); return false;">None</a></span><br /> 
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<tbody id="tbodyList">
+		
+		</tbody>
+		<tfoot></tfoot>
+	</table>
+	</div>
+	<div class="hidden">
+		<input type="text" onclick="ListManager.onclickFilterLevels();"/>
+		<div style="text-decoration:underline;" onclick="ListManager.onclickFilterLevels();">hi</div>
+	</div>
+	<div id="refreshMessage" class="modalPage">
+		<div id="refreshMask" class="modalBackground"></div>
+		<div class="modalContainer">
+			<table id="refreshBox" class="modal" style="height:30px; width:100px; text-align:center">
+				<tbody>
+					<tr valign="middle"><td valign="middle"><img src="../graphics/working.gif" alt="" />&nbsp;<i>Working...</i></td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

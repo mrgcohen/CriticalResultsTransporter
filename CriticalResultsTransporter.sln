@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.Entities", "Entities\CriticalResults.Entities.csproj", "{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.Lib", "CriticalResultsLib\CriticalResults.Lib.csproj", "{2D2D51E9-F82F-48E6-86D5-154586B44912}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.WcfServices", "WcfServices\CriticalResults.WcfServices.csproj", "{4F8B3101-4588-4E02-8339-1C63F80299DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.SmtpTransport", "SmtpTransport\CriticalResults.SmtpTransport.csproj", "{BDC3EF8A-3678-45BD-8402-3C337D386F3C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.EntityObjects", "EntityObjects\EntityObjects\CriticalResults.EntityObjects.csproj", "{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.Web", "Web\CriticalResults.Web.csproj", "{D1698C10-69C0-467D-9783-C2BB262357E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CriticalResults.AgentService", "AgentService\CriticalResults.AgentService.csproj", "{478B4F91-60E0-4B08-85BB-712E3542E08C}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "CriticalResults.AgentServiceSetup", "AgentServiceSetup\AgentServiceSetup.vdproj", "{C01C7590-E5C7-472B-8FE1-A02E21EFC3F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL", "SQL", "{AD169F3A-02BA-4159-A456-F422BCD80C04}"
+	ProjectSection(SolutionItems) = preProject
+		SQL Server Scripts\CREATE_CriticalResultsTransporter_Database.sql = SQL Server Scripts\CREATE_CriticalResultsTransporter_Database.sql
+		SQL Server Scripts\CREATE_CriticalResultsTransporter_Tables.sql = SQL Server Scripts\CREATE_CriticalResultsTransporter_Tables.sql
+		SQL Server Scripts\delete_active.sql = SQL Server Scripts\delete_active.sql
+		SQL Server Scripts\DROP_CriticalResultsTransporter.sql = SQL Server Scripts\DROP_CriticalResultsTransporter.sql
+		SQL Server Scripts\INITIALIZE_CriticalResultsTransporter.sql = SQL Server Scripts\INITIALIZE_CriticalResultsTransporter.sql
+		SQL Server Scripts\INITIALIZE_DEV.sql = SQL Server Scripts\INITIALIZE_DEV.sql
+		SQL Server Scripts\UPDATE_1SP3_TO21.sql = SQL Server Scripts\UPDATE_1SP3_TO21.sql
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4BC92F-4384-4F80-8749-A6D3CC980F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D2D51E9-F82F-48E6-86D5-154586B44912}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D2D51E9-F82F-48E6-86D5-154586B44912}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D2D51E9-F82F-48E6-86D5-154586B44912}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D2D51E9-F82F-48E6-86D5-154586B44912}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8B3101-4588-4E02-8339-1C63F80299DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8B3101-4588-4E02-8339-1C63F80299DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8B3101-4588-4E02-8339-1C63F80299DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8B3101-4588-4E02-8339-1C63F80299DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDC3EF8A-3678-45BD-8402-3C337D386F3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDC3EF8A-3678-45BD-8402-3C337D386F3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDC3EF8A-3678-45BD-8402-3C337D386F3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDC3EF8A-3678-45BD-8402-3C337D386F3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D2C173B-2C34-409F-B1A9-1D2AF1AF9028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1698C10-69C0-467D-9783-C2BB262357E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1698C10-69C0-467D-9783-C2BB262357E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1698C10-69C0-467D-9783-C2BB262357E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1698C10-69C0-467D-9783-C2BB262357E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{478B4F91-60E0-4B08-85BB-712E3542E08C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{478B4F91-60E0-4B08-85BB-712E3542E08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{478B4F91-60E0-4B08-85BB-712E3542E08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{478B4F91-60E0-4B08-85BB-712E3542E08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C01C7590-E5C7-472B-8FE1-A02E21EFC3F6}.Debug|Any CPU.ActiveCfg = Debug
+		{C01C7590-E5C7-472B-8FE1-A02E21EFC3F6}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

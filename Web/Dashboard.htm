@@ -1,0 +1,468 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+	<link href="CSS/StyleSheet.css" rel="stylesheet" type="text/css" />
+
+	<script src="javascript/jquery/jquery-1.3.2.js" type="text/javascript"></script>
+
+	<script src="javascript/jquery/jquery.json-1.3.min.js" type="text/javascript"></script>
+
+	<script src="DynamicScripts/RootUrl.aspx" type="text/javascript"></script>
+	<script src="javascript/datetime/DateExtensions.js" type="text/javascript"></script>
+
+	<script src="javascript/Utility.js" type="text/javascript"></script>
+
+	<script src="javascript/datetime/Timespan2.js" type="text/javascript"></script>
+
+	<script src="javascript/objects/user.js" type="text/javascript"></script>
+
+	<script type="text/javascript" language="javascript">
+		var CRManager = parent.Manager;
+
+		var DashboardManager = {
+			userLoaded: null,
+			queryString: null,
+
+			initialize: null,
+			userLoaded: null,
+
+			refreshTime: 20000
+		};
+
+		//	Modified: 2009-12-01, Jeremy Richardson
+		//		Fixed apparent timing issue where Dashboard was not refreshing on start.  See default.htm::Manager.onDashQueryResultsSuccess() 
+		$(document).ready(function() {
+			DashboardManager.initialize();
+			if (CRManager.DashboardResults != null)
+				DashboardManager.refresh();
+		});
+
+		DashboardManager.initialize = function()
+		{
+			DashboardManager.hideProtectedElements();
+			//WebClient.initialize();
+			DashboardManager.onUserLoaded();
+			parent.UserTransportManagement.Initialize(DashboardManager.refreshUserInfo);
+			CRManager.Extension.renderHelpLinks($('#helpLinks'));
+		}
+
+		DashboardManager.hideProtectedElements = function() {
+			$(".sender").hide();
+			$(".receiver").hide();
+		}
+
+		DashboardManager.refreshUserInfo = function() {
+			CRManager.WebClient.getUser(CRManager.AuthenticatedUser.UserName, DashboardManager.getUserSuccessful);
+		}
+
+		DashboardManager.getUserSuccessful = function(response) {
+			CRManager.AuthenticatedUser = response;
+			$("#userInfoTableBody").html(DashboardManager.getUserContactMarkup(CRManager.AuthenticatedUser));
+		}
+
+		DashboardManager.logout = function() {
+			CRManager.setAuthenticatedUser(null);
+		}
+
+		DashboardManager.refresh = function() {
+			DashboardManager.onQuerySuccess(CRManager.DashboardResults);
+			return;
+		}
+
+		DashboardManager.onQuerySuccess = function(response) {
+			DashboardManager.memo = {};
+			$.each(response, function(index, item) {
+				if (!DashboardManager.memo[item.LevelUuid]) {
+					DashboardManager.memo[item.LevelUuid] = item;
+					DashboardManager.memo[item.LevelUuid].count = 0;
+				}
+				DashboardManager.memo[item.LevelUuid].count++;
+			});
+
+			$(".dashboardRow").remove();
+			var dashboardTableBodyHtml = "";
+			$.each(CRManager.Levels, function(levelIndex, level) {
+				if (level.Transports != null && level.Transports.length > 0) {
+					var entry = {};
+					entry.levelName = level.Name;
+					entry.colorValue = level.ColorValue;
+					entry.count = 0;
+					entry.due = "-";
+					entry.ResultUuid = "";
+					entry.shortDescription = level.ShortDescription;
+					if (DashboardManager.memo[level.Uuid]) {
+						if (DashboardManager.memo[level.Uuid].AcknowledgmentTime == null) {
+							entry.count = DashboardManager.memo[level.Uuid].count;
+							entry.due = formatDate(DashboardManager.memo[level.Uuid].DueTime);
+							entry.ResultUuid = DashboardManager.memo[level.Uuid].ResultUuid;
+						}
+					}
+
+					//IE6 has problems with $.append()
+					//DashboardManager.buildDashboardRow(entry);
+
+					DashboardManager.buildDOMDashboardRow(entry);
+				}
+			});
+
+			$("#lastUpdated").text("Last update at: " + new Date().dateFormat(Date.patterns.NiceDisplay));
+
+			$(".colorCell").each(DashboardManager.setLevelColor);
+			DashboardManager.memo = {};
+
+			DashboardManager.updateVisualState();
+		}
+
+		DashboardManager.updateVisualState = function() {
+			if (CRManager.AuthenticatedUser.UserName === null)
+				$("#dashboardTable").hide();
+
+			else {
+				$("#dashboardTable").show();
+				if (CRManager.AuthenticatedUser.ProxiedUsers.length > 0)
+					$(".proxyColumn:hidden").show();
+				else {
+					$(".proxyColumn:visible").show();
+				}
+				$(".proxyColumn").hide();
+			}
+		}
+
+		DashboardManager.setLevelColor = function(index, item) {
+			Utility.setLevelColor(item, item.id);
+		}
+
+		DashboardManager.onUserLoaded = function() {
+
+		if (CRManager.AuthenticatedUser !== null && CRManager.AuthenticatedUser.UserName !== null) {
+				text = CRManager.getFullUserName();
+				if (CRManager.ActiveRole != "")
+					text += " (" + CRManager.ActiveRole + ")";
+				else
+					text += "&nbsp;";
+
+				text += ' <a href="" onclick="DashboardManager.logout()"> logout </a>';
+
+				CRManager.WebClient.getAllLevels(DashboardManager.onGetLevelsSuccess, null);
+
+				$("#userNameCell").text(Utility.format('{0} {1}, {2} ( {3} )', CRManager.AuthenticatedUser.FirstName, CRManager.AuthenticatedUser.LastName, CRManager.AuthenticatedUser.Credentials, CRManager.AuthenticatedUser.UserName));
+				$("#userInfoTableBody").html(this.getUserContactMarkup(CRManager.AuthenticatedUser));
+
+                if( CRManager.userInRole(CRManager.ROLE_RECEIVER)){
+                    $(".receiver").show();
+                }
+                if (CRManager.userInRole(CRManager.ROLE_SENDER)) {
+                    $(".sender").show();
+                }
+			}
+			else {
+				var text = "Please Login...";
+				$("#userInfoDashboard").html(text);
+			}
+
+		}
+
+		DashboardManager.getUserContactMarkup = function(user) {
+			var markup = '';
+			for (var i = 0; i < CRManager.AuthenticatedUser.Transports.length; i++) {
+				if (user.Transports[i].Transport.Name != "Manual") {
+					var address = user.Transports[i].Address;
+					var address2 = address;
+					if (address == "") {
+						address = '<span style="font-style:italic;">none</span>';
+					}
+					//    			markup += Utility.format('<tr><td>{0}</td><td>{1}</td><td><a href="#" onclick="DashboardManager.editUserTransport(\'{2}\')">Edit</a></tr>', user.Transports[i].Transport.FriendlyName, address, user.Transports[i].Transport.Name);
+					markup += Utility.format('<tr><td>{0}</td><td>{1}</td><td><a href="#" class="hidden" onclick="parent.UserTransportManagement.editTransport(\'{3}\', \'{2}\')">Edit</a><a href="#" onclick="DashboardManager.changeContactInfo();return false;">?</a></tr>', user.Transports[i].Transport.FriendlyName, address, user.Transports[i].Transport.Name, address2);
+				}
+			}
+			return markup;
+		}
+
+		DashboardManager.changeContactInfo = function() {
+			CRManager.showAlert("If ANCR contact information is incorrect please email the <a href='mailto:" + AdminEmailAddress + "'>ANCR System Administrator</a>.<br /><br/>" +
+                "<input type='button' onclick='Manager.closeAlert(true)' value='Close' />", null, "Questions", 380, null);
+		}
+
+		DashboardManager.buildDashboardRow = function(entry) {
+			var row = "";
+			if (entry.ResultUuid != "") {
+//				row = '<tr class="dashboardRow"><td class="colorCell" id="' + entry.colorValue + '" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');" onmouseover="this.style.cursor=\'pointer\'" onmouseout="\'auto\'">' + entry.levelName + '&nbsp;(' + entry.shortDescription + ')' + '</td><td class="valueCell"><a href="#" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');return false;">' + entry.count + '</a></td><td class="valueCell"><a href="#" onclick="DashboardManager.showDetail(\'' + entry.ResultUuid + '\');return false;">' + entry.due + '</a></td><td class="proxyColumn">' + '' + '</td></tr>';
+				row = '<tr class="dashboardRow"><td class="colorCell clickable" id="' + entry.colorValue + '" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');" >' + entry.levelName + '&nbsp;(' + entry.shortDescription + ')' + '</td><td class="valueCell"><a href="#" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');return false;">' + entry.count + '</a></td><td class="valueCell"><a href="#" onclick="DashboardManager.showDetail(\'' + entry.ResultUuid + '\');return false;">' + entry.due + '</a></td><td class="proxyColumn">' + '' + '</td></tr>';
+
+			}
+			else {
+				row = '<tr class="dashboardRow"><td class="colorCell" id="' + entry.colorValue + '" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');" >' + entry.levelName + '&nbsp;(' + entry.shortDescription + ')' + '</td><td class="valueCell"><a href="#" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');return false;">' + entry.count + '</td><td class="valueCell">' + entry.due + '</td><td class="proxyColumn">' + '' + '</td></tr>';
+//				row = '<tr class="dashboardRow"><td class="colorCell" id="' + entry.colorValue + '" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');" onmouseover="this.style.cursor=\'pointer\'" onmouseout="\'auto\'">' + entry.levelName + '&nbsp;(' + entry.shortDescription + ')' + '</td><td class="valueCell"><a href="#" onclick="DashboardManager.filterWorklist(\'' + entry.levelName + '\');return false;">' + entry.count + '</td><td class="valueCell">' + entry.due + '</td><td class="proxyColumn">' + '' + '</td></tr>';
+			}
+			$("#dashboardTableBody").append(row);
+		}
+
+		//Description:
+		//	Method builds a row using the DOM instead of as a string.
+		//	Fixes issues in IE6 when calling $("#dashboardTableBody").append(row) or dashboardTableBody.innerHTML = row;
+		//Created: 2009/12/11, Jeremy Richardson
+		//Modified: 2009-12-15, John Morgan
+		//  Fixed row.setAttribute call so that className was not overwriting dashboardRow
+		//  replaced onmouseout and onmouseover attributes with clickable css class
+		//  Added class attributes in addition to className attributes to support all browsers other than ie6
+		DashboardManager.buildDOMDashboardRow = function(entry) {
+			var row = document.createElement("TR");
+			row.setAttribute("className", "dashboardRow");
+			row.setAttribute("class", "dashboardRow");
+
+			var colorCell = document.createElement("TD");
+			colorCell.setAttribute("id", entry.colorValue);
+			colorCell.setAttribute("onclick", "DashboardManager.filterWorklist(\"" + entry.levelName + "\");");
+			colorCell.setAttribute("className", "colorCell clickable");
+			colorCell.setAttribute("class", "colorCell clickable");
+
+			//			colorCell.setAttribute("onmouseout", "auto");
+			//			colorCell.setAttribute("onmouseover", "this.style.cursor=\'pointer\'");
+			colorCell.innerText = entry.levelName + " (" + entry.shortDescription + ")";
+			row.appendChild(colorCell);
+
+			var valueCell = document.createElement("TD");
+			valueCell.setAttribute("className", "valueCell");
+			valueCell.setAttribute("class", "valueCell");
+			valueCell.setAttribute("id", entry.colorValue);
+			row.appendChild(valueCell);
+
+			var valueLink = document.createElement("A");
+			valueLink.innerText = entry.count;
+			valueLink.setAttribute("href", "#");
+			valueLink.onclick = function() { DashboardManager.filterWorklist(entry.levelName); return false; };
+			//			valueLink.setAttribute("onmouseout", "auto");
+			//			valueLink.setAttribute("onmouseover", "this.style.cursor=\'pointer\'");
+			valueCell.appendChild(valueLink);
+
+
+			var dueCell = document.createElement("TD");
+			dueCell.setAttribute("className", "valueCell");
+			dueCell.setAttribute("class", "valueCell");
+			dueCell.setAttribute("id", entry.colorValue);
+			row.appendChild(dueCell);
+
+			if (entry.ResultUuid != "") {
+				var dueLink = document.createElement("A");
+				dueLink.innerHTML = entry.due;
+				dueLink.setAttribute("href", "#");
+				dueLink.onclick = function() { DashboardManager.showDetail(entry.ResultUuid); return false; };
+				//				dueLink.setAttribute("onmouseout", "auto");
+				//				dueLink.setAttribute("onmouseover", "this.style.cursor=\'pointer\'");
+				dueCell.appendChild(dueLink);
+			}
+			else {
+				dueCell.innerText = entry.due;
+			}
+
+			document.getElementById("dashboardTableBody").appendChild(row);
+		}
+
+		DashboardManager.showDetail = function(uuid) {
+			DashboardManager.displayedUuid = uuid;
+			var width = CRManager.getWindowWidth() - Math.round(CRManager.getWindowWidth() * .2);
+			var height = CRManager.getWindowHeight() - Math.round(CRManager.getWindowHeight() * .1);
+			var iframeHgt = height - 40;
+			var html = "<iframe frameborder='0' width='100%' height='" + iframeHgt + "' src=" + RootUrl + "/User/ResultDetail.htm?uuid=" + uuid + "></iframe>";
+			parent.Manager.openModal(html, "Critical Results :: Result Detail", null, null, null, width, height, null, null, CRManager.AcknowledgeResult.confirmCloseWithoutAck);
+		}
+
+		DashboardManager.acknowledgeConfirm = function(event, ui) {
+			if (CRManager.ActiveRole == CRManager.ROLE_SENDER || CRManager.ActiveRole == CRManager.ROLE_RECEIVER) {
+				var resultAck = true;
+				$(CRManager.ListResults).each(function(i, result) {
+					if (result.ResultUuid == DashboardManager.displayedUuid) {
+						if (result.AcknowledgementTime == null) {
+							resultAck = false;
+						}
+					}
+				});
+				if (resultAck == false) {
+					CRManager.showAlert("<center>The result has not been acknowledged.<br />Would you like to acknowledge the result?<br /><input type='button' value='Yes' onclick='Manager.modalConfirmCallback(true);' />&nbsp;<input type='button' value='No' onclick='Manager.modalConfirmCallback(false);' /></center>");
+					return false;
+				}
+
+			}
+			else {
+				return true;
+			}
+		}
+
+		DashboardManager.filterWorklist = function(levelName) {
+			var filter = new Array();
+			$(CRManager.Levels).each(function(i, level) {
+				if (level.Name == levelName) {
+					filter[i] = {
+						name: level.Name,
+						value: true
+					}
+				}
+				else {
+					filter[i] = {
+						name: level.Name,
+						value: false
+					}
+				}
+			});
+			if (CRManager.Filter) {
+				CRManager.resetFiltersToDefault();
+				CRManager.Filter.levelFilter = filter;
+				parent.mainFrame.ListManager.applyFilter();
+				parent.mainFrame.ListManager.updateTimeStatusFilterText();
+			}
+			//    		if (parent.mainFrame) {
+			//    			parent.mainFrame.location.href = "User/ResultList.htm";
+			//    		}
+		}
+
+		function formatDate(jsonDateString) {
+			var dueTime = Utility.parseJsonDate(jsonDateString);
+			var delta = new Timespan();
+			delta.fromDates(dueTime, new Date());
+			if (Math.abs(delta.totalDays()) >= 1) {
+				var dayString = "day";
+				if (Math.abs(delta.totalDays()) >= 2)
+					dayString = "days";
+				if (delta.base >= 0)
+					deltaString = '>' + Math.floor(delta.totalDays()) + ' ' + dayString;
+				else
+					deltaString = '<span class="overdue">' + Math.ceil(delta.totalDays()) + ' ' + dayString + ' ' + delta.hours + ' hr</span>';
+			} else {
+				if (delta.base >= 0)
+					deltaString = Math.floor(delta.totalHours()) + ' hr ' + delta.minutes + ' min';
+				else
+					deltaString = '<span class="overdue">' + Math.ceil(delta.totalHours()) + 'hr ' + delta.minutes + ' min</span>';
+			}
+			return deltaString;
+		}
+
+	</script>
+
+	<style type="text/css">
+		h1
+		{
+			margin-top: 0px;
+			font-size: 200%;
+		}
+		li
+		{
+			list-style-type: none;
+			margin-left: 0px;
+			padding: 1px;
+		}
+		p
+		{
+			margin: 0px;
+			padding: 0px;
+		}
+		table
+		{
+			border: none;
+		}
+		td
+		{
+			background-color: #EEEEEE;
+			border: solid 1px #FFFFFF;
+		}
+		th.foot
+		{
+			border-top: solid 2px #305481;
+			color: Black;
+			background-color: White;
+			font: italic 11px Verdana;
+			text-align: right;
+			padding: 0px;
+			margin-top: 2px;
+		}
+		/*classes*/.headerLink:link
+		{
+			color: White;
+		}
+		.headerLink:hover
+		{
+			color: Orange;
+		}
+		.valueCell
+		{
+			text-align: center;
+		}
+		.overdue
+		{
+			font-weight: bold;
+		}
+		.proxyColumn
+		{
+		}
+		.tableFooter
+		{
+			padding: 0px;
+			border-top: solid 2px #EEEEEE;
+		}
+		/*id's*/#dashboardTable
+		{
+			width: 450px;
+		}
+		#userInfoBlock
+		{
+			width: 450px;
+		}
+		#resultBlock
+		{
+			width: 450px;
+		}
+	</style>
+</head>
+<body style="height: 20px;">
+	<div style="float: left;">
+		<table id="dashboardTable">
+			<thead>
+				<tr>
+					<th>
+						Alert Level
+					</th>
+					<th>
+						<span id="countName">Count</span>
+					</th>
+					<th>
+						Next Due
+					</th>
+					<th class="proxyColumn">
+						Proxy
+					</th>
+				</tr>
+			</thead>
+			<tbody id="dashboardTableBody">
+
+			</tbody>
+			<tfoot>
+				<tr>
+					<th colspan="3" class="foot" id="lastUpdated">
+					</th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<div style="float: right; width: 400px; text-align: right;">
+		<a href="" id="logout" onclick="parent.location='default.htm'; return false;">Logout</a>
+		<table id="userInfoTable" style="text-align: left;">
+			<thead>
+				<tr>
+					<th colspan="3" id="userNameCell">
+					</th>
+				</tr>
+			</thead>
+			<tbody id="userInfoTableBody">
+			</tbody>
+			<tfoot>
+				<tr>
+					<th colspan="3" class="foot">
+					</th>
+				</tr>
+			</tfoot>
+		</table>
+		<div id="helpLinks">
+		</div>
+	</div>
+</body>
+</html>

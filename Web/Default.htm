@@ -1,0 +1,1244 @@
+﻿<html>
+<head>
+	<title>Alert Notification of Critical Radiology Results (ANCR)</title>
+	<link href="CSS/custom-theme/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" />
+	<link href="CSS/StyleSheet.css" rel="stylesheet" type="text/css" />
+	<!--	<script src="javascript/Filter.js" type="text/javascript"></script>-->
+
+	<script src="javascript/jquery/jquery-1.3.2.min.js" type="text/javascript"></script>
+	<script src="javascript/jquery/jquery.json-1.3.min.js" type="text/javascript"></script>
+	<script src="javascript/jquery/jquery-ui-1.7.2.custom.min.js" type="text/javascript"></script>
+
+	<script src="javascript/jquery/plugins/bgiframe_2.1.1/jquery.bgiframe.min.js" type="text/javascript"></script>
+	<script src="javascript/datetime/DateExtensions.js" type="text/javascript"></script>
+
+	<script src="DynamicScripts/RootUrl.aspx" type="text/javascript"></script>
+	<script src="javascript/Utility.js" type="text/javascript"></script>
+	<script src="javascript/AuthManager.js" type="text/javascript"></script>
+	<script src="javascript/WebClient.js" type="text/javascript"></script>
+
+	<script src="javascript/objects/manager.js" type="text/javascript"></script>
+
+	<script src="javascript/transportManagement.js" type="text/javascript"></script>
+	<link href="javascript/autocomplete/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+	<script src="javascript/autocomplete/jquery.autocomplete.js" type="text/javascript"></script>
+	<script src="javascript/Filters/SavedFilters.js" type="text/javascript"></script>
+	<script src="Services/DirectoryServices/javascript/ADWebClient.js" type="text/javascript"></script>
+	<script src="Services/DirectoryServices/javascript/AutoCreateADAuthExt.js" type="text/javascript"></script>
+	<script src="javascript/ChangePassword.js" type="text/javascript"></script>
+
+	<script src="javascript/CreateUser.js" type="text/javascript"></script>
+
+	<script src="javascript/AcknowledgeResult.js" type="text/javascript"></script>
+
+	<!--Added for Base 64 Encoding-->
+
+	<script src="javascript/crypt/pidcrypt_util.js" type="text/javascript"></script>
+	<script src="javascript/crypt/pidcrypt.js" type="text/javascript"></script>
+	<script src="javascript/crypt/sha256.js" type="text/javascript"></script>
+
+    <script src="javascript/UserAgentDetection.js" type="text/javascript"></script>
+	<script src="javascript/DefaultExtension.js" type="text/javascript"></script>
+	<script src="DynamicScripts/Modules.aspx" type="text/javascript"></script>
+
+	<script type="text/javascript" language="javascript">
+	    var LAST_COMPLETE_FILTER_SETTING = "lastCompleteFilter";
+
+	    function checkBrowserType() {
+//	        if (isMobile() == true) {
+//	            var queryString = window.location.href.split("?");
+//	            var mobile = "../mobile/Default.aspx";
+//	            if (queryString.length > 1)
+//	                mobile += "?" + queryString[1];
+//	            window.location = mobile;
+//	            return;
+//	        }
+//	        if (isIE6() == false) {
+//	            alert("This site was designed to support Internet Explorer 6.  Some functionality may not work correctly in your browser.");
+//	        }
+	    }
+		
+		Manager.ACTION_CREATE = "create"; //Create new result based on data passed in through querystring - i.e. Application=Centricity&UserName=RK020&Action=create&PatientName=JONES^ROGER&DOB=02181978&MRN=123&ACC=321&ExamDescription=BLAHBLAH
+		Manager.ACTION_NAVIGATE = "navigate";
+		Manager.ACTION_OPEN = "open"; //Open a result on login based on querystring data - i.e. ResultUuid=SOMEGUID&Action=open
+		Manager.ACTION_FIND = "find"; //Search for a result based on context data - i.e. mrn=SOMEMRN&accession=SOMEACC&Action=find
+		Manager.UriContext = null;
+
+		var SENDER_RESULT_DETAIL_HELP_LINK = Extension.getSenderHelpLink(); 
+		var RECEIVER_RESULT_DETAIL_HELP_LINK = Extension.getReceiverHelpLink();
+		
+		Manager.PRIMARY_ROLE_HELP_LINK = "about:blank";
+
+		Manager.QUERYSTRING_LOGIN_URI = "./Security/IPFilter/QueryStringLogin.htm?";
+		Manager.QUERYSTRING_LOGIN_QUERYSTRING_FORMAT_STRING = "userName={0}";
+		Manager.FORM_LOGIN_URI = "./Auth/DefaultLogin.htm";
+
+		Manager.CREATE_ALERT_URI = "User/ComposeResult.htm?";
+		Manager.DASHBOARD_URI = "Dashboard.htm";
+		Manager.NAV_URI = "Navigation.htm";
+		Manager.RESULT_LIST_URI = "User/ResultList.htm";
+		Manager.MAIN_URI = "main.htm";
+
+		Manager.Extension = Extension;
+
+		Manager.defaultStatusFilter = [{ "name": "Complete", "value": false, "text": "None" }, { "name": "Pending", "value": true, "text": "All" }, { "name": "Overdue", "value": true, "text": "All"}];
+		Manager.defaultTimeFilter = [{ "name": "Complete", "value": "none" }, { "name": "Pending", "value": "" }, { "name": "Overdue", "value": ""}];
+		Manager.defaultLevelFilter = "";
+		Manager.Filter.statusFilter = Manager.defaultStatusFilter;
+		Manager.Filter.timeFilter = Manager.defaultTimeFilter;
+
+		Manager.ADWebClient = null;
+		if ( typeof(ADWebClient) != "undefined") {
+			Manager.ADWebClient = ADWebClient;
+		}
+
+		Manager.WebClient = WebClient;
+
+		Manager.RefreshTime = 60000;
+
+		Manager.SystemSettings = null;
+
+		Manager.AcknowledgeResult = AcknowledgeResult;
+
+		Manager.SearchForExistingResultsOnCompose = true;
+
+		Manager.AutoOpenSingleResult = false;
+
+		Manager.sha256 = function(s) {		    
+		    return pidCrypt.SHA256(s);		    
+		}
+		
+		Manager.getFullUserName = function() {
+			if (!this.AuthenticatedUser) {
+				return null;
+			}
+			return Utility.format("{0} {1}, {2}", this.AuthenticatedUser.FirstName, this.AuthenticatedUser.LastName, this.AuthenticatedUser.Credentials);
+		}
+
+		Manager.setActiveRole = function(roleName) {
+			this.ActiveRole = roleName;
+			if (dashboardFrame.DashboardManager) {
+				dashboardFrame.DashboardManager.onUserLoaded();
+			}
+		}
+
+		Manager.onGetSystemSettingSuccess = function(data) {
+			Manager.SystemSettings = data;
+		}
+
+		Manager.setAuthenticatedUser = function(setUser)
+		{
+
+			$("#navigationRow").show();
+
+			this.AuthenticatedUser = setUser;
+			if (typeof (AutoCreateADAuthExt) != "undefined")
+			{
+				AutoCreateADAuthExt.CheckAccountByUserObject(Manager, setUser);
+			}
+			if (!this.AuthenticatedUser)
+			{
+				location = "Default.htm";
+				return;
+			}
+
+			if (this.AuthenticatedUser.Roles.length > 0)
+				Manager.setActiveRole(this.AuthenticatedUser.Roles[0].Name);
+
+			WebClient.auditEvent("Login:Success", this.AuthenticatedUser.UserName, null, null); //TODO: review failure case; if we can't audit, should we fail?
+
+			WebClient.getAllLevels(Manager.onGetLevelsSuccess, null); //TODO: review failure case
+			WebClient.getAllUsers(Manager.onGetUsersSuccess, null); //TODO: review failure case
+			WebClient.getSettings("System", Manager.onGetSystemSettingSuccess, null); //TODO: review failure case
+
+			Manager.addMenuObject("");
+			var questionsLnk = $("<a href='#' class='menuItem' id='lnkQuestions'>Questions</a>");
+			$(questionsLnk).bind("click", function() { Manager.questions(); });
+			Manager.addMenuObject(questionsLnk);
+
+			var searchAlertsLnk = $("<a href='#' class='menuItem' id='lnkQuestions'>Find Any Alerts</a>");
+			$(searchAlertsLnk).bind("click", function() { Manager.searchAlerts("", "", false, true); });
+			Manager.addMenuObject(searchAlertsLnk);
+			if (Manager.AuthenticatedUser.HasPassword)
+				Manager.addMenuObject("<a href='' id='lnkChangePassword' class='menuItem' onclick='ChangePassword.Initialize(\"" + Manager.AuthenticatedUser.UserName + "\");return false;'>Change Password</a>");
+
+			if (Manager.userIsAdmin())
+			{
+				var showSavedFilterLnk = $("<a href='#' class='menuItem' id='lnkSavedFilters'>Saved Filters</a>");
+				$(showSavedFilterLnk).bind("click", function() { Manager.showSavedFilters(); });
+				Manager.addMenuObject($(showSavedFilterLnk));
+
+				var showManagerLnk = $("<a href='#' class='menuItem' id='lnkShowManager'>Manage</a>");
+				$(showManagerLnk).bind("click", function() { Manager.showManager(); });
+				Manager.addMenuObject($(showManagerLnk));
+				$("#showAllCheck").removeClass("hidden");
+				$("#showAllCheckLabel").removeClass("hidden");
+			}
+			if (Manager.userCanCreate() == true)
+			{
+				var link = Extension.createPhoneLink();
+				if (link!=null)
+					Manager.addMenuObject($(link));
+
+				var createResultLnk = $("<a href='#' class='menuItem' id='lnkCreateResult'>Create New Alert</a>");
+				$(createResultLnk).bind("click", function() { Manager.createResult(true); });
+				Manager.addMenuObject($(createResultLnk));
+			}
+
+			if (Manager.userInRole(Manager.ROLE_SENDER))
+			{
+				Manager.PRIMARY_ROLE_HELP_LINK = SENDER_RESULT_DETAIL_HELP_LINK;
+			}
+			if (Manager.userInRole(Manager.ROLE_RECEIVER))
+			{
+				Manager.PRIMARY_ROLE_HELP_LINK = RECEIVER_RESULT_DETAIL_HELP_LINK;
+			}
+
+			$(Manager.AuthenticatedUser.UserEntries).each(function(index, setting)
+			{
+				if (setting.Key == LAST_COMPLETE_FILTER_SETTING && setting.Type == "FilterSetting")
+				{
+					var settingVal = $.evalJSON(setting.Value);
+					$(Manager.Filter.timeFilter).each(function(index, filter)
+					{
+						if (filter.name == "Complete")
+						{
+							filter.value = settingVal.value;
+						}
+					});
+					$(Manager.Filter.statusFilter).each(function(index, filter)
+					{
+						if (filter.name == "Complete")
+						{
+							filter.value = true;
+							filter.text = settingVal.name;
+						}
+					});
+				}
+			});
+			return Manager.AuthenticatedUser;
+		}
+
+		Manager.createUserEntry = function(data) {
+			WebClient.createUpdateUserEntry(Manager.AuthenticatedUser.UserName, data, Manager.createUserEntrySuccess, Manager.createUserEntryError);
+		}
+
+		Manager.createUserEntrySuccess = function(data) {
+		}
+		Manager.createUserEntryError = function(data) {
+		}
+
+		Manager.userIsAdmin = function() {
+			if (Manager.userInRole(Manager.ROLE_CLIN_ADMIN) || Manager.userInRole(Manager.ROLE_SYS_ADMIN)) {
+				return true;
+			}
+			return false;
+		}
+
+		Manager.userCanCreate = function() {
+			if (Manager.userInRole(Manager.ROLE_CLIN_ADMIN) || Manager.userInRole(Manager.ROLE_SENDER)) {
+				return true;
+			}
+			return false;
+		}
+
+		Manager.userInRole = function(roleName) {
+			var roles = Manager.AuthenticatedUser.Roles;
+			for (var i = 0; i < roles.length; i++) {
+				if (roles[i].Name == roleName)
+					return true;
+			}
+			return false;
+		}
+
+		Manager.questions = function() {
+			Manager.showAlert("For problems or questions please email the <a href='mailto:" + AdminEmailAddress + "'>ANCR System Administrator</a>.<br /><br/>" +
+                "<input type='button' onclick='Manager.closeAlert(true)' value='Close' />", null, "Questions", 380, null);
+		}
+
+		Manager.showManager = function() {
+			$('#managerDiv').html("<iframe id='managerFrame' witdh='100%' src='Manager/manager.htm' frameborder='0'></iframe>");
+			var x = $(window).width();
+			x = Math.round(x * .95);
+			var y = $(window).height();
+			//y = Math.round(y * .85);
+			$('#managerDiv').dialog({
+				bgiframe: true,
+				modal: true,
+				width: x,
+				height: y,
+				title: "Manager",
+				close: function(event, ui) {
+					$('#managerDiv').dialog('destroy');
+				}
+			});
+			$('#managerFrame').attr({ width: '100%', height: '100%' });
+		}
+
+		Manager.refresh = function() {
+			Manager.queryResults();        }
+
+		//Modified: 2009-07-21, Jeremy Richardson
+		//	Added parsing AuthExt
+		//	TODO: Instead of If...If...If..., Loop through qs, adding each item to context...
+		Manager.loadQueryString = function() {
+			var qs = Utility.queryString(true);
+
+			//this should look at the context type...
+
+			//Parse context
+			var context = { Name: "Radiology" };
+
+			if (qs.Accession)
+				context.Accession = qs.Accession;
+			if (qs.MRN)
+				context.MRN = qs.MRN;
+			if (qs.Modality)
+				context.Modality = qs.Modality;
+			if (qs.ExamTime)
+			    context.ExamTime = qs.ExamTime;
+			if (qs.ExamDate)
+			    context.ExamDate = qs.ExamDate;
+			if (qs.PatientName)
+				context.PatientName = qs.PatientName;
+			if (qs.ExamDescription)
+				context.ExamDescription = qs.ExamDescription;
+			if (qs.DOB)
+				context.DOB = qs.DOB;
+			if (qs.To)
+				context.To = qs.To;
+			if (qs.ResultUuid)
+				context.ResultUuid = qs.ResultUuid;
+
+			//Parse application/action/callback
+			if (qs.Application)
+				context.Application = qs.Application;
+			if (qs.Action)
+				context.Action = qs.Action;
+			if (qs.Callback)
+				context.Callback = qs.Callback;
+
+			//Parse user information
+			if (qs.UserName) {
+				context.UserName = qs.UserName;
+			}
+
+			if (qs.AuthExt) {
+				context.AuthExt = qs.AuthExt;
+			}
+
+			Manager.UriContext = context;
+
+		}
+
+
+		// Modified: 2009-07-21, Jeremy Richardson
+		//	Added changes to support AuthExt's inline.
+		//	TODO: get AuthExt's from settings.
+		Manager.initialize = function() {
+		    $("#jsWarning").addClass("hidden");
+		    checkBrowserType();
+		    WebClient.timeoutAlert = false;	
+
+		    $("#navigationRow").hide();
+
+		    Manager.loadQueryString();
+
+		    var loginUri = Manager.FORM_LOGIN_URI; //set default login uri
+		    if (!Manager.AuthenticatedUser) {		        
+		        if (Manager.UriContext) {				//
+		            if (Manager.UriContext.AuthExt == "default") {
+		                loginUri = "./Auth/DefaultLogin.htm?";
+		            }
+		            else if (Manager.UriContext.AuthExt == "Windows") {
+		                loginUri = "./Auth/WindowsLogin.aspx";
+		            }
+		            else if (Manager.UriContext.AuthExt == "Centricity") {
+		                loginUri = "./Auth/CentricityLogin.aspx?CentricityUserName=" + Manager.UriContext.UserName.encodeBase64();
+		            }
+		            //TODO: Remove Legacy QueryStringLogin
+		            else if (Manager.UriContext.UserName) {
+		                loginUri = Manager.QUERYSTRING_LOGIN_URI + encodeURI(Utility.format(Manager.QUERYSTRING_LOGIN_QUERYSTRING_FORMAT_STRING, Manager.UriContext.UserName));
+		            }
+		        }
+		    }
+		    $("#mainFrame").attr("src", loginUri);
+		}
+
+		Manager.ready = function() {
+			if (!Manager.Levels)
+				return false;
+			if (!Manager.Users)
+				return false;
+			return true;
+		}
+
+		Manager.onGetLevelsSuccess = function(response) {
+			Manager.Levels = response;
+			if (Manager.ready())
+				Manager.start();
+		}
+
+		Manager.onGetUsersSuccess = function(response) {
+			Manager.AutocompleteReceivers = new Array();
+			Manager.AutocompleteSenders = new Array();
+			Manager.Users = response;
+			var userList = new Array();
+			$.each(Manager.Users, function(index, user) {
+
+				userList[index] = user.LastName + ", " + user.FirstName + " (" + user.UserName + ")";
+
+				$.each(user.Roles, function(roleIndex, role) {
+					if ((role.Name == Manager.RECEIVER_ROLE || role.Name == Manager.ROLE_RECEIVER) && user.Enabled == true)
+						Manager.AutocompleteReceivers[Manager.AutocompleteReceivers.length] = userList[index];
+
+					if ((role.Name == Manager.SENDER_ROLE || role.Name == Manager.ROLE_SENDER) && user.Enabled == true)
+						Manager.AutocompleteSenders[Manager.AutocompleteSenders.length] = userList[index];
+				});
+			});
+			Manager.AutocompleteReceivers.sort();
+			Manager.AutocompleteSenders.sort();
+			if (Manager.ready())
+				Manager.start();
+		}
+
+
+		Manager.start = function() {
+
+			$("#dashboardFrame")[0].src = Manager.DASHBOARD_URI;
+			$('#myAlertsDiv').removeClass("hidden");
+			var mainFrameTarget = Manager.RESULT_LIST_URI;
+
+			if (this.UriContext) {
+				if (this.UriContext.Action) {
+					switch (this.UriContext.Action) {
+						case this.ACTION_CREATE:
+							if (Manager.userInRole(Manager.ROLE_SENDER)) {
+								SHOW_SEARCH_DIALOG_IF_NO_RESULTS = false;
+								var url = Manager.CREATE_ALERT_URI;
+								mainFrameTarget = Manager.RESULT_LIST_URI;
+								var width = $(window).width() - Math.round($(window).width() * .2);
+								var height = $(window).height() - Math.round($(window).height() * .05);
+								var iframeHgt = height - 40;
+								var html = "<iframe frameborder='0' width='100%' height='" + iframeHgt + "' src='" + url + "'></iframe>";
+								Manager.openComposeModal(html, "Critical Radiology Results (ANCR)", null, null, null, width, height, null, null);
+							}
+							else {
+								Manager.showAlert("Your account does not have permission to create alerts.<br /><input type='button' onclick='Manager.closeAlert(true)' value='Close' />", null, "Error", 400, null)
+							}
+							break;
+						case this.ACTION_OPEN:
+							mainFrameTarget = Manager.RESULT_LIST_URI;
+							Manager.openResultDetail(this.UriContext.ResultUuid);
+							break;
+						case this.ACTION_FIND:
+							Manager.searchAlerts(this.UriContext.MRN, this.UriContext.Accession, false, false, true, true);
+							break;
+						default:
+							mainFrameTarget = Manager.RESULT_LIST_URI;
+							break;
+					}
+				}
+			}
+
+			$("#mainFrame").attr("src", mainFrameTarget);
+
+			Manager.startRefresh(true);
+		}
+
+		Manager.openResultDetail = function(resultUuid) {
+			var width = Math.round($(window).width() * .95);
+			var height = $(window).height() - Math.round($(window).height() * .05);
+			var iframeHgt = height - 40;
+			var html = "<iframe frameborder='0' width='100%' height='" + iframeHgt + "' src=" + RootUrl + "/User/ResultDetail.htm?uuid=" + resultUuid + "></iframe>";
+			Manager.openModal(html, "Critical Radiology Results (ANCR)", null, null, null, width, height, null, null, Manager.AcknowledgeResult.confirmCloseWithoutAck, Manager.PRIMARY_ROLE_HELP_LINK);
+		}
+
+		Manager.queryResults = function() {
+			Manager.ListQueryString = Manager.buildListQueryString();
+			WebClient.queryResultList(Manager.ListQueryString, null, null, Manager.onListQueryResultsSuccess, null, "ListQuery");        }
+
+        Manager.queryResultsByTimer = function() {
+            Manager.ListQueryString = Manager.buildListQueryString();
+            WebClient.queryResultList(Manager.ListQueryString, null, null, Manager.onListQueryResultsSuccess, null, "ListQuery");
+        }
+
+		Manager.buildDashQueryString = function() {
+			var queryString = "1==1";
+
+			if (!this.userIsAdmin()) {
+				queryString += "AND ( it.ReceiverUserName='" + this.AuthenticatedUser.UserName + "' OR it.SenderUserName='" + this.AuthenticatedUser.UserName + "' ) ";
+			}
+	
+			queryString += " AND ( it.AcknowledgmentTime IS NULL )"
+			return queryString;
+		}
+
+
+		Manager.resetFiltersToDefault = function() {
+			Manager.Filter.statusFilter = Manager.defaultStatusFilter;
+			Manager.Filter.timeFilter = Manager.defaultTimeFilter;
+			Manager.Filter.levelFilter = Manager.defaultLevelFilter;
+			Manager.Filter.messageFilter = "";
+			Manager.Filter.receiverFilter = "";
+			Manager.Filter.contextFilter = "";
+			Manager.Filter.senderFilter = "";
+			mainFrame.ListManager.setFreeTextFilters();
+		}
+		//	buildQueryString
+		//	description:
+		//		buildQueryString() builds the system's global querystring.  The returned query
+		//		is used to drive the Result List and Result Dashboard.
+		//
+		//	created: 2009-06, Jeremy Richardson, Poiesis Informatics
+		//		note: specified in us34 and children
+		//
+		//
+		//Modified - 2010-06-14 - John Morgan to show only Administrators results if no sender or receiver filter is provided
+		Manager.buildListQueryString = function() {
+			var queryString = "1==1";
+
+			if ($("#showAllCheck").attr("checked") == false) {
+				queryString += "AND ( it.ReceiverUserName='" + this.AuthenticatedUser.UserName + "' OR it.SenderUserName='" + this.AuthenticatedUser.UserName + "' ) ";
+			}
+
+
+			//			if (Manager.Filter.userFilter.Senders && Manager.Filter.userFilter.Senders.length > 0 && Manager.Filter.userFilter.Senders != "") {
+			//				queryString += " AND (it.SenderUserName='" + Manager.Filter.userFilter.Senders[0] + "' OR it.ReceiverUserName='" + Manager.Filter.userFilter.Senders[0] + "')";
+			//			}
+
+			if (Manager.Filter.statusFilter && Manager.Filter.statusFilter.length > 0 && Manager.Filter.timeFilter && Manager.Filter.timeFilter.length > 0) {
+
+				var completeFilter = Manager.getFilterValue(Manager.Filter.statusFilter, "Complete");
+				var completeTime = Manager.getFilterValue(Manager.Filter.timeFilter, "Complete");
+
+				var pendingFilter = Manager.getFilterValue(Manager.Filter.statusFilter, "Pending");
+				var pendingTime = Manager.getFilterValue(Manager.Filter.timeFilter, "Pending");
+
+				var overdueFilter = Manager.getFilterValue(Manager.Filter.statusFilter, "Overdue");
+				var overdueTime = Manager.getFilterValue(Manager.Filter.timeFilter, "Overdue");
+
+				var statusTimeQueryString = " AND (";
+
+				if (completeFilter === true) {
+					if (completeTime != "" && completeTime != "none") {
+						var startTime = new Date();
+						var endTime = new Date();
+						startTime.setTime(new Date().getTime() + parseInt(completeTime));
+						statusTimeQueryString += "(it.AcknowledgmentTime>DATETIME'" + startTime.dateFormat(Date.patterns.ISO8601LongPattern) + "'";
+						statusTimeQueryString += " AND it.AcknowledgmentTime<DATETIME'" + endTime.dateFormat(Date.patterns.ISO8601LongPattern) + "')";
+					}
+					else {
+						statusTimeQueryString += " it.AcknowledgmentTime IS NULL";
+					}
+				}
+				else {
+					statusTimeQueryString += "it.AcknowledgmentTime IS NULL";
+				}
+				if ((completeFilter === false) && ((pendingFilter === true) || (overdueFilter === true)))
+					statusTimeQueryString += " AND";
+				else if ((pendingFilter === true) || (overdueFilter === true))
+					statusTimeQueryString += " OR";
+
+				if (pendingFilter === true) {
+					var startTime = new Date();
+					var endTime = new Date();
+					if (pendingTime != "") {
+						endTime.setTime(new Date().getTime() + parseInt(pendingTime));
+						if (overdueFilter === true)
+							statusTimeQueryString += "(";
+						statusTimeQueryString += "(it.DueTime>DATETIME'" + startTime.dateFormat(Date.patterns.ISO8601LongPattern) + "'";
+						statusTimeQueryString += " AND it.DueTime<DATETIME'" + endTime.dateFormat(Date.patterns.ISO8601LongPattern) +
+							"' AND it.AcknowledgmentTime IS NULL)";
+					}
+					else {
+						if (overdueFilter === true)
+							statusTimeQueryString += "(";
+						statusTimeQueryString += "(it.DueTime>DATETIME'" + startTime.dateFormat(Date.patterns.ISO8601LongPattern) +
+							"' AND it.AcknowledgmentTime IS NULL)";
+					}
+				}
+				if (overdueFilter === true) {
+					var startTime = new Date();
+					var endTime = new Date();
+					if (overdueTime != "") {
+						startTime.setTime(new Date().getTime() + parseInt(overdueTime));
+						if (pendingFilter === true)
+							statusTimeQueryString += " OR "
+						statusTimeQueryString += "(it.DueTime>DATETIME'" + startTime.dateFormat(Date.patterns.ISO8601LongPattern) + "'";
+						statusTimeQueryString += " AND it.DueTime<DATETIME'" + endTime.dateFormat(Date.patterns.ISO8601LongPattern) +
+							"' AND it.AcknowledgmentTime IS NULL)";
+						if (pendingFilter === true)
+							statusTimeQueryString += ")"
+					}
+					else {
+						if (pendingFilter === true)
+							statusTimeQueryString += " OR "
+						statusTimeQueryString += "(it.DueTime<DATETIME'" + startTime.dateFormat(Date.patterns.ISO8601LongPattern) +
+							"' AND it.AcknowledgmentTime IS NULL)";
+						if (pendingFilter === true)
+							statusTimeQueryString += ")"
+					}
+				}
+				statusTimeQueryString += ")";
+				queryString += statusTimeQueryString;
+			}
+
+			return queryString;
+		}
+
+		Manager.getFilterValue = function(filter, name) {
+			var value = "";
+			$(filter).each(function(i, filter) {
+				if (filter.name == name) {
+					value = filter.value;
+				}
+			});
+			return value;
+		}
+
+		Manager.onListQueryResultsSuccess = function(results) {
+			delete (Manager.ListResults); 
+			Manager.ListResults = results;
+
+			if (mainFrame.ListManager != null)
+				mainFrame.ListManager.refresh();
+
+			Manager.DashQueryString = Manager.buildDashQueryString();
+			WebClient.queryResultList(Manager.DashQueryString, null, null, Manager.onDashQueryResultsSuccess, null, "DashboardQuery");
+		}
+
+		Manager.onDashQueryResultsSuccess = function(results) {
+			delete (Manager.DashboardResults);
+			Manager.DashboardResults = results;
+			if (dashboardFrame.DashboardManager != null) {
+				dashboardFrame.DashboardManager.refresh();
+			}
+		}
+
+		Manager.startRefresh = function(runNow) {
+			if (runNow) {
+				Manager.refresh();
+			}
+			setInterval("Manager.refresh();", Manager.RefreshTime);
+		}
+
+
+		$(document).ready(function() {
+		    Manager.initialize();
+		});
+
+		function hideDashboard() {
+			$("#dashboardFrame").attr("visibility", "hidden");
+		}
+		function showDashboard() {
+			$("#dashboardFrame").attr("visibility", "visible");
+		}
+
+		Manager.openComposeModal = function(innerHtml, title, cssClass, onOK, onClose, width, height, onSuccess, onCloseEvent, onBeforeCloseEvent, helpLink) {
+			$("#composeDiv").html("");
+			$("#composeDiv").html(innerHtml);
+			$("#composeDiv").dialog({ draggable: true, resizable: false, modal: true, zIndex: 4999, title: title, position: 'center' });
+			if (height == null) {
+				height = $(window).height() - Math.round($(window).height() * .2);
+			}
+			if (width == null) {
+				width = $(window).width() - Math.round($(window).width() * .1);
+			}
+			if (cssClass) {
+				$("composeDiv").dialog('option', 'dialogClass', cssClass);
+			}
+			if (onOK != null && onClose != null) {
+				$("#composeDiv").dialog('option', 'buttons', { "Close": onClose, "Ok": onOK });
+			}
+			else if (onOK != null) {
+				$("#composeDiv").dialog('option', 'buttons', { "Ok": onOK });
+			}
+			else if (onClose != null) {
+				$("#composeDiv").dialog('option', 'buttons', { "Close": onClose });
+			}
+			if (height != null) {
+				$("#composeDiv").dialog('option', 'height', height);
+				$("#composeDiv").dialog('option', 'position', 'center');
+			}
+			if (width != null) {
+				$("#composeDiv").dialog('option', 'width', width);
+				$("#composeDiv").dialog('option', 'position', 'center');
+			}
+			if (onSuccess != null) {
+				Manager.onModalSuccess = onSuccess;
+			}
+			$("#composeDiv").dialog("open");
+			if (onCloseEvent) {
+				$("#composeDiv").bind('dialogclose', onCloseEvent);
+			}
+			else {
+				$("#composeDiv").bind('dialogclose', function(event, ui) {
+					Manager.refresh();
+					$('#composeDiv iframe').attr('src', 'about:blank');
+					$("#composeDiv").dialog("destroy");
+					//$('#' + event.currentTarget.id).remove();
+				});
+			}
+			if (onBeforeCloseEvent) {
+				$("#composeDiv").bind('dialogbeforeclose', onBeforeCloseEvent);
+			}
+
+			if (helpLink) {
+				$('#ui-dialog-title-modalDiv').after("<a id='lnkTitleBarHelp' class='ui-corner-all' role='button' onclick='window.open(\"" + helpLink + "\")'><span class='ui-icon ui-icon-help' style='mozuserselect: none;' unselectable='on'>help</span></a>");
+				$('#lnkTitleBarHelp').bind("mouseenter mouseleave", function(e) {
+					$(this).toggleClass('ui-state-hover');
+				});
+			}
+			else {
+				$('#lnkTitleBarHelp').remove();
+			}
+
+		}
+
+		Manager.openModal = function(innerHtml, title, cssClass, onOK, onClose, width, height, onSuccess, onCloseEvent, onBeforeCloseEvent, helpLink) {
+			$("#modalDiv").html("");
+			$("#modalDiv").html(innerHtml);
+			$("#modalDiv").dialog({ draggable: true, resizable: false, modal: true, zIndex: 4999, title: title, position: 'center' });
+			if (height == null) {
+				height = $(window).height() - Math.round($(window).height() * .2);
+			}
+			if (width == null) {
+				width = $(window).width() - Math.round($(window).width() * .1);
+			}
+			if (cssClass) {
+				$("modalDiv").dialog('option', 'dialogClass', cssClass);
+			}
+			if (onOK != null && onClose != null) {
+				$("#modalDiv").dialog('option', 'buttons', { "Close": onClose, "Ok": onOK });
+			}
+			else if (onOK != null) {
+				$("#modalDiv").dialog('option', 'buttons', { "Ok": onOK });
+			}
+			else if (onClose != null) {
+				$("#modalDiv").dialog('option', 'buttons', { "Close": onClose });
+			}
+			if (height != null) {
+				$("#modalDiv").dialog('option', 'height', height);
+				$("#modalDiv").dialog('option', 'position', 'center');
+			}
+			if (width != null) {
+				$("#modalDiv").dialog('option', 'width', width);
+				$("#modalDiv").dialog('option', 'position', 'center');
+			}
+			if (onSuccess != null) {
+				Manager.onModalSuccess = onSuccess;
+			}
+			$("#modalDiv").dialog("open");
+			if (onCloseEvent) {
+				$("#modalDiv").bind('dialogclose', onCloseEvent);
+			}
+			else {
+				$("#modalDiv").bind('dialogclose', function(event, ui) {
+					Manager.refresh();
+					$('#modalDiv iframe').attr('src', 'about:blank');
+					$("#modalDiv").dialog("destroy");
+					//$('#' + event.currentTarget.id).remove();
+				});
+			}
+			if (onBeforeCloseEvent) {
+				$("#modalDiv").bind('dialogbeforeclose', onBeforeCloseEvent);
+			}
+
+			if (helpLink) {
+				$('#ui-dialog-title-modalDiv').after("<a id='lnkTitleBarHelp' class='ui-corner-all' role='button' onclick='window.open(\"" + helpLink + "\")'><span class='ui-icon ui-icon-help' style='mozuserselect: none;' unselectable='on'>help</span></a>");
+				$('#lnkTitleBarHelp').bind("mouseenter mouseleave", function(e) {
+					$(this).toggleClass('ui-state-hover');
+				});
+			}
+			else {
+				$('#lnkTitleBarHelp').remove();
+			}
+
+		}
+
+		Manager.setModalTitle = function(title) {
+			$("#modalDiv").dialog('option', 'title', title);
+		}
+
+		Manager.addModal = function(name, innerHtml, modalTitle, cssClass, onOK, onClose, width, height, onSuccess) {
+			$("<div id='" + name + "'>" + innerHtml + "</div>").appendTo("body");
+			$("#" + name).dialog({ draggable: true, resizable: false, modal: true, zIndex: 4500, title: modalTitle, position: 'center' });
+			if (cssClass) {
+				$("#" + name).dialog('option', 'dialogClass', cssClass);
+			}
+			if (onOK != null && onClose != null) {
+				$("#" + name).dialog('option', 'buttons', { "Close": onClose, "Ok": onOK });
+			}
+			else if (onOK != null) {
+				$("#" + name).dialog('option', 'buttons', { "Ok": onOK });
+			}
+			else if (onClose != null) {
+				$("#" + name).dialog('option', 'buttons', { "Close": onClose });
+			}
+			
+			if (height != null) {
+				$("#" + name).dialog('option', 'height', height);
+				$("#" + name).dialog('option', 'position', 'center');
+			}
+			if (width != null) {
+				$("#" + name).dialog('option', 'width', width);
+				$("#" + name).dialog('option', 'position', 'center');
+			}
+			if (onSuccess != null) {
+				Manager.onModalSuccess = onSuccess;
+			}
+			$("#" + name).dialog("open");
+			$("#" + name).bind('dialogclose', Manager.onCloseModal);
+			return $("#" + name);
+		}
+
+		Manager.closeModalSuccess = function(data) {
+			Manager.onModalSuccess(data);
+			Manager.closeModal();
+		}
+
+		Manager.onCloseModal = function(event, ui) {
+			$('#modalDiv iframe').attr('src', 'about:blank');
+			$('#' + event.currentTarget.id).dialog("destroy");
+			$('#' + event.currentTarget.id).remove();
+		}
+
+		Manager.closeModal = function(name, ignoreBeforeClose) {
+			if (name) {
+				if (ignoreBeforeClose) {
+					if (ignoreBeforeClose == true) {
+						$('#' + name).unbind('dialogbeforeclose');
+					}
+				}
+				$('#' + name).dialog("close");
+			}
+			else {
+				if ($("#modalDiv").dialog("isOpen")) {
+					if (ignoreBeforeClose) {
+						if (ignoreBeforeClose == true) {
+							$("#modalDiv").unbind('dialogbeforeclose');
+						}
+					}
+					$("#modalDiv").dialog("close");
+				}
+			}
+		}
+
+		Manager.onAlertOk = null;
+
+		Manager.showAlert = function(message, onOk, title, width, height) {
+			$("#alertDiv").html(message);
+			if (onOk) {
+				Manager.onAlertOk = onOk;
+			}
+			if (!title) {
+				title = "Alert";
+			}
+
+			var dialogOptions = { autoOpen: true, draggable: false, resizable: false, modal: true, zIndex: 5000, title: title, position: 'center' };
+			if (height != null) {
+				dialogOptions.height = height;
+			}
+			if (width != null) {
+				dialogOptions.width = width;
+			}
+
+			$("#alertWrapper").dialog(dialogOptions);
+			$("#alertWrapper").dialog().parents(".ui-dialog").find(".ui-dialog-titlebar-close").remove();
+		}
+
+		Manager.closeAlert = function() {
+			if (Manager.onAlertOk) {
+				Manager.onAlertOk;
+			}
+			if ($("#alertWrapper").dialog("isOpen")) {
+				$("#alertWrapper").dialog("destroy");
+			}
+		}
+
+		Manager.getObjectReference = function(name) {
+			return $('#' + name);
+		}
+
+		Manager.addMenuObject = function(objectHtml) {
+			var listItem = $("<li class='menuItem'></li>"); // +objectHtml + "</li>";
+			$(listItem).append(objectHtml);
+			$('#ulNavigationMenu').prepend(listItem);
+		}
+
+		Manager.showSavedFilters = function() {
+			$('#lnkSavedFilters').addClass('hidden');
+			SavedFilters.showSavedFiltersDialog(Manager.AuthenticatedUser.UserEntries, Manager, Manager.onApplyFilter, Manager.onSavedFiltersClosed);
+		}
+
+		Manager.onSavedFiltersClosed = function() {
+			mainFrame.ListManager.updateTimeStatusFilterText();
+			$('#lnkSavedFilters').removeClass('hidden');
+		}
+
+		Manager.onApplyFilter = function() {
+			mainFrame.ListManager.setFreeTextFilters();
+			mainFrame.ListManager.updateTimeStatusFilterText();
+			Manager.refresh();
+		}
+
+		Manager.createResult = function(clearContext) {
+			if (clearContext) {
+				if (clearContext == true) {
+					Manager.UriContext = {};
+				}
+			}
+			var width = $(window).width() - Math.round($(window).width() * .05);
+			var height = $(window).height() - Math.round($(window).height() * .05);
+			var iframeHgt = height - 40;
+			var html = "";
+			html = "<iframe frameborder='0' width='100%' height='" + iframeHgt + "' src='" + RootUrl + "/User/ComposeResult.htm'></iframe>";
+
+
+			if ($('#modalDiv').dialog("isOpen")) {
+				Manager.closeModal("modalDiv", true);
+			}
+			if ($('#composeDiv').dialog("isOpen")) {
+				$("#composeDiv").dialog("destroy");
+			}
+			Manager.openComposeModal(html, "Alert Notification of Critical Radiology Results :: Create Alert", null, null, null, width, height, null, Manager.onCreateResultClose);
+
+		}
+
+		Manager.onCreateResultClose = function() {
+			$("#composeDiv").dialog("destroy");
+			Manager.UriContext = {};
+		}
+
+		Manager.getWindowHeight = function() {
+			return $(window).height();
+		}
+		Manager.getWindowWidth = function() {
+			return $(window).width();
+		}
+
+
+		Manager.modalConfirmCallback = function(value) {
+			Manager.closeAlert();
+			if (value === false) {
+				Manager.closeModal(null, true);
+			}
+		}
+
+		var SHOW_SEARCH_DIALOG_IF_NO_RESULTS = false;
+
+		Manager.searchAlerts = function(patientKey, examKey, showCreateNew, showSearchInput, showDialogIfNoResult, autoOpen) {
+			Manager.openSearchModal();
+			if (autoOpen) {
+				Manager.AutoOpenSingleResult = autoOpen;
+			}
+			else {
+				Manager.AutoOpenSingleResult = false;
+			}
+			SHOW_SEARCH_DIALOG_IF_NO_RESULTS = showDialogIfNoResult;
+			if (patientKey == "" && examKey == "") {
+				$("#tblSearchBody").html("");
+				$("#tblSearchBody").append("<tr><td colspan='6'><i>Please enter search criteria</i></td><tr>");
+				$('#modalSearchDiv').dialog('open');
+			}
+			if (showSearchInput == true) {
+				$('#tblSeachCriteria').removeClass('hidden');
+			}
+			else {
+				$('#tblSeachCriteria').addClass('hidden');
+			}
+			var queryString = "1=1";
+			if ((patientKey == null || patientKey == "") && (examKey == null || examKey == "")) {
+				return;
+			}
+			if (patientKey != null && patientKey != "") {
+				queryString += " AND it.PatientKey='" + patientKey + "'";
+			}
+			if (examKey != null && examKey != "") {
+				queryString += " AND it.ExamKey='" + examKey + "'";
+			}
+
+			if (showCreateNew == true) {
+				$('#createNewButtons').removeClass("hidden");
+			}
+			else {
+				$('#createNewButtons').addClass("hidden");
+			}
+
+			WebClient.queryResultList(queryString, null, null, Manager.onSearchCallback, "FindAlertQuery");
+		}
+
+		Manager.onSearchCallback = function(data) {
+			//build seach results
+			$("#tblSearchBody").html("");
+			$("#spnPatientKeyContext").text("MRN");
+			$("#spnExamKeyContext").text("Exam ID");
+			if (Manager.AutoOpenSingleResult == true) {
+				if (data.length == 1) {
+					Manager.openResultDetail(data[0].ResultUuid)
+					return;
+				}
+			}
+			if (data.length > 0) {
+				$.each(data, function(index, item) {
+					var levelColor = "";
+					$(Manager.Levels).each(function(jdex, level) {
+						if (level.Uuid == item.LevelUuid) {
+							levelColor = level.ColorValue;
+						}
+					});
+					var ackTime = "<i>none</i>";
+					if (item.AcknowledgmentTimeFormatted != null) {
+						ackTime = Utility.parseJsonDate(item.AcknowledgmentTime);
+					}
+
+					var createTime = Utility.parseJsonDate(item.CreationTime);
+
+					Date.patterns["CriticalResults"] = "J\\h K\\m";
+
+					var creationTimeString;
+					if (createTime)
+						creationTimeString = createTime.dateFormat(Date.patterns.NiceDisplay);
+
+					var ackTimeString = ackTime;
+					if (ackTime != "<i>none</i>")
+						ackTimeString = ackTime.dateFormat(Date.patterns.NiceDisplay);
+					var tableRow = "";
+					if (index % 2 == 0)
+						tableRow = "<tr class='evenRow'><td><div style='background-color:" + levelColor + "'>&nbsp;</div></td></td><td>" + item.PatientKey + "</td><td>" + item.ExamKey + "</td><td>" + item.SenderName + "</td><td>" + item.ReceiverName + "</td><td>" + creationTimeString + "</td><td>" + ackTimeString + "</td>";
+					else
+						tableRow = "<tr class='oddRow'><td><div style='background-color:" + levelColor + "'>&nbsp;</div></td></td><td>" + item.PatientKey + "</td><td>" + item.ExamKey + "</td><td>" + item.SenderName + "</td><td>" + item.ReceiverName + "</td><td>" + creationTimeString + "</td><td>" + ackTimeString + "</td>";
+
+					tableRow += "<td><input type='button' style='width:100%;' id='" + item.ResultUuid + "' value='View' /></td></tr>";
+					$("#tblSearchBody").append(tableRow);
+					$('#' + item.ResultUuid).click(function() { Manager.openResultDetail(item.ResultUuid) });
+				});
+
+			}
+			else {
+				$("#tblSearchBody").append("<tr><td colspan='6'>No existing alerts found.</td><tr>");
+			}
+			if ($('#modalSearchDiv').dialog('isOpen') == false && (data.length > 0 || SHOW_SEARCH_DIALOG_IF_NO_RESULTS == true)) {
+				$('#modalSearchDiv').dialog('open');
+			}
+		}
+
+		Manager.createNewFromSearch = function() {
+			Manager.SearchForExistingResultsOnCompose = false;
+			Manager.closeSearchModal();
+		}
+
+		Manager.skipCreationFromSearch = function() {
+			Manager.closeModal("composeDiv", true); 
+			Manager.closeSearchModal();
+		}
+
+		Manager.openSearchModal = function() {
+			var width = Math.round($(window).width() * .5)
+			$('#modalSearchDiv').dialog({ resizable: false, bgiframe: true, modal: true, stack: true, title: "Find Alerts", minWidth: 800, width: 800, autoOpen: false });
+			$('#modalSearchDiv').bind('dialogclose', Manager.onCloseSearchModal);
+		}
+
+		Manager.closeSearchModal = function() {
+			$('#txtSearchPatient').val("");
+			$('#txtSearchExam').val("");
+			$("#tblSearchBody").html("");
+			$('#modalSearchDiv').dialog('close');
+		}
+
+		Manager.onCloseSearchModal = function() {
+			$('#txtSearchPatient').val("");
+			$('#txtSearchExam').val("");
+			$("#tblSearchBody").html("");
+			$('#modalSearchDiv').dialog('destroy');
+		}
+
+		Manager.onSearchClick = function() {
+			SHOW_SEARCH_DIALOG_IF_NO_RESULTS = true;
+			var pid = $('#txtSearchPatient').val();
+			var eid = $('#txtSearchExam').val();
+			Manager.searchAlerts(pid, eid, false, true);
+		}
+
+		Manager.getUsersForFilter = function() {
+			//HERE
+		}
+	</script>
+
+	<style type="text/css">
+		html, body
+		{
+			height: 100%;
+		}
+		.alert
+		{
+			font-family: Tahoma, Verdana, Sans-Serif;
+			font-size: 10pt;
+			background-color: White;
+		}
+		.filterUL
+		{
+		}
+		.menu
+		{
+			list-style-type: none;
+			float: left;
+			padding: 0px 0px 0px 0px;
+			background-color: White;
+			margin-left: 3px;
+		}
+		.menuItem
+		{
+			padding: 2px 2px 2px 2px;
+			background-color: White;
+			display: inline;
+		}
+		.menuItem a
+		{
+			font-size: x-small;
+			padding: 5px 5px 5px 5px;
+		}
+		.resourceLink
+		{
+			font-size: xx-small;
+		}
+		#layoutTable
+		{
+			height: 97%;
+			padding: 1px;
+			margin: 1px;
+			border: none;
+		}
+		#titleRow
+		{
+			height: 40px;
+		}
+		#dashboardRow
+		{
+			height: 145px;
+		}
+		#navigationRow
+		{
+			height: 20px;
+		}
+		#mainRow
+		{
+		}
+		#footerRow
+		{
+			height: 48px;
+			text-align: center;
+		}
+		#lnkCreateResult
+		{
+			font-size: small;
+		}
+		.filterSelect
+		{
+			width: 120px;
+		}
+		/* Style for Modal Dialog Title Bar help icon */#lnkTitleBarHelp
+		{
+			mouzerselect: none;
+			float: right;
+			margin-right: 22px;
+			margin-bottom: 2px;
+			cursor: default;
+			border: 1px solid #305481;
+		}
+	</style>
+</head>
+<body>
+	<table id="layoutTable">
+		<tr id="titleRow">
+			<td>
+				<h1>
+					Alert Notification of Critical Radiology Results (ANCR) <span style="font-size: x-small">
+						Version 2.1</span></h1>
+			</td>
+		</tr>
+		<tr id="dashboardRow">
+			<td style="height: 145px;">
+				<iframe style="height: 145px;" id="dashboardFrame" width="100%" name="dashboardFrame"
+					src="about:blank" frameborder="0" scrolling="no"></iframe>
+			</td>
+		</tr>
+		<tr id="navigationRow" style="height: 20px;">
+			<td id="navigationCell">
+				<ul id='ulNavigationMenu' class='menu'>
+				</ul>
+			</td>
+		</tr>
+		<tr id="mainRow">
+			<td>
+				<table width="100%" style="border: none;">
+				<tr>
+				<td>				
+					<div id="myAlertsDiv" class="hidden" style="padding-left: 10px; padding-bottom: 6px; padding-top: 12px; font-family:Arial; font-size:medium; color:#888888; overflow: hidden;">My Alerts: <span style="font-size: 11px">click anywhere on a row to open it up and see the detail</span></div>
+				</td>
+				<td align="right">
+				<input type="checkbox" id="showAllCheck" class="hidden" onchange="Manager.refresh()" /><label for="showAllCheck" id="showAllCheckLabel" class="hidden">Show all alerts</label>
+				</td>
+				</tr>
+				</table>
+				<div id="jsWarning" style="border: solid 1px black; padding: 3px 3px 3px 3px; text-align: center;">Your browser either has javascript disabled or does not support javascript.  In order to access the ANCR system, javascript must be enabled and fully supported by your browser.
+				 If you are accessing ANCR on a mobile device please click the link below to access the mobile site.<br /><a href="../mobile/Default.aspx">Mobile Site</a>
+				
+				</div>
+				<iframe height="90%" id="mainFrame" name="mainFrame" width="100%" src="about:blank"
+					frameborder="0" scrolling="auto"></iframe>
+			</td>
+		</tr>
+		<tr id="footerRow">
+			<td>
+				<span id="crico">
+					<img src="graphics/logo-crico_rmf.gif" alt="CRICO RMF Logo" /></span> <span id="partners">
+						<img src="graphics/logo-partners.gif" alt="Partners Healthcare Logo" /></span>
+				<span id="brigham">
+					<img src="graphics/logo-brigham2.jpg" alt="Brigham and Women's Hospital Logo" /></span>
+				<span id="harvard" style="padding-bottom: 6px">
+					<img src="graphics/logo-harvard2.jpg" alt="Harvard Medical School Logo" /></span>
+				<span id="danafarber">
+					<img src="graphics/logo-danafarber.gif" alt="Dana Farber" /></span> <span id="faulkner">
+						<img src="graphics/logo-faulkner.gif" alt="Faulkner" /></span>
+			</td>
+		</tr>
+	</table>
+	<div id="modalDiv">
+	</div>
+	<div id="composeDiv">
+	</div>
+	<div id="alertWrapper">
+		<div id="alertDiv" class="alert">
+		</div>
+	</div>
+	<div id="managerDiv" class="hidden">
+	</div>
+	<div id="modalSearchDiv" class='hidden' style="width:525px">
+		<table id="tblSeachCriteria" style="border: none; width: auto; padding-bottom: 6px; margin-bottom: 4px;">
+			<tr><td>MRN</td><td><input type="text" id="txtSearchPatient" /></td></tr>
+			<tr><td>Exam ID</td><td><input type="text" id = "txtSearchExam" /></td></tr>
+			<tr><td colspan="2"><input type="button" id="btnSearch" onclick="Manager.onSearchClick()" value="Search" /></td></tr>
+		</table>
+		<table id="tblSearchResult" style="width: 100%">
+			<thead>
+				<tr>
+					<th class="tight" style="font-size:10px;">&nbsp;</th>
+					<th class="tight" style="font-size:10px;"><span id="spnPatientKeyContext">MRN</span></th>
+					<th class="tight" style="font-size:10px;"><span id="spnExamKeyContext">Exam ID</span></th>
+					<th class="tight" style="font-size:10px;">Sender</th>
+					<th class="tight" style="font-size:10px;">Receiver</th>
+					<th class="tight" style="font-size:10px;">Created</th>
+					<th class="tight" style="font-size:10px;">Acknowledged</th>
+					<th colspan="2"></th>
+				</tr>
+			</thead>
+			<tbody id="tblSearchBody">
+				<tr><td colspan="6"><i>Please enter search criteria.</i></td></tr>
+			</tbody>
+		</table>
+		<div id="createNewButtons" class="hidden" style="padding-top:6px; margin-top: 4px; ">Do you wish to create another alert for this exam ID?&nbsp;<input type="button" value="Yes" onclick="Manager.createNewFromSearch();" />&nbsp;<input type="button" value="No" onclick="Manager.skipCreationFromSearch();" /></div>
+	</div>
+</body>
+</html>
